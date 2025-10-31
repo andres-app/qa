@@ -1,0 +1,5 @@
+RewriteEngine On
+
+# Redirigir de /flota/ a /flota/view/accesopersonal/
+RewriteCond %{REQUEST_URI} ^/flota/?$
+RewriteRule ^(.*)$ /flota/view/accesopersonal/ [L,R=301]
