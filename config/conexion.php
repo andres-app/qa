@@ -37,10 +37,10 @@
         public static function ruta(){
             if ($_SERVER['HTTP_HOST'] == 'localhost') {
                 /* Ruta para el entorno de desarrollo */
-                return "http://localhost/template/";
+                return "http://localhost/qa/";
             } else {
                 /* Ruta para el entorno de producción */
-                return "http://192.168.10.106/template/";
+                return "http://192.168.10.106/qa/";
             }
         }
     }
