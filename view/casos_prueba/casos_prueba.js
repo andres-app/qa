@@ -126,12 +126,12 @@ $(document).ready(function () {
             {
                 targets: 2, // Nombre del Caso
                 render: function (data) {
-                    const limite = 10;
-                    const palabras = (data || "").split(" ");
-                    const textoCorto = palabras.length > limite ? palabras.slice(0, limite).join(" ") + "…" : data;
-                    return `<div title="${data || ""}">${textoCorto}</div>`;
+                    const limite = 20;
+                    if (!data) return "";
+                    const textoCorto = data.length > limite ? data.substring(0, limite) + "…" : data;
+                    return `<div title="${data}">${textoCorto}</div>`;
                 }
-            },
+            },            
             {
                 targets: -1, // Columna de acciones
                 orderable: false,
