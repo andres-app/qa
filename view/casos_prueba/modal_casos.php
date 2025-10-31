@@ -7,7 +7,8 @@
                 <!-- Encabezado -->
                 <div class="modal-header bg-primary">
                     <h5 class="modal-title text-white fw-semibold" id="modalLabel">Registro de Caso de Prueba</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
 
                 <!-- Cuerpo -->
@@ -75,8 +76,16 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="elaborado_por" class="form-label">Elaborado Por</label>
-                            <input type="text" class="form-control" id="elaborado_por" name="elaborado_por"
-                                value="<?php echo $_SESSION['usu_nombre'] ?? ''; ?>" placeholder="Nombre del responsable">
+                            <select class="form-select" id="elaborado_por" name="elaborado_por" required>
+                                <option value="">Seleccione...</option>
+                                <option value="Andres Silva" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Andres Silva') !== false) ? 'selected' : '' ?>>
+                                    Andres Silva</option>
+                                <option value="Lucero Sifuentes" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Lucero Sifuentes') !== false) ? 'selected' : '' ?>>
+                                    Lucero Sifuentes</option>
+                                <option value="Nancy Maza" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Nancy Maza') !== false) ? 'selected' : '' ?>>Nancy
+                                    Maza</option>
+                                <option value="Christian Candiotti" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Christian Candiotti') !== false) ? 'selected' : '' ?>>Christian Candiotti</option>
+                            </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="especialidad_id" class="form-label">Especialidad</label>

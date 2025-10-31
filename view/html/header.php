@@ -9,7 +9,7 @@
                     </span>
                     <span class="logo-lg">
                         <img src="../../assets/picture/logo-sm.svg" alt="" height="24"> <span
-                            class="logo-txt">TEMPLATE</span>
+                            class="logo-txt">Análisis QA</span>
                     </span>
                 </a>
 
@@ -19,7 +19,7 @@
                     </span>
                     <span class="logo-lg">
                         <img src="../../assets/picture/logo-sm.svg" alt="" height="24"> <span
-                            class="logo-txt">TEMPLATE</span>
+                            class="logo-txt">Análisis QA</span>
                     </span>
                 </a>
             </div>
