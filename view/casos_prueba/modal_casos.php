@@ -7,8 +7,7 @@
                 <!-- Encabezado -->
                 <div class="modal-header bg-primary">
                     <h5 class="modal-title text-white fw-semibold" id="modalLabel">Registro de Caso de Prueba</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Cuerpo -->
@@ -20,12 +19,12 @@
                         <div class="col-md-4 mb-3">
                             <label for="codigo" class="form-label">Código (*)</label>
                             <input type="text" class="form-control" id="codigo" name="codigo"
-                                placeholder="Ej: CP-GPR-01" required>
+                                   placeholder="Ej: CP-GPR-01" required>
                         </div>
                         <div class="col-md-8 mb-3">
                             <label for="nombre" class="form-label">Nombre del Caso (*)</label>
                             <input type="text" class="form-control" id="nombre" name="nombre"
-                                placeholder="Ej: Validar registro exitoso de expediente" required>
+                                   placeholder="Ej: Validar registro exitoso de expediente" required>
                         </div>
                     </div>
 
@@ -50,16 +49,14 @@
                         </div>
                     </div>
 
-                    <!-- Fila 3: Resultado esperado y versión -->
+                    <!-- Fila 3: Versión -->
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="resultado_esperado" class="form-label">Resultado Esperado</label>
-                            <input type="text" class="form-control" id="resultado_esperado" name="resultado_esperado"
-                                placeholder="Ej: El sistema muestra mensaje de confirmación.">
-                        </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="version" class="form-label">Versión</label>
-                            <input type="text" class="form-control" id="version" name="version" placeholder="Ej: 1.0">
+                            <select class="form-control" id="version" name="version">
+                                <option value="">Seleccione</option>
+                                <option value="1.0">1.0</option>
+                            </select>
                         </div>
                     </div>
 
@@ -68,7 +65,7 @@
                         <div class="col-12 mb-3">
                             <label for="descripcion" class="form-label">Descripción del Caso</label>
                             <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
-                                placeholder="Describa los pasos o propósito del caso de prueba"></textarea>
+                                      placeholder="Describa los pasos o propósito del caso de prueba"></textarea>
                         </div>
                     </div>
 
@@ -78,15 +75,13 @@
                             <label for="elaborado_por" class="form-label">Elaborado Por</label>
                             <select class="form-select" id="elaborado_por" name="elaborado_por" required>
                                 <option value="">Seleccione...</option>
-                                <option value="Andres Silva" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Andres Silva') !== false) ? 'selected' : '' ?>>
-                                    Andres Silva</option>
-                                <option value="Lucero Sifuentes" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Lucero Sifuentes') !== false) ? 'selected' : '' ?>>
-                                    Lucero Sifuentes</option>
-                                <option value="Nancy Maza" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Nancy Maza') !== false) ? 'selected' : '' ?>>Nancy
-                                    Maza</option>
+                                <option value="Andres Silva" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Andres Silva') !== false) ? 'selected' : '' ?>>Andres Silva</option>
+                                <option value="Lucero Sifuentes" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Lucero Sifuentes') !== false) ? 'selected' : '' ?>>Lucero Sifuentes</option>
+                                <option value="Nancy Maza" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Nancy Maza') !== false) ? 'selected' : '' ?>>Nancy Maza</option>
                                 <option value="Christian Candiotti" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Christian Candiotti') !== false) ? 'selected' : '' ?>>Christian Candiotti</option>
                             </select>
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label for="especialidad_id" class="form-label">Especialidad</label>
                             <select class="form-control" id="especialidad_id" name="especialidad_id">
@@ -99,7 +94,7 @@
                         </div>
                     </div>
 
-                    <!-- Fila 6: Estado ejecución y Resultado -->
+                    <!-- Fila 6: Estado ejecución -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="estado_ejecucion" class="form-label">Estado de Ejecución</label>
@@ -110,28 +105,6 @@
                                 <option value="Completado">Completado</option>
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="resultado" class="form-label">Resultado</label>
-                            <select class="form-control" id="resultado" name="resultado">
-                                <option value="">Seleccione</option>
-                                <option value="Exitoso">Exitoso</option>
-                                <option value="Fallido">Fallido</option>
-                                <option value="En revisión">En revisión</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Fila 7: Fecha de ejecución y observaciones -->
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="fecha_ejecucion" class="form-label">Fecha de Ejecución</label>
-                            <input type="date" class="form-control" id="fecha_ejecucion" name="fecha_ejecucion">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="observaciones" class="form-label">Observaciones</label>
-                            <textarea class="form-control" id="observaciones" name="observaciones" rows="1"
-                                placeholder="Anote observaciones relevantes"></textarea>
-                        </div>
                     </div>
                 </div>
 
@@ -140,7 +113,6 @@
                     <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary waves-effect waves-light">Guardar</button>
                 </div>
-
             </div>
         </form>
     </div>
