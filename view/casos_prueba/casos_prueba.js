@@ -42,7 +42,8 @@ function guardaryeditar(e) {
             } catch (e) {
                 console.error("Respuesta inesperada del servidor:", resp);
                 Swal.fire("Error", "El servidor devolvió una respuesta inválida.", "error");
-            }}
+            }
+        }
     });
 }
 
@@ -98,6 +99,131 @@ function eliminar(id) {
 }
 
 // =======================================================
+// MOSTRAR ITERACIONES DE UN CASO DE PRUEBA
+// =======================================================
+function verIteraciones(id_caso) {
+    $("#id_caso_iter").val(id_caso);
+
+    $.post("../../controller/iteraciones.php?op=listar", { id_caso: id_caso }, function (resp) {
+        try {
+            let data = JSON.parse(resp);
+            let html = "";
+
+            if (data.length === 0) {
+                html = `<p class="text-muted">No hay iteraciones registradas aún.</p>`;
+            } else {
+                data.forEach((iter, index) => {
+                    html += `
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold">Iteración ${index + 1} - ${iter.estado}</span>
+                                <small class="text-muted">${iter.fecha}</small>
+                            </div>
+                            <p class="mb-1">${iter.comentario || "Sin comentarios"}</p>
+                            ${iter.estado !== "Completado"
+                            ? `<button class="btn btn-sm btn-outline-primary" onClick="nuevaIteracion(${id_caso})">
+                                        <i class="bx bx-plus"></i> Nueva Iteración
+                                       </button>`
+                            : ""
+                        }
+                            <hr>
+                        </div>
+                    `;
+                });
+            }
+
+            $("#timeline_iteraciones").html(html);
+            $("#iter_modal").modal("show");
+
+        } catch (e) {
+            console.error("Error al cargar iteraciones:", resp);
+            Swal.fire("Error", "No se pudo cargar el historial de iteraciones", "error");
+        }
+    });
+}
+
+// =======================================================
+// EVENTO: CLIC EN BOTÓN NUEVA ITERACIÓN
+// =======================================================
+$(document).on("click", "#btn_nueva_iteracion", function () {
+    const id_caso = $("#id_caso_iter").val();
+    nuevaIteracion(id_caso);
+});
+
+// =======================================================
+// FUNCIÓN: CREAR NUEVA ITERACIÓN
+// =======================================================
+function nuevaIteracion(id_caso) {
+    Swal.fire({
+        title: "Registrar nueva iteración",
+        html: `
+            <div class="text-start">
+                <label class="form-label fw-semibold">Estado</label>
+                <select id="estado_iteracion" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="En Ejecución">En Ejecución</option>
+                    <option value="Observado">Observado</option>
+                    <option value="Completado">Completado</option>
+                </select>
+
+                <label class="form-label fw-semibold mt-3">Comentario</label>
+                <textarea id="comentario_iteracion" class="form-control" rows="3"
+                    placeholder="Ingrese una observación o detalle (opcional)"></textarea>
+            </div>
+        `,
+        focusConfirm: false,
+        allowOutsideClick: false,
+        stopKeydownPropagation: false,   // ✅ permite escribir libremente
+        showCancelButton: true,
+        confirmButtonText: "Guardar",
+        cancelButtonText: "Cancelar",
+
+        willOpen: () => {
+            // SweetAlert2 bloquea el foco hasta que se abra
+            const textArea = document.getElementById("comentario_iteracion");
+            textArea.focus();
+            textArea.removeAttribute("readonly");
+        },
+
+        preConfirm: () => {
+            const estado = $("#estado_iteracion").val();
+            const comentario = $("#comentario_iteracion").val();
+            if (!estado) {
+                Swal.showValidationMessage("Debe seleccionar un estado");
+            }
+            return { estado, comentario };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const estado = result.value.estado;
+            const comentario = result.value.comentario;
+
+            $.post("../../../controller/iteraciones.php?op=guardar", {
+                id_caso: id_caso,
+                estado: estado,
+                comentario: comentario
+            }, function (resp) {
+                try {
+                    const data = JSON.parse(resp);
+                    if (data.success) {
+                        Swal.fire("Éxito", data.success, "success");
+                        verIteraciones(id_caso);
+                    } else {
+                        Swal.fire("Error", data.error || "No se pudo guardar la iteración", "error");
+                    }
+                } catch (e) {
+                    console.error("Error al procesar respuesta:", resp);
+                    Swal.fire("Error", "Respuesta inválida del servidor", "error");
+                }
+            });
+        }
+    });
+}
+
+
+
+
+// =======================================================
 // CONFIGURACIÓN DEL DATATABLE
 // =======================================================
 $(document).ready(function () {
@@ -131,7 +257,7 @@ $(document).ready(function () {
                     const textoCorto = data.length > limite ? data.substring(0, limite) + "…" : data;
                     return `<div title="${data}">${textoCorto}</div>`;
                 }
-            },            
+            },
             {
                 targets: -1, // Columna de acciones
                 orderable: false,
@@ -144,6 +270,9 @@ $(document).ready(function () {
                             <button type="button" class="btn btn-soft-warning btn-sm" title="Editar" onClick="editar(${id_caso})">
                                 <i class="bx bx-edit-alt"></i>
                             </button>
+                            <button type="button" class="btn btn-soft-info btn-sm" title="Iteraciones" onClick="irIteraciones(${id_caso})">
+                                <i class="bx bx-history"></i>
+                            </button>
                             <button type="button" class="btn btn-soft-danger btn-sm" title="Eliminar" onClick="eliminar(${id_caso})">
                                 <i class="bx bx-trash-alt"></i>
                             </button>
@@ -151,8 +280,9 @@ $(document).ready(function () {
                     `;
                 }
             }
+
         ],
-        
+
         language: {
             sProcessing: "Procesando...",
             sLengthMenu: "Mostrar _MENU_ registros",
@@ -202,5 +332,10 @@ function cargarRequerimientos() {
         });
     });
 }
+
+function irIteraciones(id_caso){
+    window.location.href = `iteraciones.php?id=${id_caso}`;
+}
+
 
 init();

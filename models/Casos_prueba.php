@@ -32,24 +32,46 @@ class Casos_prueba extends Conectar
     // ============================================================
     // OBTENER CASO POR ID
     // ============================================================
-    public function get_caso_por_id($id_caso)
-    {
-        $conectar = parent::conexion();
-        parent::set_names();
+// ============================================================
+// OBTENER CASO POR ID
+// ============================================================
+public function get_caso_por_id($id_caso)
+{
+    $conectar = parent::conexion();
+    parent::set_names();
 
-        $sql = "SELECT * FROM caso_prueba WHERE id_caso = ?";
-        $stmt = $conectar->prepare($sql);
-        $stmt->execute([$id_caso]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    $sql = "SELECT 
+                cp.id_caso,
+                cp.codigo,
+                cp.nombre,
+                cp.estado_ejecucion AS estado,
+                r.codigo AS requerimiento
+            FROM caso_prueba cp
+            LEFT JOIN requerimiento r ON cp.id_requerimiento = r.id_requerimiento
+            WHERE cp.id_caso = ?";
+    
+    $stmt = $conectar->prepare($sql);
+    $stmt->bindValue(1, $id_caso);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
     // ============================================================
     // INSERTAR CASO DE PRUEBA
     // ============================================================
     public function insertar_caso(
-        $codigo, $nombre, $tipo_prueba, $resultado_esperado, $version,
-        $elaborado_por, $especialidad_id, $id_requerimiento,
-        $estado_ejecucion, $resultado, $fecha_ejecucion, $observaciones
+        $codigo,
+        $nombre,
+        $tipo_prueba,
+        $resultado_esperado,
+        $version,
+        $elaborado_por,
+        $especialidad_id,
+        $id_requerimiento,
+        $estado_ejecucion,
+        $resultado,
+        $fecha_ejecucion,
+        $observaciones
     ) {
         $conectar = parent::conexion();
         parent::set_names();
@@ -65,9 +87,19 @@ class Casos_prueba extends Conectar
 
         try {
             return $stmt->execute([
-                $codigo, $nombre, $tipo_prueba, $resultado_esperado, $version,
-                $elaborado_por, $especialidad_id, $id_requerimiento,
-                $estado_ejecucion, $resultado, $fecha_ejecucion, $observaciones, $creado_por
+                $codigo,
+                $nombre,
+                $tipo_prueba,
+                $resultado_esperado,
+                $version,
+                $elaborado_por,
+                $especialidad_id,
+                $id_requerimiento,
+                $estado_ejecucion,
+                $resultado,
+                $fecha_ejecucion,
+                $observaciones,
+                $creado_por
             ]);
         } catch (PDOException $e) {
             error_log("Error al insertar caso de prueba: " . $e->getMessage());
@@ -79,9 +111,19 @@ class Casos_prueba extends Conectar
     // EDITAR CASO
     // ============================================================
     public function editar_caso(
-        $id_caso, $codigo, $nombre, $tipo_prueba, $resultado_esperado, $version,
-        $elaborado_por, $especialidad_id, $id_requerimiento,
-        $estado_ejecucion, $resultado, $fecha_ejecucion, $observaciones
+        $id_caso,
+        $codigo,
+        $nombre,
+        $tipo_prueba,
+        $resultado_esperado,
+        $version,
+        $elaborado_por,
+        $especialidad_id,
+        $id_requerimiento,
+        $estado_ejecucion,
+        $resultado,
+        $fecha_ejecucion,
+        $observaciones
     ) {
         $conectar = parent::conexion();
         parent::set_names();
@@ -98,10 +140,20 @@ class Casos_prueba extends Conectar
 
         try {
             return $stmt->execute([
-                $codigo, $nombre, $tipo_prueba, $resultado_esperado, $version,
-                $elaborado_por, $especialidad_id, $id_requerimiento,
-                $estado_ejecucion, $resultado, $fecha_ejecucion, $observaciones,
-                $actualizado_por, $id_caso
+                $codigo,
+                $nombre,
+                $tipo_prueba,
+                $resultado_esperado,
+                $version,
+                $elaborado_por,
+                $especialidad_id,
+                $id_requerimiento,
+                $estado_ejecucion,
+                $resultado,
+                $fecha_ejecucion,
+                $observaciones,
+                $actualizado_por,
+                $id_caso
             ]);
         } catch (PDOException $e) {
             error_log("Error al editar caso de prueba: " . $e->getMessage());
@@ -131,5 +183,17 @@ class Casos_prueba extends Conectar
             return false;
         }
     }
+
+    public function actualizar_estado_caso($id_caso, $estado)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "UPDATE caso_prueba SET estado = ? WHERE id_caso = ?";
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindValue(1, $estado);
+        $stmt->bindValue(2, $id_caso);
+        $stmt->execute();
+    }
+
 }
 ?>
