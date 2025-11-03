@@ -98,11 +98,24 @@ $(function () {
                     $("#fecha_ejecucion").val("");
                     $("#cerrar_caso").prop("checked", false);
 
-                    // Actualizar badge de estado del caso
+                    // =======================================================
+                    // Actualizar badge de estado del caso y bloquear si se completó
+                    // =======================================================
                     if (data.estado_caso) {
                         $("#badge_estado_caso").text(data.estado_caso);
                         $("#badge_estado_caso").attr("class", "badge " + badgeCasoClass(data.estado_caso));
+
+                        // Si el caso se completó, ocultar formulario dinámicamente
+                        if (data.estado_caso === "Completado") {
+                            $("#form_iteracion").hide();
+                            $(".card:has(#form_iteracion) .card-header").append(
+                                `<div class="alert alert-info mt-3 mb-0 text-center">
+                Este caso de prueba ya está <strong>Completado</strong> y no admite nuevas iteraciones.
+            </div>`
+                            );
+                        }
                     }
+
                 } else {
                     Swal.fire("Error", data.error || "No se pudo guardar la iteración", "error");
                 }
