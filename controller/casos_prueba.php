@@ -23,7 +23,6 @@ switch ($_GET["op"]) {
             $sub_array[] = $row["nombre"];
             $sub_array[] = $row["requerimiento"];
             $sub_array[] = $row["tipo_prueba"];
-            $sub_array[] = $row["resultado_esperado"];
             $sub_array[] = $row["estado_ejecucion"];
             $sub_array[] = $row["version"];
             $sub_array[] = $row["fecha_creacion"];
@@ -51,31 +50,29 @@ switch ($_GET["op"]) {
         $id = isset($_POST["id_caso"]) ? intval($_POST["id_caso"]) : 0;
         $codigo = trim($_POST["codigo"]);
         $nombre = trim($_POST["nombre"]);
-        $tipo_prueba = trim($_POST["tipo_prueba"]);
-        $resultado_esperado = trim($_POST["resultado_esperado"]);
-        $version = trim($_POST["version"]);
-        $elaborado_por = trim($_POST["elaborado_por"]);
-        $especialidad_id = intval($_POST["especialidad_id"]);
-        $id_requerimiento = intval($_POST["id_requerimiento"]);
-        $estado_ejecucion = trim($_POST["estado_ejecucion"]);
-        $resultado = trim($_POST["resultado"]);
-        $fecha_ejecucion = $_POST["fecha_ejecucion"];
-        $observaciones = trim($_POST["observaciones"]);
-
+        $tipo_prueba = trim($_POST["tipo_prueba"] ?? '');
+        $version = trim($_POST["version"] ?? '');
+        $elaborado_por = trim($_POST["elaborado_por"] ?? '');
+        $especialidad_id = intval($_POST["especialidad_id"] ?? 0);
+        $id_requerimiento = intval($_POST["id_requerimiento"] ?? 0);
+        $estado_ejecucion = "Pendiente";     // Fijo por defecto
+        $fecha_ejecucion = date('Y-m-d');    // Automático
+    
         if ($id > 0) {
             $ok = $caso->editar_caso(
-                $id, $codigo, $nombre, $tipo_prueba, $resultado_esperado, $version, $elaborado_por,
-                $especialidad_id, $id_requerimiento, $estado_ejecucion, $resultado, $fecha_ejecucion, $observaciones
+                $id, $codigo, $nombre, $tipo_prueba, $version, $elaborado_por,
+                $especialidad_id, $id_requerimiento, $estado_ejecucion, $fecha_ejecucion
             );
             echo json_encode(["success" => $ok ? "Caso de prueba actualizado correctamente." : "Error al actualizar el caso de prueba."]);
         } else {
             $ok = $caso->insertar_caso(
-                $codigo, $nombre, $tipo_prueba, $resultado_esperado, $version, $elaborado_por,
-                $especialidad_id, $id_requerimiento, $estado_ejecucion, $resultado, $fecha_ejecucion, $observaciones
+                $codigo, $nombre, $tipo_prueba, $version, $elaborado_por,
+                $especialidad_id, $id_requerimiento, $estado_ejecucion, $fecha_ejecucion
             );
             echo json_encode(["success" => $ok ? "Caso de prueba registrado correctamente." : "Error al registrar el caso de prueba."]);
         }
         break;
+    
 
     // 🔍 MOSTRAR
     case "mostrar":

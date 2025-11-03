@@ -61,9 +61,7 @@ function editar(id) {
             $("#nombre").val(data.nombre);
             $("#id_requerimiento").val(data.id_requerimiento).trigger("change");
             $("#tipo_prueba").val(data.tipo_prueba);
-            $("#resultado_esperado").val(data.resultado_esperado);
             $("#version").val(data.version);
-            $("#descripcion").val(data.descripcion);
             $("#modalLabel").html("Editar Caso de Prueba");
             $("#mnt_modal").modal("show");
         }
@@ -305,9 +303,14 @@ $(document).ready(function () {
     $("#btnnuevo").on("click", function () {
         $("#id_caso_prueba").val("");
         $("#mnt_form")[0].reset();
+
+        // Estado fijo a Pendiente
+        $("#estado_ejecucion").val("Pendiente");
+
         $("#modalLabel").html("Nuevo Caso de Prueba");
         $("#mnt_modal").modal("show");
     });
+
 });
 
 // =======================================================
@@ -333,7 +336,7 @@ function cargarRequerimientos() {
     });
 }
 
-function irIteraciones(id_caso){
+function irIteraciones(id_caso) {
     window.location.href = `iteraciones.php?id=${id_caso}`;
 }
 

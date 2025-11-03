@@ -1,4 +1,18 @@
 $(function () {
+
+    // =======================================================
+    // Si el caso está completado, ocultar el formulario
+    // =======================================================
+    const estadoCasoActual = $("#badge_estado_caso").text().trim();
+    if (estadoCasoActual === "Completado") {
+        $("#form_iteracion").hide();
+        $(".card:has(#form_iteracion) .card-header").append(
+            `<div class="alert alert-info mt-3 mb-0 text-center">
+            Este caso de prueba ya está <strong>Completado</strong> y no admite nuevas iteraciones.
+        </div>`
+        );
+    }
+
     const id_caso = $("#id_caso").val();
 
     // =======================================================

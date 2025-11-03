@@ -15,7 +15,6 @@ class Casos_prueba extends Conectar
                     cp.nombre,
                     r.codigo AS requerimiento,
                     cp.tipo_prueba,
-                    cp.resultado_esperado,
                     cp.estado_ejecucion,
                     cp.version,
                     DATE_FORMAT(cp.fecha_creacion, '%Y-%m-%d %H:%i') AS fecha_creacion
@@ -63,42 +62,36 @@ class Casos_prueba extends Conectar
         $codigo,
         $nombre,
         $tipo_prueba,
-        $resultado_esperado,
         $version,
         $elaborado_por,
         $especialidad_id,
         $id_requerimiento,
         $estado_ejecucion,
-        $resultado,
-        $fecha_ejecucion,
-        $observaciones
+        $fecha_ejecucion
     ) {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "INSERT INTO caso_prueba
-                (codigo, nombre, tipo_prueba, resultado_esperado, version, elaborado_por, especialidad_id,
-                 id_requerimiento, estado_ejecucion, resultado, fecha_ejecucion, observaciones, creado_por,
+                (codigo, nombre, tipo_prueba, version, elaborado_por, especialidad_id,
+                 id_requerimiento, estado_ejecucion, fecha_ejecucion, creado_por,
                  fecha_creacion, estado)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)";
-
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)";
+    
         $stmt = $conectar->prepare($sql);
         $creado_por = $_SESSION["usu_nombre"] ?? 'admin';
-
+    
         try {
             return $stmt->execute([
                 $codigo,
                 $nombre,
                 $tipo_prueba,
-                $resultado_esperado,
                 $version,
                 $elaborado_por,
                 $especialidad_id,
                 $id_requerimiento,
                 $estado_ejecucion,
-                $resultado,
                 $fecha_ejecucion,
-                $observaciones,
                 $creado_por
             ]);
         } catch (PDOException $e) {
@@ -106,6 +99,7 @@ class Casos_prueba extends Conectar
             return false;
         }
     }
+    
 
     // ============================================================
     // EDITAR CASO
@@ -115,43 +109,37 @@ class Casos_prueba extends Conectar
         $codigo,
         $nombre,
         $tipo_prueba,
-        $resultado_esperado,
         $version,
         $elaborado_por,
         $especialidad_id,
         $id_requerimiento,
         $estado_ejecucion,
-        $resultado,
-        $fecha_ejecucion,
-        $observaciones
+        $fecha_ejecucion
     ) {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "UPDATE caso_prueba SET
-                    codigo = ?, nombre = ?, tipo_prueba = ?, resultado_esperado = ?, version = ?,
+                    codigo = ?, nombre = ?, tipo_prueba = ?, version = ?,
                     elaborado_por = ?, especialidad_id = ?, id_requerimiento = ?,
-                    estado_ejecucion = ?, resultado = ?, fecha_ejecucion = ?, observaciones = ?,
+                    estado_ejecucion = ?, fecha_ejecucion = ?,
                     actualizado_por = ?, fecha_actualizacion = NOW()
                 WHERE id_caso = ?";
-
+    
         $stmt = $conectar->prepare($sql);
         $actualizado_por = $_SESSION["usu_nombre"] ?? 'admin';
-
+    
         try {
             return $stmt->execute([
                 $codigo,
                 $nombre,
                 $tipo_prueba,
-                $resultado_esperado,
                 $version,
                 $elaborado_por,
                 $especialidad_id,
                 $id_requerimiento,
                 $estado_ejecucion,
-                $resultado,
                 $fecha_ejecucion,
-                $observaciones,
                 $actualizado_por,
                 $id_caso
             ]);
@@ -160,7 +148,7 @@ class Casos_prueba extends Conectar
             return false;
         }
     }
-
+    
     // ============================================================
     // CAMBIAR ESTADO
     // ============================================================
