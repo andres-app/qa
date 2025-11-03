@@ -34,26 +34,35 @@ class Casos_prueba extends Conectar
 // ============================================================
 // OBTENER CASO POR ID
 // ============================================================
-    public function get_caso_por_id($id_caso)
-    {
-        $conectar = parent::conexion();
-        parent::set_names();
+public function get_caso_por_id($id_caso)
+{
+    $conectar = parent::conexion();
+    parent::set_names();
 
-        $sql = "SELECT 
-                cp.id_caso,
+    $sql = "SELECT 
+                cp.id_caso AS id_caso_prueba,
                 cp.codigo,
                 cp.nombre,
-                cp.estado_ejecucion AS estado,
-                r.codigo AS requerimiento
+                cp.id_requerimiento,
+                r.codigo AS requerimiento_codigo,
+                cp.tipo_prueba,
+                cp.version,
+                cp.estado_ejecucion,
+                cp.especialidad_id,
+                cp.elaborado_por,
+                cp.descripcion,
+                DATE_FORMAT(cp.fecha_ejecucion, '%Y-%m-%d') AS fecha_ejecucion
             FROM caso_prueba cp
             LEFT JOIN requerimiento r ON cp.id_requerimiento = r.id_requerimiento
             WHERE cp.id_caso = ?";
 
-        $stmt = $conectar->prepare($sql);
-        $stmt->bindValue(1, $id_caso);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    $stmt = $conectar->prepare($sql);
+    $stmt->bindValue(1, $id_caso);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+
 
     // ============================================================
     // INSERTAR CASO DE PRUEBA
@@ -64,6 +73,7 @@ class Casos_prueba extends Conectar
         $tipo_prueba,
         $version,
         $elaborado_por,
+        $descripcion,       // 👈 nuevo parámetro
         $especialidad_id,
         $id_requerimiento,
         $estado_ejecucion,
@@ -71,16 +81,16 @@ class Casos_prueba extends Conectar
     ) {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "INSERT INTO caso_prueba
-                (codigo, nombre, tipo_prueba, version, elaborado_por, especialidad_id,
-                 id_requerimiento, estado_ejecucion, fecha_ejecucion, creado_por,
-                 fecha_creacion, estado)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)";
-
+                (codigo, nombre, tipo_prueba, version, elaborado_por, descripcion,
+                 especialidad_id, id_requerimiento, estado_ejecucion, fecha_ejecucion, 
+                 creado_por, fecha_creacion, estado)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)";
+    
         $stmt = $conectar->prepare($sql);
         $creado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
-
+    
         try {
             return $stmt->execute([
                 $codigo,
@@ -88,6 +98,7 @@ class Casos_prueba extends Conectar
                 $tipo_prueba,
                 $version,
                 $elaborado_por,
+                $descripcion,        // 👈 incluido
                 $especialidad_id,
                 $id_requerimiento,
                 $estado_ejecucion,
@@ -111,6 +122,7 @@ class Casos_prueba extends Conectar
         $tipo_prueba,
         $version,
         $elaborado_por,
+        $descripcion,        // 👈 nuevo parámetro
         $especialidad_id,
         $id_requerimiento,
         $estado_ejecucion,
@@ -118,17 +130,17 @@ class Casos_prueba extends Conectar
     ) {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "UPDATE caso_prueba SET
                     codigo = ?, nombre = ?, tipo_prueba = ?, version = ?,
-                    elaborado_por = ?, especialidad_id = ?, id_requerimiento = ?,
+                    elaborado_por = ?, descripcion = ?, especialidad_id = ?, id_requerimiento = ?,
                     estado_ejecucion = ?, fecha_ejecucion = ?,
                     actualizado_por = ?, fecha_actualizacion = NOW()
                 WHERE id_caso = ?";
-
+    
         $stmt = $conectar->prepare($sql);
         $actualizado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
-
+    
         try {
             return $stmt->execute([
                 $codigo,
@@ -136,6 +148,7 @@ class Casos_prueba extends Conectar
                 $tipo_prueba,
                 $version,
                 $elaborado_por,
+                $descripcion,        // 👈 incluido
                 $especialidad_id,
                 $id_requerimiento,
                 $estado_ejecucion,
@@ -148,6 +161,7 @@ class Casos_prueba extends Conectar
             return false;
         }
     }
+    
 
     // ============================================================
     // CAMBIAR ESTADO

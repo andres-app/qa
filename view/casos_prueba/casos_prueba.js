@@ -18,8 +18,12 @@ function init() {
 // =======================================================
 // GUARDAR O EDITAR CASO DE PRUEBA
 // =======================================================
+// =======================================================
+// GUARDAR O EDITAR CASO DE PRUEBA
+// =======================================================
 function guardaryeditar(e) {
     e.preventDefault();
+
     var formData = new FormData($("#mnt_form")[0]);
     var id = $("#id_caso_prueba").val();
 
@@ -29,20 +33,23 @@ function guardaryeditar(e) {
         data: formData,
         contentType: false,
         processData: false,
-        success: function (resp) {
-            try {
-                let data = JSON.parse(resp);
-                if (data.success) {
-                    Swal.fire("Éxito", data.success, "success");
-                    $("#mnt_modal").modal("hide");
-                    tabla.ajax.reload();
-                } else {
-                    Swal.fire("Error", data.error || "No se pudo guardar el caso de prueba", "error");
-                }
-            } catch (e) {
-                console.error("Respuesta inesperada del servidor:", resp);
-                Swal.fire("Error", "El servidor devolvió una respuesta inválida.", "error");
+        dataType: "json", // 👈 fuerza jQuery a interpretar como JSON
+        success: function (data) {
+            // ✅ Ya no se usa JSON.parse()
+            if (data.success) {
+                Swal.fire("Éxito", data.success, "success");
+                $("#mnt_modal").modal("hide");
+                tabla.ajax.reload();
+            } else if (data.error) {
+                Swal.fire("Error", data.error, "error");
+            } else {
+                console.warn("Respuesta inesperada:", data);
+                Swal.fire("Aviso", "El servidor devolvió una respuesta no reconocida.", "info");
             }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error AJAX:", error);
+            Swal.fire("Error", "No se pudo guardar el caso de prueba.", "error");
         }
     });
 }
@@ -51,22 +58,36 @@ function guardaryeditar(e) {
 // MOSTRAR CASO DE PRUEBA
 // =======================================================
 function editar(id) {
-    $.post("../../controller/casos_prueba.php?op=mostrar", { id: id }, function (data) {
-        data = JSON.parse(data);
-        if (data.error) {
-            Swal.fire("Error", data.error, "error");
-        } else {
-            $("#id_caso_prueba").val(data.id_caso_prueba);
-            $("#codigo").val(data.codigo);
-            $("#nombre").val(data.nombre);
-            $("#id_requerimiento").val(data.id_requerimiento).trigger("change");
-            $("#tipo_prueba").val(data.tipo_prueba);
-            $("#version").val(data.version);
-            $("#modalLabel").html("Editar Caso de Prueba");
-            $("#mnt_modal").modal("show");
+    $.ajax({
+        url: "../../controller/casos_prueba.php?op=mostrar",
+        type: "POST",
+        data: { id: id },
+        dataType: "json",
+        success: function (data) {
+            if (data.error) {
+                Swal.fire("Error", data.error, "error");
+            } else {
+                $("#id_caso_prueba").val(data.id_caso_prueba);
+                $("#codigo").val(data.codigo);
+                $("#nombre").val(data.nombre);
+                $("#id_requerimiento").val(data.id_requerimiento);
+                $("#buscarRequerimiento").val(data.requerimiento_codigo).prop("readonly", true); // ✅ mostrar requerimiento
+                $("#tipo_prueba").val(data.tipo_prueba);
+                $("#version").val(data.version);
+                $("#especialidad_id").val(data.especialidad_id);
+                $("#elaborado_por").val(data.elaborado_por);
+                $("#descripcion").val(data.descripcion);
+                $("#modalLabel").html("Editar Caso de Prueba");
+                $("#mnt_modal").modal("show");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error AJAX:", status, error);
+            Swal.fire("Error", "No se pudo obtener la información del caso.", "error");
         }
     });
 }
+
 
 // =======================================================
 // ELIMINAR CASO DE PRUEBA

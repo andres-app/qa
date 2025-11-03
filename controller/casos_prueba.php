@@ -47,17 +47,20 @@ switch ($_GET["op"]) {
 
     // 💾 GUARDAR / EDITAR CASO
     case "guardar":
-        $id = isset($_POST["id_caso"]) ? intval($_POST["id_caso"]) : 0;
-        $codigo = trim($_POST["codigo"]);
-        $nombre = trim($_POST["nombre"]);
-        $tipo_prueba = trim($_POST["tipo_prueba"] ?? '');
-        $version = trim($_POST["version"] ?? '');
-        $elaborado_por = trim($_POST["elaborado_por"] ?? '');
-        $especialidad_id = intval($_POST["especialidad_id"] ?? 0);
+        header('Content-Type: application/json; charset=utf-8');
+    
+        $id = isset($_POST["id_caso_prueba"]) ? intval($_POST["id_caso_prueba"]) : 0;
+        $codigo           = trim($_POST["codigo"] ?? '');
+        $nombre           = trim($_POST["nombre"] ?? '');
+        $tipo_prueba      = trim($_POST["tipo_prueba"] ?? '');
+        $version          = trim($_POST["version"] ?? '');
+        $elaborado_por    = trim($_POST["elaborado_por"] ?? '');
+        $descripcion      = trim($_POST["descripcion"] ?? '');   // ✅ <--- AQUI EL FIX
+        $especialidad_id  = intval($_POST["especialidad_id"] ?? 0);
         $id_requerimiento = intval($_POST["id_requerimiento"] ?? 0);
-        $estado_ejecucion = "Pendiente";     // Fijo por defecto
-        $fecha_ejecucion = date('Y-m-d');    // Automático
-
+        $estado_ejecucion = "Pendiente";
+        $fecha_ejecucion  = date('Y-m-d');
+    
         if ($id > 0) {
             $ok = $caso->editar_caso(
                 $id,
@@ -66,6 +69,7 @@ switch ($_GET["op"]) {
                 $tipo_prueba,
                 $version,
                 $elaborado_por,
+                $descripcion,          // ✅ pásalo
                 $especialidad_id,
                 $id_requerimiento,
                 $estado_ejecucion,
@@ -79,6 +83,7 @@ switch ($_GET["op"]) {
                 $tipo_prueba,
                 $version,
                 $elaborado_por,
+                $descripcion,          // ✅ pásalo
                 $especialidad_id,
                 $id_requerimiento,
                 $estado_ejecucion,
@@ -87,17 +92,27 @@ switch ($_GET["op"]) {
             echo json_encode(["success" => $ok ? "Caso de prueba registrado correctamente." : "Error al registrar el caso de prueba."]);
         }
         break;
+    
 
 
     // 🔍 MOSTRAR
     case "mostrar":
-        if (isset($_POST["id"])) {
-            $datos = $caso->get_caso_por_id($_POST["id"]);
-            echo json_encode($datos);
-        } else {
+        header('Content-Type: application/json; charset=utf-8');
+    
+        if (!isset($_POST["id"])) {
             echo json_encode(["error" => "ID no proporcionado."]);
+            exit;
+        }
+    
+        $datos = $caso->get_caso_por_id($_POST["id"]);
+    
+        if (!$datos) {
+            echo json_encode(["error" => "No se encontró el caso de prueba."]);
+        } else {
+            echo json_encode($datos);
         }
         break;
+    
 
     // ❌ ELIMINAR (estado lógico)
     case "eliminar":
