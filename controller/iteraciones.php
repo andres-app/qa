@@ -10,7 +10,7 @@ switch ($_GET["op"]) {
 
     case "listar":
         $datos = $iter->get_iteraciones_por_caso($_POST["id_caso"]);
-        echo json_encode([ "data" => $datos ]);
+        echo json_encode(["data" => $datos]);
         break;
 
     case "guardar":
@@ -24,15 +24,21 @@ switch ($_GET["op"]) {
         // Insertar iteración
         $iter->insert_iteracion_full($id_caso, $ejecutor_nombre, $fecha_ejecucion, $resultado, $comentario, $cerrar);
 
-        // Lógica de estado del caso
-        $estado_caso = "En ejecución"; // al menos
-        if ($cerrar && $resultado === "Ejecutado") {
+        // =======================================================
+// Lógica de estado del caso (actualizada)
+// =======================================================
+        if ($resultado === "Ejecutado") {
+            // Si está ejecutado, se marca directamente como completado
             $estado_caso = "Completado";
+            $cerrar = 1; // por consistencia, marcamos la iteración como cerrada también
         } elseif ($resultado === "Observado") {
-            $estado_caso = "En ejecución"; // se mantiene para permitir más iteraciones
+            // Si hubo observaciones, se mantiene en ejecución
+            $estado_caso = "En ejecución";
         } else {
+            // Cualquier otro caso (por si en el futuro hay más estados)
             $estado_caso = "En ejecución";
         }
+
         $caso->actualizar_estado_caso($id_caso, $estado_caso);
 
         echo json_encode(["success" => "Iteración registrada.", "estado_caso" => $estado_caso]);

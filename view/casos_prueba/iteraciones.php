@@ -103,14 +103,6 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                         <option>Observado</option>
                                     </select>
                                 </div>
-                                <div class="col-md-2 d-flex align-items-end">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="cerrar_caso">
-                                        <label class="form-check-label" for="cerrar_caso">
-                                            Cerrar caso
-                                        </label>
-                                    </div>
-                                </div>
                                 <div class="col-12">
                                     <label class="form-label">Comentario</label>
                                     <textarea id="comentario" class="form-control" rows="3"

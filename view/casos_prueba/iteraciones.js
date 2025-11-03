@@ -1,7 +1,9 @@
 $(function () {
     const id_caso = $("#id_caso").val();
 
+    // =======================================================
     // Tabla de iteraciones
+    // =======================================================
     const tabla = $("#iteraciones_table").DataTable({
         aProcessing: true,
         aServerSide: false,
@@ -16,7 +18,7 @@ $(function () {
             { data: "ejecutor_nombre", defaultContent: "-" },
             { data: "resultado", render: estadoBadge },
             { data: "comentario", defaultContent: "" }
-        ],        
+        ],
         order: [[0, "asc"]],
         language: {
             sZeroRecords: "Sin iteraciones registradas",
@@ -26,8 +28,22 @@ $(function () {
         }
     });
 
-    function estadoBadge(val){
-        if(!val) return "-";
+    // =======================================================
+    // Cambiar comportamiento del checkbox según el estado seleccionado
+    // =======================================================
+    $("#resultado").on("change", function () {
+        if ($(this).val() === "Ejecutado") {
+            $("#cerrar_caso").prop("checked", true);   // Se marca automáticamente
+        } else {
+            $("#cerrar_caso").prop("checked", false);  // Se desmarca en otros casos
+        }
+    });
+
+    // =======================================================
+    // Función para mostrar badge de estado
+    // =======================================================
+    function estadoBadge(val) {
+        if (!val) return "-";
         const map = {
             "Ejecutado": "bg-success",
             "Observado": "bg-warning",
@@ -37,8 +53,10 @@ $(function () {
         return `<span class="badge ${cls}">${val}</span>`;
     }
 
+    // =======================================================
     // Guardar iteración
-    $("#form_iteracion").on("submit", function(e){
+    // =======================================================
+    $("#form_iteracion").on("submit", function (e) {
         e.preventDefault();
 
         const payload = {
@@ -50,15 +68,15 @@ $(function () {
             cerrar_caso: $("#cerrar_caso").is(":checked") ? 1 : 0
         };
 
-        if(!payload.resultado){
+        if (!payload.resultado) {
             Swal.fire("Validación", "Seleccione el estado de la iteración.", "warning");
             return;
         }
 
-        $.post("../../controller/iteraciones.php?op=guardar", payload, function(resp){
+        $.post("../../controller/iteraciones.php?op=guardar", payload, function (resp) {
             try {
                 const data = JSON.parse(resp);
-                if(data.success){
+                if (data.success) {
                     Swal.fire("Éxito", data.success, "success");
                     tabla.ajax.reload(null, false);
                     $("#comentario").val("");
@@ -66,22 +84,25 @@ $(function () {
                     $("#fecha_ejecucion").val("");
                     $("#cerrar_caso").prop("checked", false);
 
-                    // actualizar badge de estado del caso si vino en la respuesta
-                    if(data.estado_caso){
+                    // Actualizar badge de estado del caso
+                    if (data.estado_caso) {
                         $("#badge_estado_caso").text(data.estado_caso);
                         $("#badge_estado_caso").attr("class", "badge " + badgeCasoClass(data.estado_caso));
                     }
-                }else{
+                } else {
                     Swal.fire("Error", data.error || "No se pudo guardar la iteración", "error");
                 }
-            } catch(err){
+            } catch (err) {
                 console.error(resp);
                 Swal.fire("Error", "Respuesta inválida del servidor", "error");
             }
         });
     });
 
-    function badgeCasoClass(est){
+    // =======================================================
+    // Mapeo de colores del estado del caso
+    // =======================================================
+    function badgeCasoClass(est) {
         const map = {
             "Pendiente": "bg-secondary",
             "En ejecución": "bg-info",
