@@ -71,16 +71,16 @@ class Casos_prueba extends Conectar
     ) {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "INSERT INTO caso_prueba
                 (codigo, nombre, tipo_prueba, version, elaborado_por, especialidad_id,
                  id_requerimiento, estado_ejecucion, fecha_ejecucion, creado_por,
                  fecha_creacion, estado)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)";
-    
+
         $stmt = $conectar->prepare($sql);
         $creado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
-    
+
         try {
             return $stmt->execute([
                 $codigo,
@@ -99,7 +99,7 @@ class Casos_prueba extends Conectar
             return false;
         }
     }
-    
+
 
     // ============================================================
     // EDITAR CASO
@@ -118,17 +118,17 @@ class Casos_prueba extends Conectar
     ) {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "UPDATE caso_prueba SET
                     codigo = ?, nombre = ?, tipo_prueba = ?, version = ?,
                     elaborado_por = ?, especialidad_id = ?, id_requerimiento = ?,
                     estado_ejecucion = ?, fecha_ejecucion = ?,
                     actualizado_por = ?, fecha_actualizacion = NOW()
                 WHERE id_caso = ?";
-    
+
         $stmt = $conectar->prepare($sql);
         $actualizado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
-    
+
         try {
             return $stmt->execute([
                 $codigo,
@@ -148,7 +148,7 @@ class Casos_prueba extends Conectar
             return false;
         }
     }
-    
+
     // ============================================================
     // CAMBIAR ESTADO
     // ============================================================
@@ -187,6 +187,46 @@ class Casos_prueba extends Conectar
         $stmt->bindValue(3, $id_caso);
         $stmt->execute();
     }
+
+    // ============================================================
+// GENERAR CÓDIGO AUTOMÁTICO POR REQUERIMIENTO
+// ============================================================
+    public function generar_codigo_por_requerimiento($id_requerimiento)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        // 1️⃣ Obtener el código del requerimiento (ej: RFU-GRE-02)
+        $sql_req = "SELECT codigo FROM requerimiento WHERE id_requerimiento = ?";
+        $stmt_req = $conectar->prepare($sql_req);
+        $stmt_req->execute([$id_requerimiento]);
+        $req = $stmt_req->fetch(PDO::FETCH_ASSOC);
+
+        if (!$req) {
+            return ["error" => "Requerimiento no encontrado"];
+        }
+
+        $codigo_req = $req["codigo"];
+
+        // 2️⃣ Extraer la parte 'GRE-02' del código (después de RFU-)
+        preg_match('/[A-Z]+-\d+$/', $codigo_req, $matches);
+        $parte_req = $matches ? $matches[0] : substr($codigo_req, -6);
+
+        // 3️⃣ Contar los casos ya registrados para ese requerimiento
+        $sql_cp = "SELECT COUNT(*) AS total FROM caso_prueba WHERE id_requerimiento = ?";
+        $stmt_cp = $conectar->prepare($sql_cp);
+        $stmt_cp->execute([$id_requerimiento]);
+        $row = $stmt_cp->fetch(PDO::FETCH_ASSOC);
+
+        // 4️⃣ Generar número correlativo con dos dígitos (01, 02, 03…)
+        $nuevo_num = str_pad($row["total"] + 1, 2, "0", STR_PAD_LEFT);
+
+        // 5️⃣ Armar código final
+        $nuevo_codigo = "CP-" . $parte_req . "-" . $nuevo_num;
+
+        return ["codigo" => $nuevo_codigo];
+    }
+
 
 
 }

@@ -19,8 +19,8 @@
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="codigo" class="form-label">Código (*)</label>
-                            <input type="text" class="form-control" id="codigo" name="codigo"
-                                placeholder="Ej: CP-GPR-01" required>
+                            <input type="text" class="form-control" id="codigo" name="codigo" readonly required>
+
                         </div>
                         <div class="col-md-8 mb-3">
                             <label for="nombre" class="form-label">Nombre del Caso (*)</label>

@@ -57,22 +57,37 @@ switch ($_GET["op"]) {
         $id_requerimiento = intval($_POST["id_requerimiento"] ?? 0);
         $estado_ejecucion = "Pendiente";     // Fijo por defecto
         $fecha_ejecucion = date('Y-m-d');    // Automático
-    
+
         if ($id > 0) {
             $ok = $caso->editar_caso(
-                $id, $codigo, $nombre, $tipo_prueba, $version, $elaborado_por,
-                $especialidad_id, $id_requerimiento, $estado_ejecucion, $fecha_ejecucion
+                $id,
+                $codigo,
+                $nombre,
+                $tipo_prueba,
+                $version,
+                $elaborado_por,
+                $especialidad_id,
+                $id_requerimiento,
+                $estado_ejecucion,
+                $fecha_ejecucion
             );
             echo json_encode(["success" => $ok ? "Caso de prueba actualizado correctamente." : "Error al actualizar el caso de prueba."]);
         } else {
             $ok = $caso->insertar_caso(
-                $codigo, $nombre, $tipo_prueba, $version, $elaborado_por,
-                $especialidad_id, $id_requerimiento, $estado_ejecucion, $fecha_ejecucion
+                $codigo,
+                $nombre,
+                $tipo_prueba,
+                $version,
+                $elaborado_por,
+                $especialidad_id,
+                $id_requerimiento,
+                $estado_ejecucion,
+                $fecha_ejecucion
             );
             echo json_encode(["success" => $ok ? "Caso de prueba registrado correctamente." : "Error al registrar el caso de prueba."]);
         }
         break;
-    
+
 
     // 🔍 MOSTRAR
     case "mostrar":
@@ -97,5 +112,16 @@ switch ($_GET["op"]) {
     default:
         echo json_encode(["error" => "Operación no válida"]);
         break;
+
+    // 🔹 GENERAR CÓDIGO AUTOMÁTICO
+    case "generar_codigo":
+        if (isset($_POST["id_requerimiento"])) {
+            $datos = $caso->generar_codigo_por_requerimiento($_POST["id_requerimiento"]);
+            echo json_encode($datos);
+        } else {
+            echo json_encode(["error" => "ID de requerimiento no proporcionado."]);
+        }
+        break;
+
 }
 ?>

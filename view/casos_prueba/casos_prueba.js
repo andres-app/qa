@@ -438,6 +438,9 @@ $(document).on("input", "#buscarRequerimiento", function () {
 // =======================================================
 // Seleccionar una opción del buscador
 // =======================================================
+// =======================================================
+// Seleccionar una opción del buscador
+// =======================================================
 $(document).on("click", "#resultadosRequerimiento li", function () {
     const id = $(this).attr("data-id");
     const codigo = $(this).attr("data-codigo");
@@ -448,7 +451,6 @@ $(document).on("click", "#resultadosRequerimiento li", function () {
         .val(codigo && nombre ? `${codigo} — ${nombre}` : codigo)
         .prop("readonly", true);
 
-
     $("#id_requerimiento").val(id);
     $("#resultadosRequerimiento").hide();
 
@@ -457,7 +459,27 @@ $(document).on("click", "#resultadosRequerimiento li", function () {
         const clearBtn = $('<button type="button" id="clearRequerimiento" class="btn btn-outline-secondary"><i class="bx bx-x"></i></button>');
         $("#buscarRequerimiento").closest(".input-group").append(clearBtn);
     }
+
+    // 🔹 Llamar backend para generar código automático
+    $.ajax({
+        url: "../../controller/casos_prueba.php?op=generar_codigo",
+        type: "POST",
+        data: { id_requerimiento: id },
+        success: function (resp) {
+            try {
+                let data = JSON.parse(resp);
+                if (data.codigo) {
+                    $("#codigo").val(data.codigo).prop("readonly", true);
+                } else if (data.error) {
+                    Swal.fire("Error", data.error, "error");
+                }
+            } catch (e) {
+                console.error("Error al generar código:", resp);
+            }
+        }
+    });
 });
+
 
 // =======================================================
 // Botón para limpiar selección y volver a buscar
