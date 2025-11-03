@@ -16,6 +16,21 @@ $(function () {
     const id_caso = $("#id_caso").val();
 
     // =======================================================
+    // Asignar automáticamente la fecha y hora actual al campo de ejecución
+    // =======================================================
+    const ahora = new Date();
+    const año = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+    const dia = String(ahora.getDate()).padStart(2, "0");
+    const hora = String(ahora.getHours()).padStart(2, "0");
+    const minuto = String(ahora.getMinutes()).padStart(2, "0");
+
+    // Formato requerido por input[type=datetime-local]
+    const fechaFormateada = `${año}-${mes}-${dia}T${hora}:${minuto}`;
+    $("#fecha_ejecucion").val(fechaFormateada);
+
+
+    // =======================================================
     // Tabla de iteraciones
     // =======================================================
     const tabla = $("#iteraciones_table").DataTable({
