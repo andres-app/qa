@@ -7,8 +7,7 @@
                 <!-- Encabezado -->
                 <div class="modal-header bg-primary">
                     <h5 class="modal-title text-white fw-semibold" id="modalLabel">Registro de Caso de Prueba</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Cuerpo -->
@@ -20,27 +19,26 @@
                         <div class="col-md-4 mb-3">
                             <label for="codigo" class="form-label">Código (*)</label>
                             <input type="text" class="form-control" id="codigo" name="codigo"
-                                placeholder="Ej: CP-GPR-01" required>
+                                   placeholder="Ej: CP-GPR-01" required>
                         </div>
                         <div class="col-md-8 mb-3">
                             <label for="nombre" class="form-label">Nombre del Caso (*)</label>
                             <input type="text" class="form-control" id="nombre" name="nombre"
-                                placeholder="Ej: Validar registro exitoso de expediente" required>
+                                   placeholder="Ej: Validar registro exitoso de expediente" required>
                         </div>
                     </div>
 
-                    <!-- Fila 2: Requerimiento asociado y Tipo de prueba -->
+                    <!-- Fila 2: Requerimiento y Tipo de prueba -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="id_requerimiento" class="form-label">Requerimiento Asociado (*)</label>
-                            <select class="form-control select2" id="id_requerimiento" name="id_requerimiento" required>
+                            <select class="form-select select2" id="id_requerimiento" name="id_requerimiento" required>
                                 <option value="">Seleccione un requerimiento</option>
-                                <!-- Opciones cargadas dinámicamente -->
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="tipo_prueba" class="form-label">Tipo de Prueba</label>
-                            <select class="form-control" id="tipo_prueba" name="tipo_prueba">
+                            <select class="form-select" id="tipo_prueba" name="tipo_prueba">
                                 <option value="">Seleccione</option>
                                 <option value="Funcional">Funcional</option>
                                 <option value="No Funcional">No Funcional</option>
@@ -50,14 +48,30 @@
                         </div>
                     </div>
 
-                    <!-- Fila 3: Versión -->
+                    <!-- Fila 3: Versión, Especialidad, Elaborado por -->
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="version" class="form-label">Versión</label>
-                            <select class="form-control" id="version" name="version">
+                            <select class="form-select" id="version" name="version">
                                 <option value="">Seleccione</option>
                                 <option value="1.0">1.0</option>
+                                <option value="2.0">2.0</option>
                             </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="especialidad_id" class="form-label">Especialidad</label>
+                            <select class="form-select" id="especialidad_id" name="especialidad_id">
+                                <option value="">Seleccione</option>
+                                <option value="1">Laboral</option>
+                                <option value="2">Civil</option>
+                                <option value="3">Familia</option>
+                                <option value="4">Contencioso Administrativo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="elaborado_por" class="form-label">Elaborado por</label>
+                            <input type="text" class="form-control" id="elaborado_por" name="elaborado_por"
+                                   value="Equipo de Calidad" readonly>
                         </div>
                     </div>
 
@@ -66,47 +80,22 @@
                         <div class="col-12 mb-3">
                             <label for="descripcion" class="form-label">Descripción del Caso</label>
                             <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
-                                placeholder="Describa los pasos o propósito del caso de prueba"></textarea>
+                                      placeholder="Describa los pasos o propósito del caso de prueba"></textarea>
                         </div>
                     </div>
 
-                    <!-- Fila 5: Elaborado por y Especialidad -->
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="elaborado_por" class="form-label">Elaborado Por</label>
-                            <select class="form-select" id="elaborado_por" name="elaborado_por" required>
-                                <option value="">Seleccione...</option>
-                                <option value="Andres Silva" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Andres Silva') !== false) ? 'selected' : '' ?>>
-                                    Andres Silva</option>
-                                <option value="Lucero Sifuentes" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Lucero Sifuentes') !== false) ? 'selected' : '' ?>>
-                                    Lucero Sifuentes</option>
-                                <option value="Nancy Maza" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Nancy Maza') !== false) ? 'selected' : '' ?>>Nancy
-                                    Maza</option>
-                                <option value="Christian Candiotti" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Christian Candiotti') !== false) ? 'selected' : '' ?>>Christian Candiotti</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="especialidad_id" class="form-label">Especialidad</label>
-                            <select class="form-control" id="especialidad_id" name="especialidad_id">
-                                <option value="">Seleccione</option>
-                                <option value="1">Laboral</option>
-                                <option value="2">Civil</option>
-                                <option value="3">Familia</option>
-                                <option value="4">Contencioso Administrativo</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Fila 6: Estado ejecución (oculto y fijo en Pendiente) -->
+                    <!-- Estado oculto -->
                     <input type="hidden" id="estado_ejecucion" name="estado_ejecucion" value="Pendiente">
-
                 </div>
 
                 <!-- Pie del modal -->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary waves-effect waves-light">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bx bx-x-circle"></i> Cerrar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bx bx-save"></i> Guardar
+                    </button>
                 </div>
             </div>
         </form>

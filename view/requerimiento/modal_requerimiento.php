@@ -58,7 +58,7 @@
                             <label for="estado_validacion" class="form-label">Estado de Validación</label>
                             <select class="form-control" id="estado_validacion" name="estado_validacion">
                                 <option value="Pendiente">Pendiente</option>
-                                <option value="Aprobado">Aprobado</option>
+                                <option value="Completado">Completado</option>
                                 <option value="Observado">Observado</option>
                             </select>
                         </div>

@@ -32,11 +32,11 @@ switch ($_GET["op"]) {
             $estado_caso = "Completado";
             $cerrar = 1; // por consistencia, marcamos la iteración como cerrada también
         } elseif ($resultado === "Observado") {
-            // Si hubo observaciones, se mantiene en ejecución
-            $estado_caso = "En ejecución";
+            // Si hubo observaciones, se mantiene Observado
+            $estado_caso = "Observado";
         } else {
             // Cualquier otro caso (por si en el futuro hay más estados)
-            $estado_caso = "En ejecución";
+            $estado_caso = "Observado";
         }
 
         $caso->actualizar_estado_caso($id_caso, $estado_caso);

@@ -148,7 +148,7 @@ class Reporte extends Conectar
     }
 
     /* ============================================================
-   SEGUIMIENTO POR ESPECIALIDAD (Aprobado / En Ejecución / Pendiente)
+   SEGUIMIENTO POR ESPECIALIDAD (Completado / Observado / Pendiente)
 ============================================================ */
     public function get_seguimiento_por_especialidad()
     {
@@ -157,8 +157,8 @@ class Reporte extends Conectar
 
         $sql = "SELECT 
                 e.nombre AS especialidad,
-                SUM(CASE WHEN cp.estado_ejecucion = 'APROBADO' THEN 1 ELSE 0 END) AS aprobado,
-                SUM(CASE WHEN cp.estado_ejecucion = 'EN EJECUCIÓN' THEN 1 ELSE 0 END) AS en_ejecucion,
+                SUM(CASE WHEN cp.estado_ejecucion = 'COMPLETADO' THEN 1 ELSE 0 END) AS completado,
+                SUM(CASE WHEN cp.estado_ejecucion = 'Observado' THEN 1 ELSE 0 END) AS en_ejecucion,
                 SUM(CASE WHEN cp.estado_ejecucion = 'PENDIENTE' THEN 1 ELSE 0 END) AS pendiente
             FROM caso_prueba cp
             INNER JOIN especialidad e ON cp.especialidad_id = e.id_especialidad

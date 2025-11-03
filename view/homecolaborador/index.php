@@ -41,7 +41,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
         foreach ($seguimiento_especialidad as $row) {
             $labels_especialidad[] = $row["especialidad"];
-            $data_aprobado[] = (int) $row["aprobado"];
+            $data_aprobado[] = (int) $row["completado"];
             $data_en_ejecucion[] = (int) $row["en_ejecucion"];
             $data_pendiente[] = (int) $row["pendiente"];
         }
@@ -271,7 +271,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                         <td>3.2.1.3</td>
                                                         <td>Consultas</td>
                                                         <td>PR-002</td>
-                                                        <td>EN EJECUCIÓN</td>
+                                                        <td>Observado</td>
                                                         <td>13/01</td>
                                                         <td>Pruebas en curso</td>
                                                     </tr>
@@ -279,7 +279,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                         <td>3.2.1.5</td>
                                                         <td>Gestión</td>
                                                         <td>PR-003</td>
-                                                        <td>APROBADO</td>
+                                                        <td>COMPLETADO</td>
                                                         <td>14/01</td>
                                                         <td>Validado</td>
                                                     </tr>
@@ -362,12 +362,12 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                     labels: <?= json_encode($labels_especialidad); ?>,
                     datasets: [
                         {
-                            label: 'Aprobado',
+                            label: 'Completado',
                             data: <?= json_encode($data_aprobado); ?>,
                             backgroundColor: 'rgba(96, 165, 250, 0.8)'
                         },
                         {
-                            label: 'En Ejecución',
+                            label: 'Observado',
                             data: <?= json_encode($data_en_ejecucion); ?>,
                             backgroundColor: 'rgba(147, 197, 253, 0.8)'
                         },
@@ -428,8 +428,8 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                 data: {
                     labels: ['Startvi', 'Consultas', 'Registro'],
                     datasets: [
-                        { label: 'Aprobado', data: [5, 8, 6], backgroundColor: gradient(ctxAvance, '#93c5fd', '#bfdbfe') },
-                        { label: 'En Ejecución', data: [10, 7, 8], backgroundColor: gradient(ctxAvance, '#a5c8dd', '#dbeafe') },
+                        { label: 'Completado', data: [5, 8, 6], backgroundColor: gradient(ctxAvance, '#93c5fd', '#bfdbfe') },
+                        { label: 'Observado', data: [10, 7, 8], backgroundColor: gradient(ctxAvance, '#a5c8dd', '#dbeafe') },
                         { label: 'Pendiente', data: [3, 5, 2], backgroundColor: gradient(ctxAvance, '#d1d5db', '#e5e7eb') }
                     ]
                 },

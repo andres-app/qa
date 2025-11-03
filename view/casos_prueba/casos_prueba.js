@@ -159,7 +159,6 @@ function nuevaIteracion(id_caso) {
                 <label class="form-label fw-semibold">Estado</label>
                 <select id="estado_iteracion" class="form-select">
                     <option value="">Seleccione...</option>
-                    <option value="En Ejecución">En Ejecución</option>
                     <option value="Observado">Observado</option>
                     <option value="Completado">Completado</option>
                 </select>
@@ -264,12 +263,12 @@ $(document).ready(function () {
                     if (!data) return "";
                     let badgeStyle = "";
                     let texto = data.toLowerCase();
-            
+
                     switch (texto) {
                         case "pendiente":
                             badgeStyle = "border border-secondary text-secondary bg-white";
                             break;
-                        case "en ejecución":
+                        case "observado": // ✅ ahora en minúsculas
                             badgeStyle = "border border-warning text-warning bg-white";
                             break;
                         case "completado":
@@ -278,29 +277,30 @@ $(document).ready(function () {
                         default:
                             badgeStyle = "border border-light text-muted bg-white";
                     }
-            
+
                     return `<span class="badge rounded-pill ${badgeStyle} px-3 py-2 fw-semibold">${data}</span>`;
                 }
             },
-            
-            
+
+
+
 
             {
-                targets: -1, // Columna de acciones
+                targets: -1,
                 orderable: false,
                 searchable: false,
                 className: "text-center",
                 render: function (id, type, row) {
-                    const id_caso = row[0]; // ID de la primera columna (oculta)
+                    const id_caso = row[0]; // ID oculto
                     return `
                         <div class="d-flex gap-1 justify-content-center">
-                            <button type="button" class="btn btn-soft-warning btn-sm" title="Editar" onClick="editar(${id_caso})">
+                            <button type="button" class="btn btn-soft-warning btn-sm btn-editar" data-estado="${row[5]}" data-id="${id_caso}" title="Editar">
                                 <i class="bx bx-edit-alt"></i>
                             </button>
                             <button type="button" class="btn btn-soft-info btn-sm" title="Iteraciones" onClick="irIteraciones(${id_caso})">
                                 <i class="bx bx-history"></i>
                             </button>
-                            <button type="button" class="btn btn-soft-danger btn-sm" title="Eliminar" onClick="eliminar(${id_caso})">
+                            <button type="button" class="btn btn-soft-danger btn-sm btn-eliminar" data-estado="${row[5]}" data-id="${id_caso}" title="Eliminar">
                                 <i class="bx bx-trash-alt"></i>
                             </button>
                         </div>
@@ -333,12 +333,17 @@ $(document).ready(function () {
         $("#id_caso_prueba").val("");
         $("#mnt_form")[0].reset();
 
+        // Valor por defecto del campo Elaborado por
+        $("#elaborado_por").val("Equipo de Calidad");
+
         // Estado fijo a Pendiente
         $("#estado_ejecucion").val("Pendiente");
 
         $("#modalLabel").html("Nuevo Caso de Prueba");
         $("#mnt_modal").modal("show");
     });
+
+
 
 });
 
@@ -368,6 +373,44 @@ function cargarRequerimientos() {
 function irIteraciones(id_caso) {
     window.location.href = `iteraciones.php?id=${id_caso}`;
 }
+
+// =======================================================
+// BLOQUEAR EDICIÓN Y ELIMINACIÓN SI EL CASO ESTÁ COMPLETADO
+// =======================================================
+
+// Editar
+$(document).on("click", ".btn-editar", function () {
+    const estado = $(this).data("estado");
+    const id = $(this).data("id");
+
+    if (estado && estado.toLowerCase() === "completado") {
+        Swal.fire({
+            icon: "info",
+            title: "Acción no permitida",
+            text: "Este caso de prueba está completado y no puede ser editado.",
+            confirmButtonText: "Entendido"
+        });
+    } else {
+        editar(id); // ejecuta normalmente si no está completado
+    }
+});
+
+// Eliminar
+$(document).on("click", ".btn-eliminar", function () {
+    const estado = $(this).data("estado");
+    const id = $(this).data("id");
+
+    if (estado && estado.toLowerCase() === "completado") {
+        Swal.fire({
+            icon: "info",
+            title: "Acción no permitida",
+            text: "Este caso de prueba está completado y no puede ser eliminado.",
+            confirmButtonText: "Entendido"
+        });
+    } else {
+        eliminar(id); // ejecuta normalmente si no está completado
+    }
+});
 
 
 init();

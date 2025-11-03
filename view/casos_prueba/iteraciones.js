@@ -147,7 +147,6 @@ $(function () {
     function badgeCasoClass(est) {
         const map = {
             "Pendiente": "bg-secondary",
-            "En ejecución": "bg-info",
             "Observado": "bg-warning",
             "Completado": "bg-success"
         };
