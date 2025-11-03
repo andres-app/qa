@@ -79,7 +79,7 @@ class Casos_prueba extends Conectar
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)";
     
         $stmt = $conectar->prepare($sql);
-        $creado_por = $_SESSION["usu_nombre"] ?? 'admin';
+        $creado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
     
         try {
             return $stmt->execute([
@@ -127,7 +127,7 @@ class Casos_prueba extends Conectar
                 WHERE id_caso = ?";
     
         $stmt = $conectar->prepare($sql);
-        $actualizado_por = $_SESSION["usu_nombre"] ?? 'admin';
+        $actualizado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
     
         try {
             return $stmt->execute([
@@ -162,7 +162,7 @@ class Casos_prueba extends Conectar
                 WHERE id_caso = ?";
 
         $stmt = $conectar->prepare($sql);
-        $actualizado_por = $_SESSION["usu_nombre"] ?? 'admin';
+        $actualizado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
 
         try {
             return $stmt->execute([$estado, $actualizado_por, $id_caso]);
@@ -183,7 +183,7 @@ class Casos_prueba extends Conectar
 
         $stmt = $conectar->prepare($sql);
         $stmt->bindValue(1, $estado_ejecucion);
-        $stmt->bindValue(2, $_SESSION["usu_nombre"] ?? 'admin');
+        $stmt->bindValue(2, $_SESSION["usu_nombre"] ?? 'Equipo de Calidad');
         $stmt->bindValue(3, $id_caso);
         $stmt->execute();
     }

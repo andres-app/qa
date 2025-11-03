@@ -354,21 +354,131 @@ $("#mnt_modal").on("hidden.bs.modal", function () {
     $("#mnt_form")[0].reset();
     $("#mnt_form select").val("").trigger("change");
     $("#modalLabel").html("Nuevo Caso de Prueba");
+
+    // 🔹 Limpiar buscador de requerimiento
+    $("#buscarRequerimiento").val("").prop("readonly", false);
+    $("#id_requerimiento").val("");
+    $("#resultadosRequerimiento").hide();
+    $("#clearRequerimiento").remove();
 });
+
 
 // =======================================================
 // CARGAR REQUERIMIENTOS EN SELECT
 // =======================================================
+let requerimientos = [];
+let reqLoaded = false;
+
+// =======================================================
+// Cargar requerimientos en formato JSON
+// =======================================================
 function cargarRequerimientos() {
-    $.get("../../controller/requerimiento.php?op=combo_requerimiento", function (data) {
-        $("#id_requerimiento").html(data);
-        $("#id_requerimiento").select2({
-            theme: "bootstrap-5",
-            placeholder: "Seleccione un requerimiento",
-            allowClear: true
-        });
+    $.ajax({
+        url: "../../controller/requerimiento.php?op=combo_requerimiento_json",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+            if (Array.isArray(data)) {
+                requerimientos = data;
+                reqLoaded = true;
+            } else {
+                console.error("Respuesta inesperada:", data);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error AJAX:", error, xhr.responseText);
+        }
     });
 }
+
+// =======================================================
+// Buscador en tiempo real (solo por código)
+// =======================================================
+$(document).on("input", "#buscarRequerimiento", function () {
+    const q = this.value.trim().toLowerCase();
+    const lista = $("#resultadosRequerimiento");
+    lista.empty();
+
+    if (q.length < 2) {
+        lista.hide();
+        return;
+    }
+
+    if (!reqLoaded || !Array.isArray(requerimientos)) {
+        lista.append('<li class="list-group-item text-muted">Cargando…</li>').show();
+        return;
+    }
+
+    const matches = requerimientos.filter(r =>
+        (r.codigo || "").toLowerCase().includes(q)
+    );
+
+    if (matches.length === 0) {
+        lista.append('<li class="list-group-item text-muted">Sin resultados</li>').show();
+        return;
+    }
+
+    matches.forEach(r => {
+        const id = r.id_requerimiento || "";
+        const codigo = r.codigo || "";
+        const nombre = r.nombre || "";
+        const html = `
+      <li class="list-group-item list-group-item-action" 
+          data-id="${id}" 
+          data-codigo="${codigo.replace(/"/g, "&quot;")}" 
+          data-nombre="${nombre.replace(/"/g, "&quot;")}">
+          <strong>${codigo}</strong> — ${nombre}
+      </li>`;
+        lista.append(html);
+    });
+
+    lista.show();
+});
+
+// =======================================================
+// Seleccionar una opción del buscador
+// =======================================================
+$(document).on("click", "#resultadosRequerimiento li", function () {
+    const id = $(this).attr("data-id");
+    const codigo = $(this).attr("data-codigo");
+    const nombre = $(this).attr("data-nombre");
+
+    // Mostrar selección en el input y bloquearlo
+    $("#buscarRequerimiento")
+        .val(codigo && nombre ? `${codigo} — ${nombre}` : codigo)
+        .prop("readonly", true);
+
+
+    $("#id_requerimiento").val(id);
+    $("#resultadosRequerimiento").hide();
+
+    // Agregar botón X para limpiar
+    if (!$("#clearRequerimiento").length) {
+        const clearBtn = $('<button type="button" id="clearRequerimiento" class="btn btn-outline-secondary"><i class="bx bx-x"></i></button>');
+        $("#buscarRequerimiento").closest(".input-group").append(clearBtn);
+    }
+});
+
+// =======================================================
+// Botón para limpiar selección y volver a buscar
+// =======================================================
+$(document).on("click", "#clearRequerimiento", function () {
+    $("#buscarRequerimiento").val("").prop("readonly", false).focus();
+    $("#id_requerimiento").val("");
+    $("#resultadosRequerimiento").hide();
+    $(this).remove();
+});
+
+// =======================================================
+// Cerrar lista al hacer clic fuera
+// =======================================================
+$(document).on("click", function (e) {
+    const container = $(".position-relative");
+    if (!container.is(e.target) && container.has(e.target).length === 0) {
+        $("#resultadosRequerimiento").hide();
+    }
+});
+
 
 function irIteraciones(id_caso) {
     window.location.href = `iteraciones.php?id=${id_caso}`;

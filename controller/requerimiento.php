@@ -86,6 +86,30 @@ switch ($_GET["op"]) {
         }
         break;
 
+    case "combo_requerimiento_json":
+        header('Content-Type: application/json; charset=utf-8');
+
+        // Obtiene los requerimientos
+        $datos = $requerimiento->get_requerimientos(); // Debe devolver un array asociativo
+
+        // Si get_requerimientos() devuelve un PDOStatement o un array de objetos,
+        // conviértelo explícitamente a un array asociativo simple:
+        $result = [];
+
+        foreach ($datos as $row) {
+            // Si $row es un objeto, usa ->propiedad; si es array, usa ['propiedad']
+            $result[] = [
+                "id_requerimiento" => is_object($row) ? $row->id_requerimiento : $row["id_requerimiento"],
+                "codigo" => is_object($row) ? $row->codigo : $row["codigo"],
+                "nombre" => is_object($row) ? $row->nombre : $row["nombre"]
+            ];
+        }
+
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+        exit;
+
+
+
     // ❌ ELIMINAR (cambio de estado lógico)
     case "eliminar":
         if (isset($_POST["id"])) {
@@ -110,10 +134,10 @@ switch ($_GET["op"]) {
             // Limitar nombre a 60 caracteres aprox.
             $nombre_corto = mb_strimwidth($row["nombre"], 0, 60, "…", "UTF-8");
             $html .= '<option value="' . $row["id_requerimiento"] . '" title="' . htmlspecialchars($row["nombre"]) . '">' .
-                        htmlspecialchars($row["codigo"]) . ' - ' . htmlspecialchars($nombre_corto) .
-                     '</option>';
+                htmlspecialchars($row["codigo"]) . ' - ' . htmlspecialchars($nombre_corto) .
+                '</option>';
         }
-        
+
 
         echo $html;
         break;

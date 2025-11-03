@@ -65,7 +65,7 @@ class Requisito extends Conectar
                 VALUES (?, ?, ?, ?, 1, ?, NOW())";
 
         $stmt = $conectar->prepare($sql);
-        $creado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'admin';
+        $creado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'Equipo de Calidad';
 
         try {
             return $stmt->execute([$codigo, $nombre, $version, $descripcion, $creado_por]);
@@ -94,7 +94,7 @@ class Requisito extends Conectar
                 WHERE id_requisito = ?";
 
         $stmt = $conectar->prepare($sql);
-        $actualizado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'admin';
+        $actualizado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'Equipo de Calidad';
 
         try {
             return $stmt->execute([$codigo, $nombre, $version, $descripcion, $actualizado_por, $id_requisito]);
@@ -117,7 +117,7 @@ class Requisito extends Conectar
                 WHERE id_requisito = ?";
 
         $stmt = $conectar->prepare($sql);
-        $actualizado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'admin';
+        $actualizado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'Equipo de Calidad';
 
         try {
             return $stmt->execute([$estado, $actualizado_por, $id_requisito]);

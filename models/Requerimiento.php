@@ -65,7 +65,7 @@ class Requerimiento extends Conectar
                 VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, NOW())";
 
         $stmt = $conectar->prepare($sql);
-        $creado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'admin';
+        $creado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'Equipo de Calidad';
 
         try {
             return $stmt->execute([$codigo, $nombre, $tipo, $prioridad, $estado_validacion, $version, $funcionalidad, $creado_por]);
@@ -97,7 +97,7 @@ class Requerimiento extends Conectar
                 WHERE id_requerimiento = ?";
 
         $stmt = $conectar->prepare($sql);
-        $actualizado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'admin';
+        $actualizado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'Equipo de Calidad';
 
         try {
             return $stmt->execute([$codigo, $nombre, $tipo, $prioridad, $estado_validacion, $version, $funcionalidad, $actualizado_por, $id]);
@@ -120,7 +120,7 @@ class Requerimiento extends Conectar
                 WHERE id_requerimiento = ?";
 
         $stmt = $conectar->prepare($sql);
-        $actualizado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'admin';
+        $actualizado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'Equipo de Calidad';
 
         try {
             return $stmt->execute([$estado, $actualizado_por, $id_requerimiento]);
