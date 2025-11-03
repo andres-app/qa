@@ -247,6 +247,7 @@ $(document).ready(function () {
         order: [[0, "desc"]],
         columnDefs: [
             { targets: [0], visible: false, searchable: false }, // ID oculto
+
             {
                 targets: 2, // Nombre del Caso
                 render: function (data) {
@@ -256,6 +257,34 @@ $(document).ready(function () {
                     return `<div title="${data}">${textoCorto}</div>`;
                 }
             },
+
+            {
+                targets: 5,
+                render: function (data) {
+                    if (!data) return "";
+                    let badgeStyle = "";
+                    let texto = data.toLowerCase();
+            
+                    switch (texto) {
+                        case "pendiente":
+                            badgeStyle = "border border-secondary text-secondary bg-white";
+                            break;
+                        case "en ejecución":
+                            badgeStyle = "border border-warning text-warning bg-white";
+                            break;
+                        case "completado":
+                            badgeStyle = "border border-success text-success bg-white";
+                            break;
+                        default:
+                            badgeStyle = "border border-light text-muted bg-white";
+                    }
+            
+                    return `<span class="badge rounded-pill ${badgeStyle} px-3 py-2 fw-semibold">${data}</span>`;
+                }
+            },
+            
+            
+
             {
                 targets: -1, // Columna de acciones
                 orderable: false,
