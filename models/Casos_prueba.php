@@ -35,12 +35,12 @@ class Casos_prueba extends Conectar
 // ============================================================
 // OBTENER CASO POR ID
 // ============================================================
-public function get_caso_por_id($id_caso)
-{
-    $conectar = parent::conexion();
-    parent::set_names();
+    public function get_caso_por_id($id_caso)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
 
-    $sql = "SELECT 
+        $sql = "SELECT 
                 cp.id_caso,
                 cp.codigo,
                 cp.nombre,
@@ -49,12 +49,12 @@ public function get_caso_por_id($id_caso)
             FROM caso_prueba cp
             LEFT JOIN requerimiento r ON cp.id_requerimiento = r.id_requerimiento
             WHERE cp.id_caso = ?";
-    
-    $stmt = $conectar->prepare($sql);
-    $stmt->bindValue(1, $id_caso);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindValue(1, $id_caso);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     // ============================================================
     // INSERTAR CASO DE PRUEBA
@@ -184,16 +184,22 @@ public function get_caso_por_id($id_caso)
         }
     }
 
-    public function actualizar_estado_caso($id_caso, $estado)
+    public function actualizar_estado_caso($id_caso, $estado_ejecucion)
     {
         $conectar = parent::conexion();
         parent::set_names();
-        $sql = "UPDATE caso_prueba SET estado = ? WHERE id_caso = ?";
+
+        $sql = "UPDATE caso_prueba 
+                SET estado_ejecucion = ?, actualizado_por = ?, fecha_actualizacion = NOW()
+                WHERE id_caso = ?";
+
         $stmt = $conectar->prepare($sql);
-        $stmt->bindValue(1, $estado);
-        $stmt->bindValue(2, $id_caso);
+        $stmt->bindValue(1, $estado_ejecucion);
+        $stmt->bindValue(2, $_SESSION["usu_nombre"] ?? 'admin');
+        $stmt->bindValue(3, $id_caso);
         $stmt->execute();
     }
+
 
 }
 ?>

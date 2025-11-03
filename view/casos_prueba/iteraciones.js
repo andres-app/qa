@@ -11,12 +11,12 @@ $(function () {
             data: { id_caso }
         },
         columns: [
-            { data: "id_iteracion" },
+            { data: "numero_iteracion", render: d => `${d}ª Iteración` },
             { data: "fecha_ejecucion", defaultContent: "-" },
             { data: "ejecutor_nombre", defaultContent: "-" },
             { data: "resultado", render: estadoBadge },
             { data: "comentario", defaultContent: "" }
-        ],
+        ],        
         order: [[0, "asc"]],
         language: {
             sZeroRecords: "Sin iteraciones registradas",

@@ -83,7 +83,13 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label">Ejecutor</label>
-                                    <input type="text" id="ejecutor_nombre" class="form-control" placeholder="Nombre de quien ejecuta">
+                                    <select class="form-select" id="ejecutor_nombre" name="ejecutor_nombre" required>
+                                <option value="">Seleccione...</option>
+                                <option value="Andres Silva" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Andres Silva') !== false) ? 'selected' : '' ?>>Andres Silva</option>
+                                <option value="Lucero Sifuentes" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Lucero Sifuentes') !== false) ? 'selected' : '' ?>>Lucero Sifuentes</option>
+                                <option value="Nancy Maza" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Nancy Maza') !== false) ? 'selected' : '' ?>>Nancy Maza</option>
+                                <option value="Christian Candiotti" <?= (isset($_SESSION['usu_nombre']) && stripos($_SESSION['usu_nombre'], 'Christian Candiotti') !== false) ? 'selected' : '' ?>>Christian Candiotti</option>
+                            </select>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Fecha de ejecución</label>
@@ -95,7 +101,6 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                         <option value="">Seleccione...</option>
                                         <option>Ejecutado</option>
                                         <option>Observado</option>
-                                        <option>No ejecutado</option>
                                     </select>
                                 </div>
                                 <div class="col-md-2 d-flex align-items-end">
