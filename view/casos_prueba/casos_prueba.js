@@ -279,17 +279,26 @@ $(document).ready(function () {
             },
 
             {
-                targets: 5,
+                targets: 5, // Especialidad
+                render: function (data) {
+                    return data
+                        ? `<span class="badge bg-light text-dark border px-2 py-1">${data}</span>`
+                        : `<span class="text-muted">-</span>`;
+                }
+            },
+
+            {
+                targets: 6, // Estado
                 render: function (data) {
                     if (!data) return "";
                     let badgeStyle = "";
-                    let texto = data.toLowerCase();
+                    const texto = data.toLowerCase();
 
                     switch (texto) {
                         case "pendiente":
                             badgeStyle = "border border-secondary text-secondary bg-white";
                             break;
-                        case "observado": // ✅ ahora en minúsculas
+                        case "observado":
                             badgeStyle = "border border-warning text-warning bg-white";
                             break;
                         case "completado":
@@ -303,33 +312,31 @@ $(document).ready(function () {
                 }
             },
 
-
-
-
             {
-                targets: -1,
+                targets: -1, // Acciones
                 orderable: false,
                 searchable: false,
                 className: "text-center",
                 render: function (id, type, row) {
                     const id_caso = row[0]; // ID oculto
+                    const estado = row[6];  // Estado actual
                     return `
                         <div class="d-flex gap-1 justify-content-center">
-                            <button type="button" class="btn btn-soft-warning btn-sm btn-editar" data-estado="${row[5]}" data-id="${id_caso}" title="Editar">
+                            <button type="button" class="btn btn-soft-warning btn-sm btn-editar" data-estado="${estado}" data-id="${id_caso}" title="Editar">
                                 <i class="bx bx-edit-alt"></i>
                             </button>
                             <button type="button" class="btn btn-soft-info btn-sm" title="Iteraciones" onClick="irIteraciones(${id_caso})">
                                 <i class="bx bx-history"></i>
                             </button>
-                            <button type="button" class="btn btn-soft-danger btn-sm btn-eliminar" data-estado="${row[5]}" data-id="${id_caso}" title="Eliminar">
+                            <button type="button" class="btn btn-soft-danger btn-sm btn-eliminar" data-estado="${estado}" data-id="${id_caso}" title="Eliminar">
                                 <i class="bx bx-trash-alt"></i>
                             </button>
                         </div>
                     `;
                 }
             }
-
         ],
+
 
         language: {
             sProcessing: "Procesando...",

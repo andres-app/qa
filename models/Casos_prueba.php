@@ -15,11 +15,13 @@ class Casos_prueba extends Conectar
                     cp.nombre,
                     r.codigo AS requerimiento,
                     cp.tipo_prueba,
+                    e.nombre AS especialidad,   -- ✅ NUEVO
                     cp.estado_ejecucion,
                     cp.version,
                     DATE_FORMAT(cp.fecha_creacion, '%Y-%m-%d %H:%i') AS fecha_creacion
                 FROM caso_prueba cp
                 LEFT JOIN requerimiento r ON cp.id_requerimiento = r.id_requerimiento
+                LEFT JOIN especialidad e ON cp.especialidad_id = e.id_especialidad  -- ✅ NUEVO
                 WHERE cp.estado = 1
                 ORDER BY cp.id_caso DESC";
 
@@ -28,23 +30,22 @@ class Casos_prueba extends Conectar
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
     // ============================================================
-    // OBTENER CASO POR ID
-    // ============================================================
-// ============================================================
 // OBTENER CASO POR ID
 // ============================================================
-public function get_caso_por_id($id_caso)
-{
-    $conectar = parent::conexion();
-    parent::set_names();
+    public function get_caso_por_id($id_caso)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
 
-    $sql = "SELECT 
+        $sql = "SELECT 
                 cp.id_caso AS id_caso_prueba,
                 cp.codigo,
                 cp.nombre,
                 cp.id_requerimiento,
                 r.codigo AS requerimiento_codigo,
+                r.nombre AS requerimiento_nombre,
                 cp.tipo_prueba,
                 cp.version,
                 cp.estado_ejecucion,
@@ -56,12 +57,11 @@ public function get_caso_por_id($id_caso)
             LEFT JOIN requerimiento r ON cp.id_requerimiento = r.id_requerimiento
             WHERE cp.id_caso = ?";
 
-    $stmt = $conectar->prepare($sql);
-    $stmt->bindValue(1, $id_caso);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindValue(1, $id_caso);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
 
     // ============================================================
@@ -81,16 +81,16 @@ public function get_caso_por_id($id_caso)
     ) {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "INSERT INTO caso_prueba
                 (codigo, nombre, tipo_prueba, version, elaborado_por, descripcion,
                  especialidad_id, id_requerimiento, estado_ejecucion, fecha_ejecucion, 
                  creado_por, fecha_creacion, estado)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)";
-    
+
         $stmt = $conectar->prepare($sql);
         $creado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
-    
+
         try {
             return $stmt->execute([
                 $codigo,
@@ -130,17 +130,17 @@ public function get_caso_por_id($id_caso)
     ) {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "UPDATE caso_prueba SET
                     codigo = ?, nombre = ?, tipo_prueba = ?, version = ?,
                     elaborado_por = ?, descripcion = ?, especialidad_id = ?, id_requerimiento = ?,
                     estado_ejecucion = ?, fecha_ejecucion = ?,
                     actualizado_por = ?, fecha_actualizacion = NOW()
                 WHERE id_caso = ?";
-    
+
         $stmt = $conectar->prepare($sql);
         $actualizado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
-    
+
         try {
             return $stmt->execute([
                 $codigo,
@@ -161,7 +161,7 @@ public function get_caso_por_id($id_caso)
             return false;
         }
     }
-    
+
 
     // ============================================================
     // CAMBIAR ESTADO

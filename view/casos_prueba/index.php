@@ -69,6 +69,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                     <th>Nombre del Caso</th>
                                                     <th>Requerimiento Asociado</th>
                                                     <th>Tipo de Prueba</th>
+                                                    <th>Especialidad</th>
                                                     <th>Estado</th>
                                                     <th>Versión</th>
                                                     <th>Fecha Creación</th>

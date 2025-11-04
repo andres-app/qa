@@ -51,45 +51,83 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                         </div>
 
                         <!-- Cabecera del caso -->
-                        <div class="card mb-3">
-                            <div class="card-body d-flex flex-wrap gap-4 align-items-center">
-                                <div>
-                                    <div class="text-muted">Código</div>
-                                    <div class="fs-5 fw-semibold"><?= htmlspecialchars($info["codigo"] ?? "-") ?></div>
+                        <div class="card mb-3 border-0 shadow-sm" style="background: #f8f9fc;">
+                            <div
+                                class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3 border-start border-4 border-primary rounded-3">
+
+                                <!-- Sección izquierda -->
+                                <div class="d-flex align-items-center flex-wrap gap-4">
+
+                                    <!-- Caso de prueba -->
+                                    <div>
+                                        <div class="text-muted small fw-semibold">Caso de prueba</div>
+                                        <div class="fs-5 fw-semibold text-primary mb-0">
+                                            <?= htmlspecialchars($info["codigo"] ?? "-") ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-muted fs-4">|</div>
+
+                                    <!-- Nombre del caso -->
+                                    <div>
+                                        <div class="text-muted small fw-semibold">Nombre del Caso</div>
+                                        <div class="fw-semibold text-dark mb-0">
+                                            <?= htmlspecialchars($info["nombre"] ?? "-") ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-muted fs-4">|</div>
+
+                                    <!-- Código del requerimiento -->
+                                    <div>
+                                        <div class="text-muted small fw-semibold">Cod. Requerimiento</div>
+                                        <div class="fw-semibold mb-0">
+                                            <?php if (!empty($info["requerimiento_codigo"])): ?>
+                                                <span class="badge bg-light text-primary border px-2 py-1">
+                                                    <?= htmlspecialchars($info["requerimiento_codigo"]) ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="text-muted">-</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
                                 </div>
-                                <div class="flex-grow-1">
-                                    <div class="text-muted">Nombre del Caso</div>
-                                    <div class="fw-semibold"><?= htmlspecialchars($info["nombre"] ?? "-") ?></div>
-                                </div>
-                                <div>
-                                    <div class="text-muted">Estado del Caso</div>
-                                    <span id="badge_estado_caso" class="badge bg-secondary">
-                                        <?= htmlspecialchars($info["estado"] ?? "Pendiente") ?>
-                                    </span>
-                                </div>
-                                <div class="ms-auto">
-                                    <a href="index.php" class="btn btn-outline-secondary">
+
+                                <!-- Sección derecha -->
+                                <div class="d-flex align-items-center gap-3 ms-auto">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-muted small fw-semibold">Estado del Caso:</span>
+                                        <span id="badge_estado_caso"
+                                            class="badge rounded-pill px-3 py-2 fw-semibold 
+                        <?= strtolower($info["estado"] ?? '') === 'completado' ? 'bg-success' :
+                            (strtolower($info["estado"] ?? '') === 'observado' ? 'bg-warning text-dark' : 'bg-secondary'); ?>">
+                                            <?= htmlspecialchars($info["estado"] ?? "Pendiente") ?>
+                                        </span>
+                                    </div>
+
+                                    <a href="index.php" class="btn btn-outline-secondary btn-sm">
                                         <i class="bx bx-arrow-back"></i> Volver
                                     </a>
                                 </div>
+
                             </div>
                         </div>
-
                         <!-- Formulario de nueva iteración -->
                         <div class="card mb-3">
                             <div class="card-header fw-semibold">Registrar Iteración</div>
                             <div class="card-body">
                                 <form id="form_iteracion">
                                     <input type="hidden" id="id_caso" value="<?= $id_caso ?>">
-                                    
+
 
                                     <div class="row g-3">
-                                    <div class="col-md-3">
-                                            <label class="form-label">Fecha de ejecución</label>
-                                            <input type="datetime-local" id="fecha_ejecucion" class="form-control">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Fecha de ejecución<span class="text-danger">*</span></label>
+                                            <input type="datetime-local" id="fecha_ejecucion" class="form-control" required>
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="form-label">Ejecutor</label>
+                                            <label class="form-label">Ejecutor<span class="text-danger">*</span></label>
                                             <select class="form-select" id="ejecutor_nombre" name="ejecutor_nombre"
                                                 required>
                                                 <option value="">Seleccione...</option>
@@ -100,16 +138,16 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                             </select>
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="form-label">Estado de la iteración</label>
-                                            <select id="resultado" class="form-select">
+                                            <label class="form-label">Estado de la iteración <span class="text-danger">*</span></label>
+                                            <select id="resultado" class="form-select" required>
                                                 <option value="">Seleccione...</option>
                                                 <option>Ejecutado</option>
                                                 <option>Observado</option>
                                             </select>
                                         </div>
                                         <div class="col-12">
-                                            <label class="form-label">Comentario</label>
-                                            <textarea id="comentario" class="form-control" rows="3"
+                                            <label class="form-label">Comentario <span class="text-danger">*</span></label>
+                                            <textarea id="comentario" class="form-control" rows="3" required
                                                 placeholder="Detalle de la ejecución u observación"></textarea>
                                         </div>
                                     </div>

@@ -18,14 +18,15 @@ switch ($_GET["op"]) {
         $data = [];
         foreach ($datos as $row) {
             $sub_array = [];
-            $sub_array[] = $row["id_caso"];
-            $sub_array[] = $row["codigo"];
-            $sub_array[] = $row["nombre"];
-            $sub_array[] = $row["requerimiento"];
-            $sub_array[] = $row["tipo_prueba"];
-            $sub_array[] = $row["estado_ejecucion"];
-            $sub_array[] = $row["version"];
-            $sub_array[] = $row["fecha_creacion"];
+            $sub_array[] = $row["id_caso"];            // 0
+            $sub_array[] = $row["codigo"];             // 1
+            $sub_array[] = $row["nombre"];             // 2
+            $sub_array[] = $row["requerimiento"];      // 3
+            $sub_array[] = $row["tipo_prueba"];        // 4
+            $sub_array[] = $row["especialidad"];       // 5 ✅ Nuevo
+            $sub_array[] = $row["estado_ejecucion"];   // 6
+            $sub_array[] = $row["version"];            // 7
+            $sub_array[] = $row["fecha_creacion"];     // 8
             $sub_array[] = '
                 <button type="button" class="btn btn-soft-warning btn-sm" onClick="editar(' . $row["id_caso"] . ')">
                     <i class="bx bx-edit-alt font-size-16 align-middle"></i>
@@ -33,7 +34,7 @@ switch ($_GET["op"]) {
                 <button type="button" class="btn btn-soft-danger btn-sm" onClick="eliminar(' . $row["id_caso"] . ')">
                     <i class="bx bx-trash-alt font-size-16 align-middle"></i>
                 </button>
-            ';
+            ';                                        // 9
             $data[] = $sub_array;
         }
 
