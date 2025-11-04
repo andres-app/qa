@@ -125,13 +125,20 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card kpi-card text-center shadow-sm">
-                                    <div class="card-body">
-                                        <h6>% Casos Ejecutados</h6>
-                                        <h2 class="text-info"><?= $porcentaje_casos_ejecutados; ?>%</h2>
-                                    </div>
-                                </div>
-                            </div>
+    <div class="card kpi-card text-center shadow-sm">
+        <div class="card-body">
+            <h6>% Casos Ejecutados</h6>
+            <div class="d-flex justify-content-center align-items-end gap-2">
+                <h2 class="text-info mb-0"><?= (int)$porcentaje_casos_ejecutados; ?>%</h2>
+                <span class="text-muted fw-semibold" style="font-size: 1rem;">
+                    (<?= $porcentaje_data["ejecutados"]; ?>)
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
                         </div>
 
                         <!-- Gráficos principales -->

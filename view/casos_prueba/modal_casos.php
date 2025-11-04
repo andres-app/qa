@@ -68,14 +68,11 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="especialidad_id" class="form-label">Especialidad</label>
-                            <select class="form-select" id="especialidad_id" name="especialidad_id">
-                                <option value="">Seleccione</option>
-                                <option value="1">Laboral</option>
-                                <option value="2">Civil</option>
-                                <option value="3">Familia</option>
-                                <option value="4">Contencioso Administrativo</option>
+                            <select class="form-select" id="especialidad_id" name="especialidad_id" required>
+                                <option value="">Cargando...</option>
                             </select>
                         </div>
+
                         <div class="col-md-4 mb-3">
                             <label for="elaborado_por" class="form-label">Elaborado por</label>
                             <input type="text" class="form-control" id="elaborado_por" name="elaborado_por"

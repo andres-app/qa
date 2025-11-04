@@ -14,10 +14,6 @@ switch ($_GET["op"]) {
         $datos = $reporte->reporte_cobertura();
         break;
 
-    case "reporte_casos_por_requerimiento":
-        $datos = $reporte->reporte_casos_por_requerimiento();
-        break;
-
     default:
         echo json_encode(["error" => "Operación no válida."]);
         exit;

@@ -13,6 +13,7 @@ function init() {
 
     // Cargar requerimientos en el select al abrir modal
     cargarRequerimientos();
+    cargarEspecialidades();
 }
 
 // =======================================================
@@ -571,6 +572,29 @@ $(document).on("click", ".btn-eliminar", function () {
         eliminar(id); // ejecuta normalmente si no está completado
     }
 });
+
+function cargarEspecialidades() {
+    $.ajax({
+        url: "../../controller/especialidad.php?op=combo_especialidad_json",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+            let select = $("#especialidad_id");
+            select.empty();
+            select.append('<option value="">Seleccione</option>');
+
+            data.forEach((esp) => {
+                select.append(
+                    `<option value="${esp.id_especialidad}">${esp.nombre}</option>`
+                );
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error("Error al cargar especialidades:", error);
+        },
+    });
+}
+
 
 
 init();

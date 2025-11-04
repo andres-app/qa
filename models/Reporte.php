@@ -56,29 +56,6 @@ class Reporte extends Conectar
     }
 
     /* ============================================================
-       REPORTE 3: CASOS POR REQUERIMIENTO
-       (Total de CP agrupado por requerimiento)
-    ============================================================ */
-    public function reporte_casos_por_requerimiento()
-    {
-        $conectar = parent::conexion();
-        parent::set_names();
-
-        $sql = "SELECT 
-                    rq.codigo AS codigo_requerimiento,
-                    rq.nombre AS nombre_requerimiento,
-                    COUNT(cp.id_caso) AS total_casos
-                FROM requerimiento rq
-                LEFT JOIN caso_prueba cp ON cp.id_requerimiento = rq.id_requerimiento
-                GROUP BY rq.codigo, rq.nombre
-                ORDER BY rq.codigo";
-
-        $sql = $conectar->prepare($sql);
-        $sql->execute();
-        return $sql->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /* ============================================================
    TOTAL CASOS DE PRUEBA ACTIVOS
    (Para dashboard principal)
 ============================================================ */
@@ -98,31 +75,50 @@ class Reporte extends Conectar
    PORCENTAJE DE CASOS EJECUTADOS
    (estado_ejecucion = 'EJECUTADO')
 ============================================================ */
-    public function get_porcentaje_casos_ejecutados()
-    {
-        $conectar = parent::conexion();
-        parent::set_names();
+public function get_porcentaje_casos_ejecutados()
+{
+    $conectar = parent::conexion();
+    parent::set_names();
 
-        $sql = "SELECT 
-                COUNT(*) AS total,
-                SUM(CASE WHEN estado_ejecucion = 'EJECUTADO' THEN 1 ELSE 0 END) AS ejecutados
-            FROM caso_prueba
-            WHERE estado = 1";
-        $stmt = $conectar->prepare($sql);
-        $stmt->execute();
+    // Subconsulta para obtener la última iteración por caso
+    $sql = "
+        SELECT 
+            COUNT(*) AS total,
+            SUM(
+                CASE 
+                    WHEN LOWER(TRIM(i.resultado)) = 'ejecutado' THEN 1 
+                    ELSE 0 
+                END
+            ) AS ejecutados
+        FROM caso_prueba cp
+        LEFT JOIN (
+            SELECT t1.*
+            FROM iteracion t1
+            INNER JOIN (
+                SELECT id_caso, MAX(numero_iteracion) AS max_iter
+                FROM iteracion
+                GROUP BY id_caso
+            ) t2 ON t2.id_caso = t1.id_caso AND t2.max_iter = t1.numero_iteracion
+        ) i ON i.id_caso = cp.id_caso
+        WHERE cp.estado = 1
+    ";
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $total = (int) $row["total"];
-        $ejecutados = (int) $row["ejecutados"];
+    $stmt = $conectar->prepare($sql);
+    $stmt->execute();
 
-        $porcentaje = $total > 0 ? round(($ejecutados / $total) * 100, 2) : 0;
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $total = (int) ($row["total"] ?? 0);
+    $ejecutados = (int) ($row["ejecutados"] ?? 0);
 
-        return [
-            "total" => $total,
-            "ejecutados" => $ejecutados,
-            "porcentaje" => $porcentaje
-        ];
-    }
+    $porcentaje = $total > 0 ? round(($ejecutados / $total) * 100, 2) : 0;
+
+    return [
+        "total" => $total,
+        "ejecutados" => $ejecutados,
+        "porcentaje" => $porcentaje
+    ];
+}
+
 
     /* ============================================================
     CASOS DE PRUEBA POR ÓRGANO JURISDICCIONAL (USANDO ESPECIALIDAD)
