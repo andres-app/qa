@@ -162,5 +162,32 @@ class Requerimiento extends Conectar
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+        // ============================================================
+    // OBTENER ESPECIALIDADES Y ÓRGANOS JURISDICCIONALES ASOCIADOS
+    // ============================================================
+    public function get_relaciones($id_requerimiento)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "
+            SELECT 
+                GROUP_CONCAT(DISTINCT e.nombre ORDER BY e.nombre SEPARATOR ', ') AS especialidades,
+                GROUP_CONCAT(DISTINCT o.nombre ORDER BY o.nombre SEPARATOR ', ') AS organos
+            FROM requerimiento r
+            LEFT JOIN requerimiento_especialidad re ON r.id_requerimiento = re.id_requerimiento
+            LEFT JOIN especialidad e ON re.id_especialidad = e.id_especialidad
+            LEFT JOIN requerimiento_organo ro ON r.id_requerimiento = ro.id_requerimiento
+            LEFT JOIN organo_jurisdiccional o ON ro.id_organo = o.id_organo
+            WHERE r.id_requerimiento = ?
+            GROUP BY r.id_requerimiento
+        ";
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$id_requerimiento]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
 }
 ?>

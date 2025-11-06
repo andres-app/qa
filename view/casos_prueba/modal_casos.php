@@ -67,10 +67,12 @@
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="especialidad_id" class="form-label">Especialidad</label>
-                            <select class="form-select" id="especialidad_id" name="especialidad_id" required>
-                                <option value="">Cargando...</option>
-                            </select>
+                            <label for="especialidades_asociadas" class="form-label">Especialidades Asociadas</label>
+                            <input type="text" class="form-control" id="especialidades_asociadas" readonly>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="organos_asociados" class="form-label">Órganos Jurisdiccionales</label>
+                            <input type="text" class="form-control" id="organos_asociados" readonly>
                         </div>
 
                         <div class="col-md-4 mb-3">

@@ -89,15 +89,12 @@ switch ($_GET["op"]) {
     case "combo_requerimiento_json":
         header('Content-Type: application/json; charset=utf-8');
 
-        // Obtiene los requerimientos
-        $datos = $requerimiento->get_requerimientos(); // Debe devolver un array asociativo
+        // Usa el método optimizado para combos
+        $datos = $requerimiento->get_requerimientos_combo();
 
-        // Si get_requerimientos() devuelve un PDOStatement o un array de objetos,
-        // conviértelo explícitamente a un array asociativo simple:
         $result = [];
 
         foreach ($datos as $row) {
-            // Si $row es un objeto, usa ->propiedad; si es array, usa ['propiedad']
             $result[] = [
                 "id_requerimiento" => is_object($row) ? $row->id_requerimiento : $row["id_requerimiento"],
                 "codigo" => is_object($row) ? $row->codigo : $row["codigo"],
@@ -107,6 +104,7 @@ switch ($_GET["op"]) {
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
         exit;
+
 
 
 
@@ -141,6 +139,35 @@ switch ($_GET["op"]) {
 
         echo $html;
         break;
+
+    // ============================================================
+// 🔹 INFO RELACIONES (Especialidades y Órganos por requerimiento)
+// ============================================================
+    // ============================================================
+// 🔹 INFO RELACIONES (Especialidades y Órganos por requerimiento)
+// ============================================================
+    case "info_relaciones":
+        header('Content-Type: application/json; charset=utf-8');
+
+        require_once("../models/Requerimiento.php");
+        $requerimiento = new Requerimiento();
+
+        $id = intval($_POST["id_requerimiento"] ?? 0);
+
+        if ($id <= 0) {
+            echo json_encode(["error" => "ID de requerimiento no válido"]);
+            exit;
+        }
+
+        $data = $requerimiento->get_relaciones($id);
+
+        echo json_encode([
+            "especialidades" => $data["especialidades"] ?? "—",
+            "organos" => $data["organos"] ?? "—"
+        ]);
+        break;
+
+
 
 }
 ?>

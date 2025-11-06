@@ -470,44 +470,63 @@ $(document).on("input", "#buscarRequerimiento", function () {
 // =======================================================
 // Seleccionar una opción del buscador
 // =======================================================
+// =======================================================
+// Seleccionar una opción del buscador
+// =======================================================
+// =======================================================
+// Seleccionar una opción del buscador de requerimientos
+// =======================================================
 $(document).on("click", "#resultadosRequerimiento li", function () {
-    const id = $(this).attr("data-id");
-    const codigo = $(this).attr("data-codigo");
-    const nombre = $(this).attr("data-nombre");
+    const id = $(this).data("id");
+    const codigo = $(this).data("codigo");
+    const nombre = $(this).data("nombre");
 
-    // Mostrar selección en el input y bloquearlo
-    $("#buscarRequerimiento")
-        .val(codigo && nombre ? `${codigo} — ${nombre}` : codigo)
-        .prop("readonly", true);
-
+    // Mostrar la selección y bloquear edición
+    $("#buscarRequerimiento").val(`${codigo} — ${nombre}`).prop("readonly", true);
     $("#id_requerimiento").val(id);
     $("#resultadosRequerimiento").hide();
 
-    // Agregar botón X para limpiar
+    // 🔸 Generar código automático del caso de prueba
+    $.ajax({
+        url: "../../controller/casos_prueba.php?op=generar_codigo",
+        type: "POST",
+        dataType: "json",
+        data: { id_requerimiento: id },
+        success: function (data) {
+            if (data.codigo) {
+                $("#codigo").val(data.codigo);
+            } else if (data.error) {
+                console.warn("⚠️ Error al generar código:", data.error);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("❌ Error AJAX (generar_codigo):", error);
+        }
+    });
+
+    // 🔹 Obtener especialidades y órganos vinculados al requerimiento
+    $.ajax({
+        url: "../../controller/requerimiento.php?op=info_relaciones",
+        type: "POST",
+        dataType: "json", // ✅ ya viene como JSON, no usar JSON.parse()
+        data: { id_requerimiento: id },
+        success: function (data) {
+            console.log("✅ info_relaciones:", data); // Depuración
+            $("#especialidades_asociadas").val(data.especialidades || "—");
+            $("#organos_asociados").val(data.organos || "—");
+        },
+        error: function (xhr, status, error) {
+            console.error("❌ Error AJAX (info_relaciones):", error);
+        }
+    });
+
+    // 🔸 (Opcional) Agregar botón de limpiar búsqueda si no existe
     if (!$("#clearRequerimiento").length) {
         const clearBtn = $('<button type="button" id="clearRequerimiento" class="btn btn-outline-secondary"><i class="bx bx-x"></i></button>');
         $("#buscarRequerimiento").closest(".input-group").append(clearBtn);
     }
-
-    // 🔹 Llamar backend para generar código automático
-    $.ajax({
-        url: "../../controller/casos_prueba.php?op=generar_codigo",
-        type: "POST",
-        data: { id_requerimiento: id },
-        success: function (resp) {
-            try {
-                let data = JSON.parse(resp);
-                if (data.codigo) {
-                    $("#codigo").val(data.codigo).prop("readonly", true);
-                } else if (data.error) {
-                    Swal.fire("Error", data.error, "error");
-                }
-            } catch (e) {
-                console.error("Error al generar código:", resp);
-            }
-        }
-    });
 });
+
 
 
 // =======================================================
