@@ -110,24 +110,26 @@ class Reporte extends Conectar
         $conectar = parent::conexion();
         parent::set_names();
     
-        $sql = "
-            SELECT 
-                o.nombre AS organo_jurisdiccional,
-                COUNT(DISTINCT cp.id_caso) AS total_casos
-            FROM organo_jurisdiccional o
-            LEFT JOIN requerimiento_organo ro ON ro.id_organo = o.id_organo
-            LEFT JOIN requerimiento r ON r.id_requerimiento = ro.id_requerimiento
-            LEFT JOIN caso_prueba cp ON cp.id_requerimiento = r.id_requerimiento
-            WHERE cp.estado = 1 OR cp.estado IS NULL
-            GROUP BY o.nombre
-            ORDER BY o.nombre ASC
-        ";
+        $sql = "SELECT 
+                    o.nombre AS organo_jurisdiccional,
+                    COUNT(cp.id_caso) AS total_casos
+                FROM organo_jurisdiccional o
+                LEFT JOIN requerimiento_organo ro 
+                    ON ro.id_organo = o.id_organo
+                LEFT JOIN requerimiento r 
+                    ON r.id_requerimiento = ro.id_requerimiento
+                LEFT JOIN caso_prueba cp 
+                    ON cp.id_requerimiento = r.id_requerimiento
+                WHERE o.estado = 1
+                GROUP BY o.nombre
+                ORDER BY total_casos DESC";
     
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
     
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
     
     
 
@@ -142,12 +144,17 @@ class Reporte extends Conectar
     
         $sql = "
             SELECT 
-                'General' AS especialidad,
+                e.nombre AS especialidad,
                 SUM(CASE WHEN cp.estado_ejecucion = 'Completado' THEN 1 ELSE 0 END) AS completado,
-                SUM(CASE WHEN cp.estado_ejecucion = 'Observado' THEN 1 ELSE 0 END) AS en_ejecucion,
+                SUM(CASE WHEN cp.estado_ejecucion = 'Observado' THEN 1 ELSE 0 END) AS observado,
                 SUM(CASE WHEN cp.estado_ejecucion = 'Pendiente' THEN 1 ELSE 0 END) AS pendiente
-            FROM caso_prueba cp
-            WHERE cp.estado = 1
+            FROM especialidad e
+            LEFT JOIN requerimiento_especialidad re ON re.id_especialidad = e.id_especialidad
+            LEFT JOIN requerimiento r ON r.id_requerimiento = re.id_requerimiento
+            LEFT JOIN caso_prueba cp ON cp.id_requerimiento = r.id_requerimiento
+            WHERE e.estado = 1
+            GROUP BY e.nombre
+            ORDER BY e.nombre ASC
         ";
     
         $stmt = $conectar->prepare($sql);
@@ -155,6 +162,8 @@ class Reporte extends Conectar
     
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    
     
 
     /* ============================================================
@@ -166,22 +175,24 @@ class Reporte extends Conectar
         $conectar = parent::conexion();
         parent::set_names();
     
-        $sql = "SELECT 
-                    e.nombre AS especialidad,
-                    COUNT(DISTINCT re.id_requerimiento) AS total_requerimientos,
-                    COUNT(DISTINCT cp.id_caso) AS total_casos_prueba
-                FROM especialidad e
-                LEFT JOIN requerimiento_especialidad re 
-                       ON re.id_especialidad = e.id_especialidad
-                LEFT JOIN caso_prueba cp 
-                       ON cp.id_requerimiento = re.id_requerimiento
-                      AND cp.estado = 1
-                GROUP BY e.nombre
-                ORDER BY e.nombre ASC";
+        $sql = "
+            SELECT 
+                e.nombre AS especialidad,
+                COUNT(DISTINCT r.id_requerimiento) AS total_requerimientos,
+                COUNT(DISTINCT cp.id_caso) AS total_casos_prueba
+            FROM especialidad e
+            LEFT JOIN requerimiento_especialidad re ON re.id_especialidad = e.id_especialidad
+            LEFT JOIN requerimiento r ON r.id_requerimiento = re.id_requerimiento
+            LEFT JOIN caso_prueba cp ON cp.id_requerimiento = r.id_requerimiento
+            WHERE e.estado = 1
+            GROUP BY e.nombre
+            ORDER BY e.nombre ASC
+        ";
     
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC); // siempre un array (puede venir vacío)
+    
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
 }

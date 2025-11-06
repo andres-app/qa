@@ -6,7 +6,7 @@ var tabla;
 // =======================================================
 function init() {
     // Evento submit del formulario
-    $("#mnt_form").on("submit", function(e) {
+    $("#mnt_form").on("submit", function (e) {
         guardaryeditar(e);
     });
 }
@@ -16,41 +16,51 @@ function init() {
 // =======================================================
 function guardaryeditar(e) {
     e.preventDefault();
+
+    // Crea el objeto FormData a partir del formulario
     var formData = new FormData($("#mnt_form")[0]);
 
-    // Si existe id_requerimiento -> editar, sino insertar
+    // Determina si es insertar o editar
     var id = $("#id_requerimiento").val();
-    var url = id 
-        ? "../../controller/requerimiento.php?op=guardar"  // editar
-        : "../../controller/requerimiento.php?op=guardar"; // insertar
+    var url = "../../controller/requerimiento.php?op=guardar";
 
     $.ajax({
         url: url,
         type: "POST",
         data: formData,
+        dataType: "json", // 👈 jQuery convierte automáticamente a JSON
         contentType: false,
         processData: false,
-        success: function(resp) {
-            let data = JSON.parse(resp);
+        success: function (data) {
+            console.log("✅ Respuesta del servidor:", data);
+
             if (data.success) {
                 Swal.fire("Éxito", data.success, "success");
+
+                // Si se registró o editó correctamente, ahora asociamos relaciones
+                const id_requerimiento = data.id_requerimiento ?? $("#id_requerimiento").val();
+                asociarRelaciones(id_requerimiento);
+
                 $("#mnt_modal").modal("hide");
                 tabla.ajax.reload();
             } else {
                 Swal.fire("Error", data.error || "No se pudo guardar el requerimiento", "error");
             }
         },
-        error: function() {
+        error: function (xhr, status, error) {
+            console.error("❌ Error AJAX:", xhr.responseText);
             Swal.fire("Error", "No se pudo procesar la solicitud", "error");
         }
     });
 }
 
+
+
 // =======================================================
 // EDITAR REQUERIMIENTO
 // =======================================================
 function editar(id) {
-    $.post("../../controller/requerimiento.php?op=mostrar", { id: id }, function(data) {
+    $.post("../../controller/requerimiento.php?op=mostrar", { id: id }, function (data) {
         data = JSON.parse(data);
         if (data.error) {
             Swal.fire("Error", data.error, "error");
@@ -84,7 +94,7 @@ function eliminar(id) {
         cancelButtonText: "Cancelar"
     }).then((result) => {
         if (result.isConfirmed) {
-            $.post("../../controller/requerimiento.php?op=eliminar", { id: id }, function(data) {
+            $.post("../../controller/requerimiento.php?op=eliminar", { id: id }, function (data) {
                 data = JSON.parse(data);
                 if (data.success) {
                     Swal.fire("Eliminado", data.success, "success");
@@ -100,7 +110,7 @@ function eliminar(id) {
 // =======================================================
 // CONFIGURACIÓN DEL DATATABLE
 // =======================================================
-$(document).ready(function() {
+$(document).ready(function () {
     tabla = $("#requerimiento_table").DataTable({
         aProcessing: true,
         aServerSide: true,
@@ -110,7 +120,7 @@ $(document).ready(function() {
             url: "../../controller/requerimiento.php?op=listar",
             type: "GET",
             dataType: "json",
-            error: function() {
+            error: function () {
                 Swal.fire("Error", "No se pudo cargar la lista de requerimientos", "error");
             }
         },
@@ -126,14 +136,14 @@ $(document).ready(function() {
             {
                 // 🔹 Controlar texto largo del campo “Nombre” (columna 3)
                 targets: 2,
-                render: function(data, type, row) {
+                render: function (data, type, row) {
                     // Muestra el texto completo pero permite saltos de línea controlados
                     const limite = 10; // cantidad máxima de palabras visibles
                     const palabras = data.split(" ");
-                    const textoCorto = palabras.length > limite 
-                        ? palabras.slice(0, limite).join(" ") + "…" 
+                    const textoCorto = palabras.length > limite
+                        ? palabras.slice(0, limite).join(" ") + "…"
                         : data;
-        
+
                     // Tooltip + estilo de bloque
                     return `
                         <div class="nombre-columna" title="${data}">
@@ -142,7 +152,7 @@ $(document).ready(function() {
                     `;
                 }
             }
-        ],        
+        ],
         language: {
             sProcessing: "Procesando...",
             sLengthMenu: "Mostrar _MENU_ registros",
@@ -167,7 +177,7 @@ $(document).ready(function() {
     });
 
     // Botón nuevo registro
-    $("#btnnuevo").on("click", function() {
+    $("#btnnuevo").on("click", function () {
         $("#id_requerimiento").val("");
         $("#mnt_form")[0].reset();
         $("#modalLabel").html("Nuevo Requerimiento");
@@ -179,11 +189,69 @@ $(document).ready(function() {
 // =======================================================
 // RESTAURAR MODAL AL CERRAR
 // =======================================================
-$("#mnt_modal").on("hidden.bs.modal", function() {
+$("#mnt_modal").on("hidden.bs.modal", function () {
     $("#mnt_form")[0].reset();
     $("#mnt_form input, #mnt_form select, #mnt_form textarea").prop("disabled", false);
     $(".modal-footer .btn-primary").show();
     $("#modalLabel").html("Nuevo Requerimiento");
 });
+
+function cargarEspecialidadesYOrganos() {
+    // Cargar especialidades
+    $.getJSON("../../controller/especialidad.php?op=combo_especialidad_json", function (data) {
+        const selectEsp = $("#especialidades");
+        selectEsp.empty();
+        data.forEach(e => {
+            selectEsp.append(`<option value="${e.id_especialidad}">${e.nombre}</option>`);
+        });
+    });
+
+    // Cargar órganos jurisdiccionales
+    $.getJSON("../../controller/organo.php?op=combo_organo_json", function (data) {
+        const selectOrg = $("#organos");
+        selectOrg.empty();
+        data.forEach(o => {
+            selectOrg.append(`<option value="${o.id_organo}">${o.nombre}</option>`);
+        });
+    });
+}
+
+// Llamar cuando se abre el modal
+$("#mnt_modal").on("show.bs.modal", function () {
+    cargarEspecialidadesYOrganos();
+});
+
+// =======================================================
+// FUNCIÓN PARA ASOCIAR RELACIONES (Especialidades / Órganos)
+// =======================================================
+function asociarRelaciones(id_requerimiento) {
+    const formData = new FormData();
+    formData.append("id_requerimiento", id_requerimiento);
+
+    // Agrega todas las especialidades seleccionadas
+    const especialidades = $("#especialidades").val() || [];
+    especialidades.forEach(e => formData.append("especialidades[]", e));
+
+    // Agrega todos los órganos seleccionados
+    const organos = $("#organos").val() || [];
+    organos.forEach(o => formData.append("organos[]", o));
+
+    $.ajax({
+        url: "../../controller/requerimiento.php?op=asociar_relaciones",
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: "json",
+        success: function (data) {
+            console.log("📎 Relaciones asociadas:", data);
+        },
+        error: function (xhr, status, error) {
+            console.error("❌ Error al asociar relaciones:", xhr.responseText);
+        }
+    });
+}
+
+
 
 init();

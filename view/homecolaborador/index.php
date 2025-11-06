@@ -27,12 +27,11 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     $labels_organo = [];
     $valores_organo = [];
     
-    if (is_array($casos_por_organo)) {
-        foreach ($casos_por_organo as $row) {
-            $labels_organo[] = $row["organo_jurisdiccional"];
-            $valores_organo[] = (int) $row["total_casos"];
-        }
+    foreach ($casos_por_organo as $row) {
+        $labels_organo[] = $row["organo_jurisdiccional"];
+        $valores_organo[] = (int)$row["total_casos"];
     }
+    
     
     // === Seguimiento por especialidad ===
     $seguimiento_especialidad = $reporte->get_seguimiento_por_especialidad();

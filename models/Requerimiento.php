@@ -59,21 +59,23 @@ class Requerimiento extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "INSERT INTO requerimiento
                 (codigo, nombre, tipo, prioridad, estado_validacion, version, funcionalidad, estado, creado_por, fecha_creacion)
                 VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, NOW())";
-
+    
         $stmt = $conectar->prepare($sql);
-        $creado_por = isset($_SESSION["usu_nombre"]) ? $_SESSION["usu_nombre"] : 'Equipo de Calidad';
-
+        $creado_por = $_SESSION["usu_nombre"] ?? 'Equipo de Calidad';
+    
         try {
-            return $stmt->execute([$codigo, $nombre, $tipo, $prioridad, $estado_validacion, $version, $funcionalidad, $creado_por]);
+            $stmt->execute([$codigo, $nombre, $tipo, $prioridad, $estado_validacion, $version, $funcionalidad, $creado_por]);
+            return $conectar->lastInsertId(); // ✅ devolvemos el ID recién insertado
         } catch (PDOException $e) {
             error_log("Error al insertar requerimiento: " . $e->getMessage());
             return false;
         }
     }
+    
 
     // ============================================================
     // EDITAR REQUERIMIENTO EXISTENTE
@@ -162,7 +164,7 @@ class Requerimiento extends Conectar
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-        // ============================================================
+    // ============================================================
     // OBTENER ESPECIALIDADES Y ÓRGANOS JURISDICCIONALES ASOCIADOS
     // ============================================================
     public function get_relaciones($id_requerimiento)
@@ -188,6 +190,108 @@ class Requerimiento extends Conectar
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+   // ============================================================
+// ASOCIAR RELACIONES (especialidades y órganos)
+// ============================================================
+public function asociar_relaciones($id_requerimiento, $especialidades = [], $organos = [])
+{
+    $conectar = parent::conexion();
+    parent::set_names();
+
+    try {
+        // Limpiar relaciones anteriores
+        $conectar->prepare("DELETE FROM requerimiento_especialidad WHERE id_requerimiento = ?")->execute([$id_requerimiento]);
+        $conectar->prepare("DELETE FROM requerimiento_organo WHERE id_requerimiento = ?")->execute([$id_requerimiento]);
+
+        // Insertar nuevas especialidades
+        if (!empty($especialidades)) {
+            $sqlEsp = "INSERT INTO requerimiento_especialidad (id_requerimiento, id_especialidad) VALUES (?, ?)";
+            $stmtEsp = $conectar->prepare($sqlEsp);
+            foreach ($especialidades as $esp) {
+                $stmtEsp->execute([$id_requerimiento, intval($esp)]);
+            }
+        }
+
+        // ✅ Insertar nuevos órganos jurisdiccionales
+        if (!empty($organos)) {
+            $sqlOrg = "INSERT INTO requerimiento_organo (id_requerimiento, id_organo) VALUES (?, ?)";
+            $stmtOrg = $conectar->prepare($sqlOrg);
+            foreach ($organos as $org) {
+                $stmtOrg->execute([$id_requerimiento, intval($org)]);
+            }
+        }
+
+        return true;
+    } catch (PDOException $e) {
+        error_log("Error en asociar_relaciones: " . $e->getMessage());
+        return false;
+    }
+}
+
+
+
+
+// ============================================================
+// ASOCIAR ESPECIALIDADES A UN REQUERIMIENTO
+// ============================================================
+public function asociar_especialidades($id_requerimiento, $especialidades)
+{
+    $conectar = parent::conexion();
+    parent::set_names();
+
+    try {
+        // Eliminar las relaciones previas
+        $sql_del = "DELETE FROM requerimiento_especialidad WHERE id_requerimiento = ?";
+        $stmt_del = $conectar->prepare($sql_del);
+        $stmt_del->execute([$id_requerimiento]);
+
+        // Insertar las nuevas relaciones
+        if (!empty($especialidades)) {
+            $sql_ins = "INSERT INTO requerimiento_especialidad (id_requerimiento, id_especialidad) VALUES (?, ?)";
+            $stmt_ins = $conectar->prepare($sql_ins);
+            foreach ($especialidades as $id_especialidad) {
+                $stmt_ins->execute([$id_requerimiento, $id_especialidad]);
+            }
+        }
+
+        return true;
+    } catch (PDOException $e) {
+        error_log("Error en asociar_especialidades: " . $e->getMessage());
+        return false;
+    }
+}
+
+// ============================================================
+// ASOCIAR ÓRGANOS A UN REQUERIMIENTO
+// ============================================================
+public function asociar_organos($id_requerimiento, $organos)
+{
+    $conectar = parent::conexion();
+    parent::set_names();
+
+    try {
+        // Eliminar las relaciones previas
+        $sql_del = "DELETE FROM requerimiento_organo WHERE id_requerimiento = ?";
+        $stmt_del = $conectar->prepare($sql_del);
+        $stmt_del->execute([$id_requerimiento]);
+
+        // Insertar las nuevas relaciones
+        if (!empty($organos)) {
+            $sql_ins = "INSERT INTO requerimiento_organo (id_requerimiento, id_organo) VALUES (?, ?)";
+            $stmt_ins = $conectar->prepare($sql_ins);
+            foreach ($organos as $id_organo) {
+                $stmt_ins->execute([$id_requerimiento, $id_organo]);
+            }
+        }
+
+        return true;
+    } catch (PDOException $e) {
+        error_log("Error en asociar_organos: " . $e->getMessage());
+        return false;
+    }
+}
+
+    
 
 }
 ?>

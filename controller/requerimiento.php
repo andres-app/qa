@@ -56,25 +56,44 @@ switch ($_GET["op"]) {
 
     // 💾 GUARDAR O EDITAR REQUERIMIENTO
     case "guardar":
+        header('Content-Type: application/json; charset=utf-8');
+    
         $id = isset($_POST["id_requerimiento"]) ? intval($_POST["id_requerimiento"]) : 0;
-        $codigo = trim($_POST["codigo"]);
-        $nombre = trim($_POST["nombre"]);
-        $tipo = trim($_POST["tipo"]);
-        $prioridad = trim($_POST["prioridad"]);
-        $estado_validacion = trim($_POST["estado_validacion"]);
-        $version = trim($_POST["version"]);
-        $funcionalidad = trim($_POST["funcionalidad"]);
-
+        $codigo           = trim($_POST["codigo"] ?? '');
+        $nombre           = trim($_POST["nombre"] ?? '');
+        $tipo             = trim($_POST["tipo"] ?? '');
+        $prioridad        = trim($_POST["prioridad"] ?? '');
+        $estado_validacion= trim($_POST["estado_validacion"] ?? '');
+        $version          = trim($_POST["version"] ?? '');
+        $funcionalidad    = trim($_POST["funcionalidad"] ?? '');
+    
         if ($id > 0) {
-            // Editar
-            $ok = $requerimiento->editar_requerimiento($id, $codigo, $nombre, $tipo, $prioridad, $estado_validacion, $version, $funcionalidad);
-            echo json_encode(["success" => $ok ? "Requerimiento actualizado correctamente." : "Error al actualizar."]);
+            // Editar requerimiento existente
+            $ok = $requerimiento->editar_requerimiento(
+                $id, $codigo, $nombre, $tipo, $prioridad, $estado_validacion, $version, $funcionalidad
+            );
+            echo json_encode([
+                "success" => $ok ? "Requerimiento actualizado correctamente." : "Error al actualizar el requerimiento.",
+                "id_requerimiento" => $id
+            ]);
         } else {
-            // Insertar nuevo
-            $ok = $requerimiento->insertar_requerimiento($codigo, $nombre, $tipo, $prioridad, $estado_validacion, $version, $funcionalidad);
-            echo json_encode(["success" => $ok ? "Requerimiento registrado correctamente." : "Error al registrar."]);
+            // Insertar nuevo requerimiento
+            $nuevo_id = $requerimiento->insertar_requerimiento(
+                $codigo, $nombre, $tipo, $prioridad, $estado_validacion, $version, $funcionalidad
+            );
+    
+            if ($nuevo_id) {
+                echo json_encode([
+                    "success" => "Requerimiento registrado correctamente.",
+                    "id_requerimiento" => $nuevo_id // ✅ devolvemos el ID insertado
+                ]);
+            } else {
+                echo json_encode(["error" => "Error al registrar el requerimiento."]);
+            }
         }
         break;
+    
+    
 
     // 🔍 MOSTRAR UN REQUERIMIENTO
     case "mostrar":
@@ -166,6 +185,24 @@ switch ($_GET["op"]) {
             "organos" => $data["organos"] ?? "—"
         ]);
         break;
+
+// ============================================================
+// ASOCIAR ESPECIALIDADES Y ÓRGANOS A UN REQUERIMIENTO
+// ============================================================
+case "asociar_relaciones":
+    header('Content-Type: application/json; charset=utf-8');
+
+    $id_requerimiento = intval($_POST["id_requerimiento"]);
+    $especialidades = $_POST["especialidades"] ?? [];
+    $organos = $_POST["organos"] ?? [];
+
+    $ok = $requerimiento->asociar_relaciones($id_requerimiento, $especialidades, $organos);
+
+    echo json_encode([
+        "success" => $ok ? true : false
+    ]);
+    break;
+
 
 
 
