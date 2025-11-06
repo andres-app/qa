@@ -13,44 +13,49 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     $data_total = $requerimiento->get_total_requerimientos();
     $total_requerimientos = isset($data_total["total"]) ? (int) $data_total["total"] : 0;
 
-    // Total de casos de prueba
     $reporte = new Reporte();
+
+    // === Totales generales ===
     $data_casos = $reporte->get_total_casos_prueba();
     $total_casos_prueba = (int) ($data_casos["total"] ?? 0);
-
-    // Porcentaje de casos ejecutados
+    
     $porcentaje_data = $reporte->get_porcentaje_casos_ejecutados();
     $porcentaje_casos_ejecutados = $porcentaje_data["porcentaje"] ?? 0;
-
-    // Casos de prueba por órgano jurisdiccional
+    
+    // === Casos por órgano jurisdiccional ===
     $casos_por_organo = $reporte->get_casos_por_organo_jurisdiccional();
-
     $labels_organo = [];
     $valores_organo = [];
-    foreach ($casos_por_organo as $row) {
-        $labels_organo[] = $row["organo_jurisdiccional"];
-        $valores_organo[] = (int) $row["total_casos"];
-
-        // ====== SEGUIMIENTO POR ESPECIALIDAD ======
-        $seguimiento_especialidad = $reporte->get_seguimiento_por_especialidad();
-
-        $labels_especialidad = [];
-        $data_aprobado = [];
-        $data_en_ejecucion = [];
-        $data_pendiente = [];
-
+    
+    if (is_array($casos_por_organo)) {
+        foreach ($casos_por_organo as $row) {
+            $labels_organo[] = $row["organo_jurisdiccional"];
+            $valores_organo[] = (int) $row["total_casos"];
+        }
+    }
+    
+    // === Seguimiento por especialidad ===
+    $seguimiento_especialidad = $reporte->get_seguimiento_por_especialidad();
+    $labels_especialidad = [];
+    $data_aprobado = [];
+    $data_en_ejecucion = [];
+    $data_pendiente = [];
+    
+    if (is_array($seguimiento_especialidad)) {
         foreach ($seguimiento_especialidad as $row) {
             $labels_especialidad[] = $row["especialidad"];
-            $data_aprobado[] = (int) $row["completado"];
-            $data_en_ejecucion[] = (int) $row["en_ejecucion"];
-            $data_pendiente[] = (int) $row["pendiente"];
+            $data_aprobado[] = (int) ($row["completado"] ?? 0);
+            $data_en_ejecucion[] = (int) ($row["en_ejecucion"] ?? 0);
+            $data_pendiente[] = (int) ($row["pendiente"] ?? 0);
         }
-
-        // ====== REPORTE CONSOLIDADO POR ESPECIALIDAD ======
-        $resumen = $reporte->get_resumen_por_especialidad();
-
-
     }
+    
+    // === Resumen consolidado ===
+    $resumen = $reporte->get_resumen_por_especialidad();
+    if (!is_array($resumen)) { 
+        $resumen = []; 
+    }
+    
     ?>
     <!doctype html>
     <html lang="es">

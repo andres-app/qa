@@ -23,7 +23,6 @@ switch ($_GET["op"]) {
             $sub_array[] = $row["nombre"];             // 2
             $sub_array[] = $row["requerimiento"];      // 3
             $sub_array[] = $row["tipo_prueba"];        // 4
-            $sub_array[] = $row["especialidad"];       // 5 ✅ Nuevo
             $sub_array[] = $row["estado_ejecucion"];   // 6
             $sub_array[] = $row["version"];            // 7
             $sub_array[] = $row["fecha_creacion"];     // 8
@@ -50,14 +49,13 @@ switch ($_GET["op"]) {
     case "guardar":
         header('Content-Type: application/json; charset=utf-8');
     
-        $id = isset($_POST["id_caso_prueba"]) ? intval($_POST["id_caso_prueba"]) : 0;
+        $id = intval($_POST["id_caso_prueba"] ?? 0);
         $codigo           = trim($_POST["codigo"] ?? '');
         $nombre           = trim($_POST["nombre"] ?? '');
         $tipo_prueba      = trim($_POST["tipo_prueba"] ?? '');
         $version          = trim($_POST["version"] ?? '');
         $elaborado_por    = trim($_POST["elaborado_por"] ?? '');
-        $descripcion      = trim($_POST["descripcion"] ?? '');   // ✅ <--- AQUI EL FIX
-        $especialidad_id  = intval($_POST["especialidad_id"] ?? 0);
+        $descripcion      = trim($_POST["descripcion"] ?? '');
         $id_requerimiento = intval($_POST["id_requerimiento"] ?? 0);
         $estado_ejecucion = "Pendiente";
         $fecha_ejecucion  = date('Y-m-d');
@@ -70,8 +68,7 @@ switch ($_GET["op"]) {
                 $tipo_prueba,
                 $version,
                 $elaborado_por,
-                $descripcion,          // ✅ pásalo
-                $especialidad_id,
+                $descripcion,
                 $id_requerimiento,
                 $estado_ejecucion,
                 $fecha_ejecucion
@@ -84,8 +81,7 @@ switch ($_GET["op"]) {
                 $tipo_prueba,
                 $version,
                 $elaborado_por,
-                $descripcion,          // ✅ pásalo
-                $especialidad_id,
+                $descripcion,
                 $id_requerimiento,
                 $estado_ejecucion,
                 $fecha_ejecucion
@@ -93,6 +89,7 @@ switch ($_GET["op"]) {
             echo json_encode(["success" => $ok ? "Caso de prueba registrado correctamente." : "Error al registrar el caso de prueba."]);
         }
         break;
+  
     
 
 

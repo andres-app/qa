@@ -75,7 +75,6 @@ function editar(id) {
                 $("#buscarRequerimiento").val(data.requerimiento_codigo).prop("readonly", true); // ✅ mostrar requerimiento
                 $("#tipo_prueba").val(data.tipo_prueba);
                 $("#version").val(data.version);
-                $("#especialidad_id").val(data.especialidad_id);
                 $("#elaborado_por").val(data.elaborado_por);
                 $("#descripcion").val(data.descripcion);
                 $("#modalLabel").html("Editar Caso de Prueba");
