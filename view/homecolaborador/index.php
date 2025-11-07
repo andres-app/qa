@@ -58,6 +58,23 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
         }
     }
 
+    // Ordenar jerárquicamente los órganos jurisdiccionales
+    $ordenJerarquico = [
+        "Sala Suprema",
+        "Sala Superior",
+        "Juzgado Especializado",
+        "Juzgado Mixto",
+        "Juzgado de Paz Letrado",
+        "Juzgado de Paz"
+    ];
+
+    // Ordenar los datos según jerarquía
+    usort($analisis_funcionalidad_limpio, function ($a, $b) use ($ordenJerarquico) {
+        $posA = array_search($a["organo_jurisdiccional"], $ordenJerarquico);
+        $posB = array_search($b["organo_jurisdiccional"], $ordenJerarquico);
+        return $posA <=> $posB;
+    });
+
 
 
     // === Casos por órgano jurisdiccional ===
@@ -102,14 +119,14 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
         <?php require_once("../html/head.php") ?>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <style>
-            /* Contenedores gráficos uniformes */
+            /* === Contenedores gráficos uniformes === */
             .chart-container {
                 position: relative;
                 width: 100%;
                 height: 340px;
             }
 
-            /* KPI Cards */
+            /* === KPI Cards === */
             .kpi-card .card-body {
                 padding: 1.5rem;
             }
@@ -131,8 +148,128 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
             .card {
                 border-radius: 10px;
                 border: 1px solid #e5e7eb;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            /* === Tabla: Análisis por Funcionalidad === */
+            #tablaAnalisisFuncionalidad {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                font-size: 0.9rem;
+                color: #374151;
+                background: #fff;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+                margin-top: 10px;
+            }
+
+            #tablaAnalisisFuncionalidad thead {
+                background: #f3f4f6;
+                border-bottom: 2px solid #e5e7eb;
+            }
+
+            #tablaAnalisisFuncionalidad thead th {
+                text-transform: uppercase;
+                font-size: 0.8rem;
+                font-weight: 600;
+                letter-spacing: 0.05em;
+                padding: 10px;
+                text-align: center;
+                color: #1f2937;
+            }
+
+            #tablaAnalisisFuncionalidad tbody tr:nth-child(even) {
+                background-color: #f9fafb;
+            }
+
+            #tablaAnalisisFuncionalidad tbody tr:hover {
+                background-color: #f1f5f9;
+                transition: all 0.15s ease-in-out;
+            }
+
+            #tablaAnalisisFuncionalidad td {
+                padding: 10px;
+                text-align: center;
+                border-top: 1px solid #f0f0f0;
+            }
+
+            #tablaAnalisisFuncionalidad tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            /* Quitar márgenes extra del DataTable */
+            .dataTables_wrapper {
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+            }
+
+            /* Mejorar header de la card */
+            .card-header {
+                background: #f8fafc;
+                border-bottom: 1px solid #e5e7eb;
+                color: #334155;
+                font-weight: 600;
+                letter-spacing: 0.03em;
+                text-transform: uppercase;
+                font-size: 0.9rem;
+            }
+
+            /* Ajustes responsivos */
+            @media (max-width: 768px) {
+
+                #tablaAnalisisFuncionalidad th,
+                #tablaAnalisisFuncionalidad td {
+                    font-size: 0.8rem;
+                    padding: 8px;
+                }
+
+                .chart-container {
+                    height: 280px;
+                }
+
+
+            }
+
+            /* Tabla de análisis por funcionalidad jerárquica */
+            #tablaAnalisisFuncionalidad {
+                width: 100%;
+                font-size: 0.88rem;
+                border-collapse: separate;
+                border-spacing: 0;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            #tablaAnalisisFuncionalidad thead th {
+                background: #f3f4f6;
+                color: #374151;
+                text-transform: uppercase;
+                font-weight: 600;
+                font-size: 0.8rem;
+                border-bottom: 2px solid #e5e7eb;
+            }
+
+            #tablaAnalisisFuncionalidad tbody tr.table-primary {
+                background-color: #e0f2fe !important;
+            }
+
+            #tablaAnalisisFuncionalidad tbody td {
+                padding: 8px 10px;
+                border-color: #f1f5f9;
+            }
+
+            #tablaAnalisisFuncionalidad tbody tr:hover td {
+                background-color: #f8fafc;
+                transition: 0.15s ease-in-out;
+            }
+
+            #tablaAnalisisFuncionalidad .text-start {
+                text-align: left !important;
             }
         </style>
+
     </head>
 
     <body>
@@ -212,52 +349,76 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                             </div>
                         </div>
 
-<!-- === ANÁLISIS POR FUNCIONALIDAD === -->
-<div class="row mt-4">
-  <div class="col-12">
-    <div class="card shadow-sm">
-      <div class="card-header text-center bg-light fw-semibold">
-        Análisis por Funcionalidad (Requisitos vs Requerimientos)
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <!-- Gráfico -->
-          <div class="col-md-7">
-            <div class="chart-container" style="height:400px;">
-              <canvas id="chartAnalisisFuncionalidad"></canvas>
-            </div>
-          </div>
+                        <!-- === ANÁLISIS POR FUNCIONALIDAD === -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header text-center bg-light fw-semibold">
+                                        Análisis por Funcionalidad (Requisitos vs Requerimientos)
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- Gráfico -->
+                                            <div class="col-md-7">
+                                                <div class="chart-container" style="height:400px;">
+                                                    <canvas id="chartAnalisisFuncionalidad"></canvas>
+                                                </div>
+                                            </div>
 
-          <!-- Tabla -->
-          <div class="col-md-5">
-            <div class="table-responsive">
-              <table id="tablaAnalisisFuncionalidad" class="table table-sm table-bordered align-middle text-center">
-                <thead class="table-light">
-                  <tr>
-                    <th>Órgano Jurisdiccional</th>
-                    <th>Funcionalidad</th>
-                    <th>Requisitos</th>
-                    <th>Requerimientos</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($analisis_funcionalidad_limpio as $row): ?>
-                    <tr>
-                      <td><?= $row["organo_jurisdiccional"]; ?></td>
-                      <td><?= $row["funcionalidad"]; ?></td>
-                      <td><?= $row["total_requisitos"]; ?></td>
-                      <td><?= $row["total_requerimientos"]; ?></td>
-                    </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+                                            <div class="col-md-5">
+                                                <div class="table-responsive">
+                                                    <table id="tablaAnalisisFuncionalidad"
+                                                        class="table table-sm table-bordered align-middle text-center shadow-sm">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Órgano Jurisdiccional</th>
+                                                                <th>Funcionalidad</th>
+                                                                <th>Requisitos</th>
+                                                                <th>Requerimientos</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <?php
+                                                            // Agrupar datos por órgano jurisdiccional
+                                                            $agrupado_tabla = [];
+                                                            foreach ($analisis_funcionalidad_limpio as $row) {
+                                                                $org = $row["organo_jurisdiccional"];
+                                                                if (!isset($agrupado_tabla[$org])) {
+                                                                    $agrupado_tabla[$org] = [];
+                                                                }
+                                                                $agrupado_tabla[$org][] = $row;
+                                                            }
+
+                                                            // Renderizado con celdas combinadas
+                                                            foreach ($agrupado_tabla as $organo => $filas):
+                                                                $rowspan = count($filas);
+                                                                $primera = true;
+                                                                foreach ($filas as $fila):
+                                                                    ?>
+                                                                    <tr>
+                                                                        <?php if ($primera): ?>
+                                                                            <td rowspan="<?= $rowspan; ?>"
+                                                                                class="fw-semibold bg-light text-start align-middle px-3">
+                                                                                <?= htmlspecialchars($organo); ?>
+                                                                            </td>
+                                                                            <?php $primera = false; ?>
+                                                                        <?php endif; ?>
+                                                                        <td class="text-start"><?= $fila["funcionalidad"]; ?></td>
+                                                                        <td><?= $fila["total_requisitos"]; ?></td>
+                                                                        <td><?= $fila["total_requerimientos"]; ?></td>
+                                                                    </tr>
+                                                                <?php endforeach; endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
 
 
@@ -540,68 +701,71 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                 }
             });
 
-            // === GRÁFICO: Análisis por Funcionalidad Limpio ===
-const ctxFunc = document.getElementById('chartAnalisisFuncionalidad').getContext('2d');
+            // === GRÁFICO: Análisis por Funcionalidad Limpio (Jerárquico) ===
+            const ctxFunc = document.getElementById('chartAnalisisFuncionalidad').getContext('2d');
+            const analisisData = <?= json_encode($analisis_funcionalidad_limpio); ?>;
 
-const analisisData = <?= json_encode($analisis_funcionalidad_limpio); ?>;
+            // Obtener órganos únicos en orden jerárquico
+            const organos = [...new Set(analisisData.map(r => r.organo_jurisdiccional))];
+            const funcionalidades = [...new Set(analisisData.map(r => r.funcionalidad))];
 
-// Obtener órganos únicos y funcionalidades dinámicas
-const organos = [...new Set(analisisData.map(r => r.organo_jurisdiccional))];
-const funcionalidades = [...new Set(analisisData.map(r => r.funcionalidad))];
+            // Generar datasets por funcionalidad (ej. FC, FP)
+            const colores = [
+                '#60a5fa', '#34d399', '#fbbf24', '#f87171', '#a78bfa'
+            ];
+            const datasets = funcionalidades.map((func, i) => ({
+                label: func,
+                data: organos.map(o => {
+                    const match = analisisData.find(r => r.organo_jurisdiccional === o && r.funcionalidad === func);
+                    return match ? match.total_requerimientos : 0;
+                }),
+                backgroundColor: colores[i % colores.length],
+                borderRadius: 6,
+                barPercentage: 0.6
+            }));
 
-// Generar datasets dinámicos por funcionalidad
-const datasets = funcionalidades.map((func, i) => ({
-  label: func,
-  data: organos.map(o => {
-    const match = analisisData.find(r => r.organo_jurisdiccional === o && r.funcionalidad === func);
-    return match ? match.total_requerimientos : 0;
-  }),
-  backgroundColor: [
-    'rgba(96, 165, 250, 0.8)',
-    'rgba(147, 197, 253, 0.8)',
-    'rgba(191, 219, 254, 0.8)',
-    'rgba(167, 139, 250, 0.8)',
-    'rgba(244, 114, 182, 0.8)'
-  ][i % 5]
-}));
+            new Chart(ctxFunc, {
+                type: 'bar',
+                data: {
+                    labels: organos,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#374151', boxWidth: 12, padding: 10 }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Requerimientos por Órgano Jurisdiccional y Funcionalidad',
+                            color: '#1f2937',
+                            font: { size: 14, weight: '600' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) {
+                                    return `${ctx.dataset.label}: ${ctx.raw} requerimientos`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#6b7280', font: { size: 11 } },
+                            grid: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#6b7280', stepSize: 5 },
+                            grid: { color: '#f3f4f6' }
+                        }
+                    }
+                }
+            });
 
-new Chart(ctxFunc, {
-  type: 'bar',
-  data: {
-    labels: organos,
-    datasets: datasets
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: { position: 'bottom' },
-      title: {
-        display: true,
-        text: 'Requerimientos por Órgano Jurisdiccional y Funcionalidad'
-      }
-    },
-    scales: {
-      x: { ticks: { color: '#6b7280' } },
-      y: { ticks: { color: '#6b7280', precision: 0 } }
-    }
-  }
-});
-
-// === DataTable ===
-$(document).ready(function () {
-  $('#tablaAnalisisFuncionalidad').DataTable({
-    dom: 'Bfrtip',
-    buttons: ['excelHtml5', 'pdfHtml5', 'csvHtml5'],
-    pageLength: 6,
-    order: [[0, 'asc']],
-    language: {
-      sLengthMenu: "Mostrar _MENU_ registros",
-      sZeroRecords: "No se encontraron resultados",
-      sSearch: "Buscar:",
-      oPaginate: { sNext: "Siguiente", sPrevious: "Anterior" }
-    }
-  });
-});
 
 
         </script>
