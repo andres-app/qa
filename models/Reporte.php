@@ -109,7 +109,7 @@ class Reporte extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "SELECT 
                     o.nombre AS organo_jurisdiccional,
                     COUNT(cp.id_caso) AS total_casos
@@ -123,15 +123,15 @@ class Reporte extends Conectar
                 WHERE o.estado = 1
                 GROUP BY o.nombre
                 ORDER BY total_casos DESC";
-    
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
-    
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
-    
-    
+
+
+
 
     /* ============================================================
        SEGUIMIENTO POR ESPECIALIDAD
@@ -141,7 +141,7 @@ class Reporte extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "
             SELECT 
                 e.nombre AS especialidad,
@@ -156,15 +156,15 @@ class Reporte extends Conectar
             GROUP BY e.nombre
             ORDER BY e.nombre ASC
         ";
-    
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
-    
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
-    
-    
+
+
+
 
     /* ============================================================
        REPORTE CONSOLIDADO POR ESPECIALIDAD
@@ -174,7 +174,7 @@ class Reporte extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "
             SELECT 
                 e.nombre AS especialidad,
@@ -188,12 +188,32 @@ class Reporte extends Conectar
             GROUP BY e.nombre
             ORDER BY e.nombre ASC
         ";
-    
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
-    
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
+    public function get_analisis_funcionalidad()
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "SELECT 
+                    organo_jurisdiccional,
+                    funcionalidad,
+                    COUNT(DISTINCT codigo_requisito) AS total_requisitos,
+                    COUNT(DISTINCT codigo_requerimiento) AS total_requerimientos
+                FROM analisis_funcionalidad
+                GROUP BY organo_jurisdiccional, funcionalidad
+                ORDER BY organo_jurisdiccional";
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 }
 ?>

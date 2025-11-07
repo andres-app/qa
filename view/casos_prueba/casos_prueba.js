@@ -279,7 +279,7 @@ $(document).ready(function () {
             },
 
             {
-                targets: 5, // Especialidad
+                targets: 4, // Especialidad
                 render: function (data) {
                     return data
                         ? `<span class="badge bg-light text-dark border px-2 py-1">${data}</span>`
@@ -288,7 +288,7 @@ $(document).ready(function () {
             },
 
             {
-                targets: 6, // Estado
+                targets: 5, // Estado
                 render: function (data) {
                     if (!data) return "";
                     let badgeStyle = "";
@@ -463,15 +463,6 @@ $(document).on("input", "#buscarRequerimiento", function () {
     lista.show();
 });
 
-// =======================================================
-// Seleccionar una opción del buscador
-// =======================================================
-// =======================================================
-// Seleccionar una opción del buscador
-// =======================================================
-// =======================================================
-// Seleccionar una opción del buscador
-// =======================================================
 // =======================================================
 // Seleccionar una opción del buscador de requerimientos
 // =======================================================

@@ -18,28 +18,66 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     // === Totales generales ===
     $data_casos = $reporte->get_total_casos_prueba();
     $total_casos_prueba = (int) ($data_casos["total"] ?? 0);
-    
+
     $porcentaje_data = $reporte->get_porcentaje_casos_ejecutados();
     $porcentaje_casos_ejecutados = $porcentaje_data["porcentaje"] ?? 0;
-    
+    // === Análisis por Funcionalidad ===
+    $analisis_funcionalidad = $reporte->get_analisis_funcionalidad();
+
+    // Limpiar datos: eliminar filas sin órgano jurisdiccional y ordenar
+    $analisis_funcionalidad = array_filter($analisis_funcionalidad, function ($r) {
+        return !empty($r["organo_jurisdiccional"]);
+    });
+
+    // Agrupar por órgano y funcionalidad (para evitar duplicados)
+    $agrupado = [];
+    foreach ($analisis_funcionalidad as $row) {
+        $org = $row["organo_jurisdiccional"];
+        $func = $row["funcionalidad"];
+        if (!isset($agrupado[$org][$func])) {
+            $agrupado[$org][$func] = [
+                "total_requisitos" => (int) $row["total_requisitos"],
+                "total_requerimientos" => (int) $row["total_requerimientos"]
+            ];
+        } else {
+            $agrupado[$org][$func]["total_requisitos"] += (int) $row["total_requisitos"];
+            $agrupado[$org][$func]["total_requerimientos"] += (int) $row["total_requerimientos"];
+        }
+    }
+
+    // Convertir el agrupado a formato plano
+    $analisis_funcionalidad_limpio = [];
+    foreach ($agrupado as $org => $funcs) {
+        foreach ($funcs as $func => $datos) {
+            $analisis_funcionalidad_limpio[] = [
+                "organo_jurisdiccional" => $org,
+                "funcionalidad" => $func,
+                "total_requisitos" => $datos["total_requisitos"],
+                "total_requerimientos" => $datos["total_requerimientos"]
+            ];
+        }
+    }
+
+
+
     // === Casos por órgano jurisdiccional ===
     $casos_por_organo = $reporte->get_casos_por_organo_jurisdiccional();
     $labels_organo = [];
     $valores_organo = [];
-    
+
     foreach ($casos_por_organo as $row) {
         $labels_organo[] = $row["organo_jurisdiccional"];
-        $valores_organo[] = (int)$row["total_casos"];
+        $valores_organo[] = (int) $row["total_casos"];
     }
-    
-    
+
+
     // === Seguimiento por especialidad ===
     $seguimiento_especialidad = $reporte->get_seguimiento_por_especialidad();
     $labels_especialidad = [];
     $data_aprobado = [];
     $data_en_ejecucion = [];
     $data_pendiente = [];
-    
+
     if (is_array($seguimiento_especialidad)) {
         foreach ($seguimiento_especialidad as $row) {
             $labels_especialidad[] = $row["especialidad"];
@@ -48,13 +86,13 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
             $data_pendiente[] = (int) ($row["pendiente"] ?? 0);
         }
     }
-    
+
     // === Resumen consolidado ===
     $resumen = $reporte->get_resumen_por_especialidad();
-    if (!is_array($resumen)) { 
-        $resumen = []; 
+    if (!is_array($resumen)) {
+        $resumen = [];
     }
-    
+
     ?>
     <!doctype html>
     <html lang="es">
@@ -129,18 +167,18 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                 </div>
                             </div>
                             <div class="col-md-4">
-    <div class="card kpi-card text-center shadow-sm">
-        <div class="card-body">
-            <h6>% Casos Ejecutados</h6>
-            <div class="d-flex justify-content-center align-items-end gap-2">
-                <h2 class="text-info mb-0"><?= (int)$porcentaje_casos_ejecutados; ?>%</h2>
-                <span class="text-muted fw-semibold" style="font-size: 1rem;">
-                    (<?= $porcentaje_data["ejecutados"]; ?>)
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
+                                <div class="card kpi-card text-center shadow-sm">
+                                    <div class="card-body">
+                                        <h6>% Casos Ejecutados</h6>
+                                        <div class="d-flex justify-content-center align-items-end gap-2">
+                                            <h2 class="text-info mb-0"><?= (int) $porcentaje_casos_ejecutados; ?>%</h2>
+                                            <span class="text-muted fw-semibold" style="font-size: 1rem;">
+                                                (<?= $porcentaje_data["ejecutados"]; ?>)
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
 
                         </div>
@@ -173,6 +211,55 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                 </div>
                             </div>
                         </div>
+
+<!-- === ANÁLISIS POR FUNCIONALIDAD === -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header text-center bg-light fw-semibold">
+        Análisis por Funcionalidad (Requisitos vs Requerimientos)
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Gráfico -->
+          <div class="col-md-7">
+            <div class="chart-container" style="height:400px;">
+              <canvas id="chartAnalisisFuncionalidad"></canvas>
+            </div>
+          </div>
+
+          <!-- Tabla -->
+          <div class="col-md-5">
+            <div class="table-responsive">
+              <table id="tablaAnalisisFuncionalidad" class="table table-sm table-bordered align-middle text-center">
+                <thead class="table-light">
+                  <tr>
+                    <th>Órgano Jurisdiccional</th>
+                    <th>Funcionalidad</th>
+                    <th>Requisitos</th>
+                    <th>Requerimientos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($analisis_funcionalidad_limpio as $row): ?>
+                    <tr>
+                      <td><?= $row["organo_jurisdiccional"]; ?></td>
+                      <td><?= $row["funcionalidad"]; ?></td>
+                      <td><?= $row["total_requisitos"]; ?></td>
+                      <td><?= $row["total_requerimientos"]; ?></td>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
                         <div class="row mt-4">
                             <div class="col-12">
@@ -452,6 +539,71 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                     }
                 }
             });
+
+            // === GRÁFICO: Análisis por Funcionalidad Limpio ===
+const ctxFunc = document.getElementById('chartAnalisisFuncionalidad').getContext('2d');
+
+const analisisData = <?= json_encode($analisis_funcionalidad_limpio); ?>;
+
+// Obtener órganos únicos y funcionalidades dinámicas
+const organos = [...new Set(analisisData.map(r => r.organo_jurisdiccional))];
+const funcionalidades = [...new Set(analisisData.map(r => r.funcionalidad))];
+
+// Generar datasets dinámicos por funcionalidad
+const datasets = funcionalidades.map((func, i) => ({
+  label: func,
+  data: organos.map(o => {
+    const match = analisisData.find(r => r.organo_jurisdiccional === o && r.funcionalidad === func);
+    return match ? match.total_requerimientos : 0;
+  }),
+  backgroundColor: [
+    'rgba(96, 165, 250, 0.8)',
+    'rgba(147, 197, 253, 0.8)',
+    'rgba(191, 219, 254, 0.8)',
+    'rgba(167, 139, 250, 0.8)',
+    'rgba(244, 114, 182, 0.8)'
+  ][i % 5]
+}));
+
+new Chart(ctxFunc, {
+  type: 'bar',
+  data: {
+    labels: organos,
+    datasets: datasets
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' },
+      title: {
+        display: true,
+        text: 'Requerimientos por Órgano Jurisdiccional y Funcionalidad'
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#6b7280' } },
+      y: { ticks: { color: '#6b7280', precision: 0 } }
+    }
+  }
+});
+
+// === DataTable ===
+$(document).ready(function () {
+  $('#tablaAnalisisFuncionalidad').DataTable({
+    dom: 'Bfrtip',
+    buttons: ['excelHtml5', 'pdfHtml5', 'csvHtml5'],
+    pageLength: 6,
+    order: [[0, 'asc']],
+    language: {
+      sLengthMenu: "Mostrar _MENU_ registros",
+      sZeroRecords: "No se encontraron resultados",
+      sSearch: "Buscar:",
+      oPaginate: { sNext: "Siguiente", sPrevious: "Anterior" }
+    }
+  });
+});
+
+
         </script>
     </body>
 
