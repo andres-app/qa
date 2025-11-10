@@ -18,45 +18,99 @@ function gradient(ctx, color1, color2) {
     console.log("✅ dataOrgano:", dataOrgano);
     console.log("✅ dataEspecialidad:", dataEspecialidad);
   
-    // ==============================
-    //  GRÁFICO: ÓRGANO JURISDICCIONAL
-    // ==============================
-    const ctxOrg = document.getElementById("chartCasosOrgano")?.getContext("2d");
-    if (ctxOrg && dataOrgano?.labels?.length > 0) {
-      new Chart(ctxOrg, {
-        type: "pie",
-        data: {
-          labels: dataOrgano.labels,
-          datasets: [{
-            data: dataOrgano.valores,
-            backgroundColor: [
-              "rgba(96,165,250,0.8)",
-              "rgba(147,197,253,0.8)",
-              "rgba(191,219,254,0.8)",
-              "rgba(219,234,254,0.8)"
-            ],
-            borderColor: "#fff",
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: "bottom", labels: { color: "#4b5563" } },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => {
-                  const value = ctx.raw;
-                  const total = ctx.chart._metasets[0].total;
-                  const pct = ((value / total) * 100).toFixed(1);
-                  return `${ctx.label}: ${value} (${pct}%)`;
-                }
-              }
+// ==============================
+//  GRÁFICO: ÓRGANO JURISDICCIONAL
+// ==============================
+const ctxOrg = document.getElementById("chartCasosOrgano")?.getContext("2d");
+if (ctxOrg && dataOrgano?.labels?.length > 0) {
+  const chartOrg = new Chart(ctxOrg, {
+    type: "pie",
+    data: {
+      labels: dataOrgano.labels,
+      datasets: [{
+        data: dataOrgano.valores,
+        backgroundColor: [
+          "rgba(96,165,250,0.8)",
+          "rgba(147,197,253,0.8)",
+          "rgba(191,219,254,0.8)",
+          "rgba(219,234,254,0.8)",
+          "rgba(59,130,246,0.8)",
+          "rgba(37,99,235,0.8)"
+        ],
+        borderColor: "#fff",
+        borderWidth: 2
+      }]
+    },
+    options: {
+      onClick: (evt, activeEls) => {
+        if (!activeEls.length) return;
+
+        const index = activeEls[0].index;
+        const id_organo = dataOrgano.ids[index];
+        const nombre = dataOrgano.labels[index];
+
+        // ✅ Redirigir al módulo seg_org_juri con parámetros GET
+        const url = `../seg_org_juri/index.php?id_organo=${id_organo}&nombre=${encodeURIComponent(nombre)}`;
+        window.location.href = url;
+      },
+
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const value = ctx.raw;
+              const total = ctx.chart._metasets[0].total;
+              const pct = ((value / total) * 100).toFixed(1);
+              return `${ctx.label}: ${value} (${pct}%)`;
             }
           }
         }
-      });
+      }
     }
+  });
+}
+
+
+
+// ==============================
+//  MODAL DETALLE DE ÓRGANO
+// ==============================
+function mostrarModalDetalle(nombre, data) {
+  $("#modalDetalleOrgano .modal-title").text(`Detalle de Casos - ${nombre}`);
+
+  $("#tablaDetalleOrgano").DataTable({
+    destroy: true,
+    data: data,
+    columns: [
+      { data: "codigo_requerimiento", title: "Código Req." },
+      { data: "nombre_requerimiento", title: "Requerimiento" },
+      { data: "codigo_caso", title: "Código Caso" },
+      { data: "nombre_caso", title: "Nombre Caso" },
+      { data: "version", title: "Versión" },
+      {
+        data: "estado_ejecucion",
+        title: "Estado",
+        render: function (data) {
+          const colores = {
+            "Pendiente": "badge bg-warning text-dark",
+            "Observado": "badge bg-danger",
+            "Completado": "badge bg-success"
+          };
+          return `<span class="${colores[data] || 'badge bg-secondary'}">${data}</span>`;
+        }
+      },
+      { data: "usuario_registro", title: "Registrado por" },
+      { data: "fecha_registro", title: "Fecha" }
+    ],
+    language: { url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/es-ES.json" },
+    dom: "Bfrtip",
+    buttons: ["excelHtml5", "pdfHtml5", "csvHtml5", "copyHtml5"]
+  });
+
+  $("#modalDetalleOrgano").modal("show");
+}
+
   
     // ==============================
     //  GRÁFICO: ESPECIALIDAD

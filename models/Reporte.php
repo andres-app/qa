@@ -110,23 +110,70 @@ class Reporte extends Conectar
         $conectar = parent::conexion();
         parent::set_names();
 
-        $sql = "SELECT 
-                    o.nombre AS organo_jurisdiccional,
-                    COUNT(cp.id_caso) AS total_casos
-                FROM organo_jurisdiccional o
-                LEFT JOIN requerimiento_organo ro 
-                    ON ro.id_organo = o.id_organo
-                LEFT JOIN requerimiento r 
-                    ON r.id_requerimiento = ro.id_requerimiento
-                LEFT JOIN caso_prueba cp 
-                    ON cp.id_requerimiento = r.id_requerimiento
-                WHERE o.estado = 1
-                GROUP BY o.nombre
-                ORDER BY total_casos DESC";
-
+        $sql = "
+            SELECT 
+                o.id_organo,
+                o.nombre AS organo_jurisdiccional,
+                COUNT(DISTINCT cp.id_caso) AS total_casos
+            FROM organo_jurisdiccional o
+            LEFT JOIN requerimiento_organo ro  ON ro.id_organo = o.id_organo
+            LEFT JOIN requerimiento r          ON r.id_requerimiento = ro.id_requerimiento
+            LEFT JOIN caso_prueba cp           ON cp.id_requerimiento = r.id_requerimiento
+            WHERE o.estado = 1
+            GROUP BY o.id_organo, o.nombre
+            ORDER BY o.nombre ASC
+        ";
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
+    public function get_detalle_por_organo($id_organo = null)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+    
+        $sql = "SELECT 
+                    o.nombre AS organo_jurisdiccional,
+                    r.codigo AS codigo_requerimiento,
+                    r.nombre AS nombre_requerimiento,
+                    cp.codigo AS codigo_caso,
+                    cp.nombre AS nombre_caso,
+                    cp.version,
+                    cp.estado_ejecucion,
+                    COALESCE(cp.creado_por, 'Equipo QA') AS responsable,
+                    DATE(cp.fecha_creacion) AS fecha_registro
+                FROM organo_jurisdiccional o
+                INNER JOIN requerimiento_organo ro ON ro.id_organo = o.id_organo
+                INNER JOIN requerimiento r ON r.id_requerimiento = ro.id_requerimiento
+                INNER JOIN caso_prueba cp ON cp.id_requerimiento = r.id_requerimiento
+                WHERE o.estado = 1";
+    
+        if (!empty($id_organo)) {
+            $sql .= " AND o.id_organo = ?";
+            $stmt = $conectar->prepare($sql);
+            $stmt->bindValue(1, $id_organo, PDO::PARAM_INT);
+        } else {
+            $stmt = $conectar->prepare($sql);
+        }
+    
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
+
+    public function get_organos_activos()
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "SELECT id_organo, nombre 
+            FROM organo_jurisdiccional 
+            WHERE estado = 1 
+            ORDER BY nombre ASC";
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -174,7 +221,7 @@ class Reporte extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "
             SELECT 
                 e.nombre AS especialidad,
@@ -188,19 +235,19 @@ class Reporte extends Conectar
             GROUP BY e.id_especialidad, e.nombre
             ORDER BY e.nombre ASC
         ";
-    
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
         // ✅ Ajuste final: asegurar que los casos únicos globales coincidan con el total general
         $sql_total = "
             SELECT COUNT(DISTINCT id_caso) AS total_global FROM caso_prueba
         ";
         $stmt_total = $conectar->prepare($sql_total);
         $stmt_total->execute();
-        $total_real = (int)$stmt_total->fetchColumn();
-    
+        $total_real = (int) $stmt_total->fetchColumn();
+
         // Calcular proporciones si se desea ajustar visualmente
         $suma_local = array_sum(array_column($data, 'total_casos_prueba'));
         if ($suma_local > $total_real && $suma_local > 0) {
@@ -209,12 +256,12 @@ class Reporte extends Conectar
                 $row['total_casos_prueba'] = round($row['total_casos_prueba'] * $factor);
             }
         }
-    
+
         return $data;
     }
-    
-    
-    
+
+
+
 
     public function get_analisis_funcionalidad()
     {

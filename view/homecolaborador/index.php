@@ -75,6 +75,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     $casos_por_organo = $reporte->get_casos_por_organo_jurisdiccional();
     $labels_organo = array_column($casos_por_organo, "organo_jurisdiccional");
     $valores_organo = array_map(fn($r) => (int) $r["total_casos"], $casos_por_organo);
+    $ids_organo = array_column($casos_por_organo, "id_organo");
 
     // === Seguimiento por especialidad ===
     $seguimiento_especialidad = $reporte->get_seguimiento_por_especialidad();
@@ -274,6 +275,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
 
                     </div>
+
                 </div>
                 <?php require_once("../html/footer.php") ?>
             </div>
@@ -287,9 +289,11 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
         <script>
             // Variables PHP exportadas a JS
             const dataOrgano = {
+                ids: <?= json_encode($ids_organo); ?>,
                 labels: <?= json_encode($labels_organo); ?>,
                 valores: <?= json_encode($valores_organo); ?>
             };
+
 
             const dataEspecialidad = {
                 labels: <?= json_encode($labels_especialidad); ?>,
