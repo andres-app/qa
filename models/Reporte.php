@@ -174,7 +174,7 @@ class Reporte extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "
             SELECT 
                 e.nombre AS especialidad,
@@ -185,15 +185,36 @@ class Reporte extends Conectar
             LEFT JOIN requerimiento r ON r.id_requerimiento = re.id_requerimiento
             LEFT JOIN caso_prueba cp ON cp.id_requerimiento = r.id_requerimiento
             WHERE e.estado = 1
-            GROUP BY e.nombre
+            GROUP BY e.id_especialidad, e.nombre
             ORDER BY e.nombre ASC
         ";
-
+    
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        // ✅ Ajuste final: asegurar que los casos únicos globales coincidan con el total general
+        $sql_total = "
+            SELECT COUNT(DISTINCT id_caso) AS total_global FROM caso_prueba
+        ";
+        $stmt_total = $conectar->prepare($sql_total);
+        $stmt_total->execute();
+        $total_real = (int)$stmt_total->fetchColumn();
+    
+        // Calcular proporciones si se desea ajustar visualmente
+        $suma_local = array_sum(array_column($data, 'total_casos_prueba'));
+        if ($suma_local > $total_real && $suma_local > 0) {
+            $factor = $total_real / $suma_local;
+            foreach ($data as &$row) {
+                $row['total_casos_prueba'] = round($row['total_casos_prueba'] * $factor);
+            }
+        }
+    
+        return $data;
     }
+    
+    
+    
 
     public function get_analisis_funcionalidad()
     {

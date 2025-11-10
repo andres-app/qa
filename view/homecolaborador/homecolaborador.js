@@ -1,0 +1,176 @@
+// =======================
+//  FUNCIONES AUXILIARES
+// =======================
+function gradient(ctx, color1, color2) {
+    const grad = ctx.createLinearGradient(0, 0, 0, 300);
+    grad.addColorStop(0, color1);
+    grad.addColorStop(1, color2);
+    return grad;
+  }
+  
+  // Esperar DOM listo
+  document.addEventListener("DOMContentLoaded", () => {
+  
+    // ==============================
+    //  DEBUG opcional
+    // ==============================
+    console.log("✅ analisisData:", analisisData);
+    console.log("✅ dataOrgano:", dataOrgano);
+    console.log("✅ dataEspecialidad:", dataEspecialidad);
+  
+    // ==============================
+    //  GRÁFICO: ÓRGANO JURISDICCIONAL
+    // ==============================
+    const ctxOrg = document.getElementById("chartCasosOrgano")?.getContext("2d");
+    if (ctxOrg && dataOrgano?.labels?.length > 0) {
+      new Chart(ctxOrg, {
+        type: "pie",
+        data: {
+          labels: dataOrgano.labels,
+          datasets: [{
+            data: dataOrgano.valores,
+            backgroundColor: [
+              "rgba(96,165,250,0.8)",
+              "rgba(147,197,253,0.8)",
+              "rgba(191,219,254,0.8)",
+              "rgba(219,234,254,0.8)"
+            ],
+            borderColor: "#fff",
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "bottom", labels: { color: "#4b5563" } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const value = ctx.raw;
+                  const total = ctx.chart._metasets[0].total;
+                  const pct = ((value / total) * 100).toFixed(1);
+                  return `${ctx.label}: ${value} (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  
+    // ==============================
+    //  GRÁFICO: ESPECIALIDAD
+    // ==============================
+    const ctxEsp = document.getElementById("chartEspecialidad")?.getContext("2d");
+    if (ctxEsp && dataEspecialidad?.labels?.length > 0) {
+      new Chart(ctxEsp, {
+        type: "bar",
+        data: {
+          labels: dataEspecialidad.labels,
+          datasets: [
+            { label: "Completado", data: dataEspecialidad.completado, backgroundColor: "rgba(96,165,250,0.8)" },
+            { label: "Observado", data: dataEspecialidad.observado, backgroundColor: "rgba(147,197,253,0.8)" },
+            { label: "Pendiente", data: dataEspecialidad.pendiente, backgroundColor: "rgba(219,234,254,0.9)" }
+          ]
+        },
+        options: {
+          plugins: { legend: { position: "bottom" } },
+          scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } },
+          responsive: true
+        }
+      });
+    }
+  
+    // ==============================
+    //  GRÁFICO: LÍNEA DE TIEMPO
+    // ==============================
+    const ctxLinea = document.getElementById("chartLineaTiempo")?.getContext("2d");
+    if (ctxLinea) {
+      new Chart(ctxLinea, {
+        type: "line",
+        data: {
+          labels: ["1-Jul", "1-Ago", "1-Sep", "1-Oct", "1-Nov", "1-Dic"],
+          datasets: [{
+            label: "Requerimientos",
+            data: [10, 25, 40, 55, 75, 100],
+            borderColor: "#60a5fa",
+            backgroundColor: "rgba(96,165,250,0.2)",
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: { plugins: { legend: { display: false } } }
+      });
+    }
+  
+    // ==============================
+    //  GRÁFICO: AVANCE POR REQUERIMIENTO
+    // ==============================
+    const ctxAvance = document.getElementById("chartAvance")?.getContext("2d");
+    if (ctxAvance) {
+      new Chart(ctxAvance, {
+        type: "bar",
+        data: {
+          labels: ["Startvi", "Consultas", "Registro"],
+          datasets: [
+            { label: "Completado", data: [5, 8, 6], backgroundColor: gradient(ctxAvance, "#93c5fd", "#bfdbfe") },
+            { label: "Observado", data: [10, 7, 8], backgroundColor: gradient(ctxAvance, "#a5c8dd", "#dbeafe") },
+            { label: "Pendiente", data: [3, 5, 2], backgroundColor: gradient(ctxAvance, "#d1d5db", "#e5e7eb") }
+          ]
+        },
+        options: {
+          plugins: { legend: { position: "bottom" } },
+          scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+        }
+      });
+    }
+  
+    // ==============================
+    //  GRÁFICO: ANÁLISIS FUNCIONALIDAD
+    // ==============================
+    const ctxFuncCanvas = document.getElementById("chartAnalisisFuncionalidad");
+    if (ctxFuncCanvas && analisisData && analisisData.length > 0) {
+  
+      const ctxFunc = ctxFuncCanvas.getContext("2d");
+  
+      const organos = [...new Set(analisisData.map(r => r.organo_jurisdiccional))];
+      const funcionalidades = [...new Set(analisisData.map(r => r.funcionalidad))];
+      const colores = ["#60a5fa", "#34d399", "#fbbf24", "#f87171", "#a78bfa"];
+  
+      const datasets = funcionalidades.map((func, i) => ({
+        label: func,
+        data: organos.map(o => {
+          const match = analisisData.find(r => r.organo_jurisdiccional === o && r.funcionalidad === func);
+          return match ? match.total_requerimientos : 0;
+        }),
+        backgroundColor: colores[i % colores.length],
+        borderRadius: 6,
+        barPercentage: 0.6
+      }));
+  
+      new Chart(ctxFunc, {
+        type: "bar",
+        data: { labels: organos, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "bottom" },
+            title: {
+              display: true,
+              text: "Requerimientos por Órgano Jurisdiccional y Funcionalidad",
+              color: "#1f2937",
+              font: { size: 14, weight: "600" }
+            }
+          },
+          scales: {
+            x: { ticks: { color: "#6b7280" }, grid: { display: false } },
+            y: { beginAtZero: true, ticks: { color: "#6b7280" }, grid: { color: "#f3f4f6" } }
+          }
+        }
+      });
+    } else {
+      console.warn("⚠️ No hay datos para el gráfico de análisis funcionalidad");
+    }
+  });
+  
