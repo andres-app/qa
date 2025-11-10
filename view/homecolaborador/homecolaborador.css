@@ -3,7 +3,11 @@
     position: relative;
     width: 100%;
     height: 340px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
 
 /* === KPI Cards === */
 .kpi-card .card-body {
@@ -146,4 +150,22 @@
 
 #tablaAnalisisFuncionalidad .text-start {
     text-align: left !important;
+}
+
+/* === Contenedor gráfico de especialidad === */
+.chart-container.especialidad {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 420px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Canvas sin escalado forzado */
+#chartEspecialidad {
+    width: 100%;
+    height: 100%;
 }
