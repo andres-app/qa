@@ -132,7 +132,7 @@ class Reporte extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "SELECT 
                     o.nombre AS organo_jurisdiccional,
                     r.codigo AS codigo_requerimiento,
@@ -148,7 +148,7 @@ class Reporte extends Conectar
                 INNER JOIN requerimiento r ON r.id_requerimiento = ro.id_requerimiento
                 INNER JOIN caso_prueba cp ON cp.id_requerimiento = r.id_requerimiento
                 WHERE o.estado = 1";
-    
+
         if (!empty($id_organo)) {
             $sql .= " AND o.id_organo = ?";
             $stmt = $conectar->prepare($sql);
@@ -156,11 +156,11 @@ class Reporte extends Conectar
         } else {
             $stmt = $conectar->prepare($sql);
         }
-    
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
 
 
     public function get_organos_activos()
@@ -221,7 +221,7 @@ class Reporte extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "
             SELECT 
                 e.nombre AS especialidad,
@@ -238,16 +238,32 @@ class Reporte extends Conectar
             GROUP BY e.id_especialidad, e.nombre
             ORDER BY e.nombre ASC
         ";
-    
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
         return $data;
     }
-    
 
+    // ==========================================================
+//  OBTENER ESPECIALIDADES ACTIVAS
+// ==========================================================
+    public function get_especialidades_activas()
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
 
+        $sql = "SELECT id_especialidad, nombre 
+            FROM especialidad 
+            WHERE estado = 1 
+            ORDER BY nombre ASC;";
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
     public function get_analisis_funcionalidad()
@@ -270,5 +286,74 @@ class Reporte extends Conectar
     }
 
 
+ // ==========================================================
+//  LISTAR CASOS DE PRUEBA POR ESPECIALIDAD (USANDO TABLA INTERMEDIA)
+// ==========================================================
+public function get_casos_por_especialidad($id_especialidad = "", $estado = "") {
+    $conectar = parent::conexion();
+    parent::set_names();
+
+    $sql = "SELECT 
+                e.nombre AS especialidad,
+                r.codigo AS codigo_requerimiento,
+                r.nombre AS nombre_requerimiento,
+                c.codigo AS codigo_caso,
+                c.nombre AS nombre_caso,
+                c.version,
+                c.estado_ejecucion AS estado,
+                c.elaborado_por AS responsable,
+                DATE_FORMAT(c.fecha_creacion, '%d/%m/%Y') AS fecha_registro
+            FROM caso_prueba c
+            INNER JOIN requerimiento r 
+                ON c.id_requerimiento = r.id_requerimiento
+            INNER JOIN requerimiento_especialidad re 
+                ON re.id_requerimiento = r.id_requerimiento
+            INNER JOIN especialidad e 
+                ON re.id_especialidad = e.id_especialidad
+            WHERE 1=1";
+
+    // 🔹 Filtrar por especialidad si se selecciona una
+    if (!empty($id_especialidad)) {
+        $sql .= " AND e.id_especialidad = :id_especialidad";
+    }
+
+    // 🔹 Filtrar por estado de ejecución
+    if (!empty($estado) && $estado != "Todos") {
+        $sql .= " AND c.estado_ejecucion = :estado";
+    }
+
+    $sql .= " ORDER BY e.nombre, r.codigo, c.codigo";
+
+    $stmt = $conectar->prepare($sql);
+
+    if (!empty($id_especialidad)) {
+        $stmt->bindParam(":id_especialidad", $id_especialidad, PDO::PARAM_INT);
+    }
+    if (!empty($estado) && $estado != "Todos") {
+        $stmt->bindParam(":estado", $estado, PDO::PARAM_STR);
+    }
+
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // 🔹 Formatear estado con badge visual
+    foreach ($result as &$row) {
+        $badgeClass = match ($row["estado"]) {
+            "Completado"   => "bg-success",
+            "Observado"    => "bg-warning text-dark",
+            "En ejecución" => "bg-info text-dark",
+            default        => "bg-secondary"
+        };
+        $row["estado_badge"] = "<span class='badge {$badgeClass}'>{$row["estado"]}</span>";
+    }
+
+    return ["aaData" => $result];
 }
-?>
+
+
+
+
+
+
+}
+
