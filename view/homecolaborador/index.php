@@ -258,14 +258,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                         </tr>
                                                     <?php endforeach; ?>
                                                 </tbody>
-                                                <tfoot class="table-light fw-semibold">
-                                                    <tr>
-                                                        <td>Total General</td>
-                                                        <td><?= array_sum(array_column($resumen, 'total_requerimientos')); ?>
-                                                        </td>
-                                                        <td><?= $total_casos_prueba; ?></td>
-                                                    </tr>
-                                                </tfoot>
+                                            
                                             </table>
                                         </div>
                                     </div>
