@@ -78,11 +78,13 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     $ids_organo = array_column($casos_por_organo, "id_organo");
 
     // === Seguimiento por especialidad ===
+// === Seguimiento por especialidad ===
     $seguimiento_especialidad = $reporte->get_seguimiento_por_especialidad();
     $labels_especialidad = array_column($seguimiento_especialidad, "especialidad");
-    $data_aprobado = array_column($seguimiento_especialidad, "completado");
-    $data_en_ejecucion = array_column($seguimiento_especialidad, "en_ejecucion");
+    $data_completado = array_column($seguimiento_especialidad, "completado");
+    $data_observado = array_column($seguimiento_especialidad, "observado");
     $data_pendiente = array_column($seguimiento_especialidad, "pendiente");
+
 
     // === Resumen consolidado ===
     $resumen = $reporte->get_resumen_por_especialidad() ?? [];
@@ -146,7 +148,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                             <div class="col-md-4">
                                 <div class="card shadow-sm">
                                     <div class="card-header text-center bg-light fw-semibold">
-                                        Seguimiento por Órgano Jurisdiccional
+                                        Casos de Prueba por Órgano Jurisdiccional
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-container">
@@ -159,7 +161,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                             <div class="col-md-8">
                                 <div class="card shadow-sm">
                                     <div class="card-header text-center bg-light fw-semibold">
-                                        Iteraciones por Especialidad
+                                        Casos de Prueba por Especialidad
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-container">
@@ -258,7 +260,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                         </tr>
                                                     <?php endforeach; ?>
                                                 </tbody>
-                                            
+
                                             </table>
                                         </div>
                                     </div>
@@ -290,9 +292,9 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
             const dataEspecialidad = {
                 labels: <?= json_encode($labels_especialidad); ?>,
-                completado: <?= json_encode($data_aprobado); ?>,
-                observado: <?= json_encode($data_en_ejecucion); ?>,
-                pendiente: <?= json_encode($data_pendiente); ?>
+                completado: <?= json_encode(array_map('intval', $data_completado)); ?>,
+                observado: <?= json_encode(array_map('intval', $data_observado)); ?>,
+                pendiente: <?= json_encode(array_map('intval', $data_pendiente)); ?>
             };
 
             const analisisData = <?= json_encode($analisis_funcionalidad_limpio); ?>;

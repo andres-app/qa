@@ -112,41 +112,75 @@ function mostrarModalDetalle(nombre, data) {
 }
 
   
-    // ==============================
-    //  GRÁFICO: ESPECIALIDAD
-    // ==============================
-    const ctxEsp = document.getElementById("chartEspecialidad")?.getContext("2d");
-    if (ctxEsp && dataEspecialidad?.labels?.length > 0) {
-      new Chart(ctxEsp, {
-        type: "bar",
-        data: {
-          labels: dataEspecialidad.labels,
-          datasets: [
-            { label: "Completado", data: dataEspecialidad.completado, backgroundColor: "rgba(96,165,250,0.8)" },
-            { label: "Observado", data: dataEspecialidad.observado, backgroundColor: "rgba(147,197,253,0.8)" },
-            { label: "Pendiente", data: dataEspecialidad.pendiente, backgroundColor: "rgba(219,234,254,0.9)" }
-          ]
+ // ==============================
+//  GRÁFICO: ESPECIALIDAD
+// ==============================
+const ctxEsp = document.getElementById("chartEspecialidad")?.getContext("2d");
+if (ctxEsp && dataEspecialidad?.labels?.length > 0) {
+  const comp = [...dataEspecialidad.completado];
+  const obs  = [...dataEspecialidad.observado];
+  const pen  = [...dataEspecialidad.pendiente];
+
+  new Chart(ctxEsp, {
+    type: "bar",
+    data: {
+      labels: dataEspecialidad.labels,
+      datasets: [
+        { // 🟧 Pendiente (al fondo)
+          label: "Pendiente",
+          data: pen,
+          backgroundColor: "rgba(249,115,22,0.9)", // naranja fuerte
+          borderColor: "rgba(249,115,22,1)",
+          borderWidth: 1,
+          minBarLength: 3,
+          order: 1
         },
-        options: {
-          plugins: { legend: { position: "bottom" } },
-          scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } },
-          responsive: true,
-    
-          // 🧭 NUEVA OPCIÓN DE CLIC PARA REDIRIGIR
-          onClick: (evt, activeEls) => {
-            if (!activeEls.length) return; // si no se clickeó ninguna barra
-            const chart = activeEls[0].element.$context.chart;
-            const index = activeEls[0].index;
-            const especialidad = chart.data.labels[index];
-    
-            // Redirigir al módulo seg_por_espec con la especialidad seleccionada
-            const url = `../seg_por_espec/index.php?especialidad=${encodeURIComponent(especialidad)}`;
-            console.log("🔗 Redirigiendo a:", url);
-            window.location.href = url;
+        { // 🔴 Observado (encima)
+          label: "Observado",
+          data: obs,
+          backgroundColor: "rgba(239,68,68,0.9)", // rojo vivo
+          borderColor: "rgba(239,68,68,1)",
+          borderWidth: 1,
+          minBarLength: 3,
+          order: 2
+        },
+        { // 🟩 Completado (arriba del todo)
+          label: "Completado",
+          data: comp,
+          backgroundColor: "rgba(34,197,94,0.9)", // verde brillante
+          borderColor: "rgba(34,197,94,1)",
+          borderWidth: 1,
+          minBarLength: 3,
+          order: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const i = ctx.dataIndex;
+              const total = comp[i] + obs[i] + pen[i];
+              const v = ctx.raw ?? 0;
+              const pct = total ? ((v / total) * 100).toFixed(2) : "0.00";
+              return `${ctx.dataset.label}: ${v} (${pct}%)`;
+            }
           }
         }
-      });
+      },
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, beginAtZero: true }
+      }
     }
+  });
+}
+
+
     
     
     // ==============================

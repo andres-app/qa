@@ -185,33 +185,48 @@ class Reporte extends Conectar
        (Usando relación requerimiento → especialidad)
     ============================================================ */
     public function get_seguimiento_por_especialidad()
-    {
-        $conectar = parent::conexion();
-        parent::set_names();
+{
+    $conectar = parent::conexion();
+    parent::set_names();
 
-        $sql = "
-            SELECT 
-                e.nombre AS especialidad,
-                SUM(CASE WHEN cp.estado_ejecucion = 'Completado' THEN 1 ELSE 0 END) AS completado,
-                SUM(CASE WHEN cp.estado_ejecucion = 'Observado' THEN 1 ELSE 0 END) AS observado,
-                SUM(CASE WHEN cp.estado_ejecucion = 'Pendiente' THEN 1 ELSE 0 END) AS pendiente
-            FROM especialidad e
-            LEFT JOIN requerimiento_especialidad re ON re.id_especialidad = e.id_especialidad
-            LEFT JOIN requerimiento r ON r.id_requerimiento = re.id_requerimiento
-            LEFT JOIN caso_prueba cp ON cp.id_requerimiento = r.id_requerimiento
-            WHERE e.estado = 1
-            GROUP BY e.nombre
-            ORDER BY e.nombre ASC
-        ";
+    $sql = "
+        SELECT 
+            COALESCE(e.nombre, 'Sin especialidad') AS especialidad,
 
-        $stmt = $conectar->prepare($sql);
-        $stmt->execute();
+            -- ✅ Casos completados
+            SUM(CASE 
+                WHEN UPPER(TRIM(cp.estado_ejecucion)) = 'COMPLETADO' 
+                THEN 1 ELSE 0 END
+            ) AS completado,
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+            -- ✅ Casos observados
+            SUM(CASE 
+                WHEN UPPER(TRIM(cp.estado_ejecucion)) = 'OBSERVADO' 
+                THEN 1 ELSE 0 END
+            ) AS observado,
 
+            -- ✅ Casos pendientes o en ejecución
+            SUM(CASE 
+                WHEN UPPER(TRIM(cp.estado_ejecucion)) IN ('PENDIENTE', 'EN EJECUCION', 'EN EJECUCIÓN') 
+                THEN 1 ELSE 0 END
+            ) AS pendiente
 
+        FROM caso_prueba cp
+        LEFT JOIN requerimiento r 
+            ON cp.id_requerimiento = r.id_requerimiento
+        LEFT JOIN requerimiento_especialidad re 
+            ON re.id_requerimiento = r.id_requerimiento
+        LEFT JOIN especialidad e 
+            ON e.id_especialidad = re.id_especialidad
+        GROUP BY e.nombre
+        ORDER BY e.nombre ASC
+    ";
 
+    $stmt = $conectar->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     /* ============================================================
        REPORTE CONSOLIDADO POR ESPECIALIDAD
