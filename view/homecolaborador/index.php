@@ -159,7 +159,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                             <div class="col-md-8">
                                 <div class="card shadow-sm">
                                     <div class="card-header text-center bg-light fw-semibold">
-                                        Seguimiento por Especialidad
+                                        Iteraciones por Especialidad
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-container">
