@@ -207,6 +207,42 @@ class Casos_prueba extends Conectar
 
         return ["codigo" => $nuevo_codigo];
     }
+    // ============================================================
+// ESPECIALIDADES ASOCIADAS A UN REQUERIMIENTO
+// ============================================================
+    public function get_especialidades_por_requerimiento($id_requerimiento)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "SELECT e.nombre
+            FROM requerimiento_especialidad re
+            INNER JOIN especialidad e ON re.id_especialidad = e.id_especialidad
+            WHERE re.id_requerimiento = ?";
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$id_requerimiento]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+// ============================================================
+// ÓRGANOS ASOCIADOS A UN REQUERIMIENTO
+// ============================================================
+public function get_organos_por_requerimiento($id_requerimiento)
+{
+    $conectar = parent::conexion();
+    parent::set_names();
+
+    $sql = "SELECT o.nombre AS organo_jurisdiccional
+            FROM requerimiento_organo ro
+            INNER JOIN organo_jurisdiccional o ON ro.id_organo = o.id_organo
+            WHERE ro.id_requerimiento = ?";
+    $stmt = $conectar->prepare($sql);
+    $stmt->execute([$id_requerimiento]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
 
 
 

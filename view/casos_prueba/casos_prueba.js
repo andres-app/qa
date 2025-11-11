@@ -72,11 +72,13 @@ function editar(id) {
                 $("#codigo").val(data.codigo);
                 $("#nombre").val(data.nombre);
                 $("#id_requerimiento").val(data.id_requerimiento);
-                $("#buscarRequerimiento").val(data.requerimiento_codigo).prop("readonly", true); // ✅ mostrar requerimiento
+                $("#buscarRequerimiento").val(data.requerimiento_codigo).prop("readonly", true);
                 $("#tipo_prueba").val(data.tipo_prueba);
                 $("#version").val(data.version);
                 $("#elaborado_por").val(data.elaborado_por);
                 $("#descripcion").val(data.descripcion);
+                $("#especialidades_asociadas").val(data.especialidades_asociadas || "No asociadas");
+                $("#organos_asociados").val(data.organos_asociados || "No asociados");
                 $("#modalLabel").html("Editar Caso de Prueba");
                 $("#mnt_modal").modal("show");
             }
@@ -87,6 +89,7 @@ function editar(id) {
         }
     });
 }
+
 
 
 // =======================================================
@@ -319,22 +322,26 @@ $(document).ready(function () {
                 className: "text-center",
                 render: function (id, type, row) {
                     const id_caso = row[0]; // ID oculto
-                    const estado = row[6];  // Estado actual
+                    const estado = row[5];  // ✅ posición correcta del estado_ejecucion
                     return `
                         <div class="d-flex gap-1 justify-content-center">
-                            <button type="button" class="btn btn-soft-warning btn-sm btn-editar" data-estado="${estado}" data-id="${id_caso}" title="Editar">
+                            <button type="button" class="btn btn-soft-warning btn-sm btn-editar" 
+                                data-estado="${estado}" data-id="${id_caso}" title="Editar">
                                 <i class="bx bx-edit-alt"></i>
                             </button>
-                            <button type="button" class="btn btn-soft-info btn-sm" title="Iteraciones" onClick="irIteraciones(${id_caso})">
+                            <button type="button" class="btn btn-soft-info btn-sm" 
+                                title="Iteraciones" onClick="irIteraciones(${id_caso})">
                                 <i class="bx bx-history"></i>
                             </button>
-                            <button type="button" class="btn btn-soft-danger btn-sm btn-eliminar" data-estado="${estado}" data-id="${id_caso}" title="Eliminar">
+                            <button type="button" class="btn btn-soft-danger btn-sm btn-eliminar" 
+                                data-estado="${estado}" data-id="${id_caso}" title="Eliminar">
                                 <i class="bx bx-trash-alt"></i>
                             </button>
                         </div>
                     `;
                 }
             }
+            
         ],
 
 
@@ -604,6 +611,26 @@ function cargarEspecialidades() {
     });
 }
 
-
+// ============================================================
+// 🚫 Función para bloquear edición/eliminación de casos completados
+// ============================================================
+function mostrarAlertaBloqueo(e, accion) {
+    e.preventDefault(); // ❌ evita que se ejecute el onclick original
+    let mensaje =
+      accion === "editar"
+        ? "Este caso ya está completado y no puede ser editado."
+        : "Este caso ya está completado y no puede ser eliminado.";
+  
+    Swal.fire({
+      title: "Acción no permitida",
+      text: mensaje,
+      icon: "warning",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Entendido",
+    });
+  
+    return false; // 🔒 detiene cualquier acción adicional
+  }
+  
 
 init();
