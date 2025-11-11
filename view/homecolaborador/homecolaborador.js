@@ -130,11 +130,25 @@ function mostrarModalDetalle(nombre, data) {
         options: {
           plugins: { legend: { position: "bottom" } },
           scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } },
-          responsive: true
+          responsive: true,
+    
+          // 🧭 NUEVA OPCIÓN DE CLIC PARA REDIRIGIR
+          onClick: (evt, activeEls) => {
+            if (!activeEls.length) return; // si no se clickeó ninguna barra
+            const chart = activeEls[0].element.$context.chart;
+            const index = activeEls[0].index;
+            const especialidad = chart.data.labels[index];
+    
+            // Redirigir al módulo seg_por_espec con la especialidad seleccionada
+            const url = `../seg_por_espec/index.php?especialidad=${encodeURIComponent(especialidad)}`;
+            console.log("🔗 Redirigiendo a:", url);
+            window.location.href = url;
+          }
         }
       });
     }
-  
+    
+    
     // ==============================
     //  GRÁFICO: LÍNEA DE TIEMPO
     // ==============================
