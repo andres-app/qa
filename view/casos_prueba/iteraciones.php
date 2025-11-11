@@ -98,15 +98,15 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                 <div class="d-flex align-items-center gap-3 ms-auto">
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="text-muted small fw-semibold">Estado del Caso:</span>
-                                        <span id="badge_estado_caso"
-                                            class="badge rounded-pill px-3 py-2 fw-semibold 
-                        <?= strtolower($info["estado"] ?? '') === 'completado' ? 'bg-success' :
-                            (strtolower($info["estado"] ?? '') === 'observado' ? 'bg-warning text-dark' : 'bg-secondary'); ?>">
-                                            <?= htmlspecialchars($info["estado"] ?? "Pendiente") ?>
+                                        <span id="badge_estado_caso" class="badge rounded-pill px-3 py-2 fw-semibold 
+    <?= strtolower($info["estado_ejecucion"] ?? '') === 'completado' ? 'bg-success' :
+        (strtolower($info["estado_ejecucion"] ?? '') === 'observado' ? 'bg-warning text-dark' : 'bg-secondary'); ?>">
+                                            <?= htmlspecialchars($info["estado_ejecucion"] ?? "Pendiente") ?>
                                         </span>
+
                                     </div>
 
-                                    <a href="index.php" class="btn btn-outline-secondary btn-sm">
+                                    <a href=" index.php" class="btn btn-outline-secondary btn-sm">
                                         <i class="bx bx-arrow-back"></i> Volver
                                     </a>
                                 </div>
@@ -123,7 +123,8 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
                                     <div class="row g-3">
                                         <div class="col-md-3">
-                                            <label class="form-label">Fecha de ejecución<span class="text-danger">*</span></label>
+                                            <label class="form-label">Fecha de ejecución<span
+                                                    class="text-danger">*</span></label>
                                             <input type="datetime-local" id="fecha_ejecucion" class="form-control" required>
                                         </div>
                                         <div class="col-md-4">
@@ -138,7 +139,8 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                             </select>
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="form-label">Estado de la iteración <span class="text-danger">*</span></label>
+                                            <label class="form-label">Estado de la iteración <span
+                                                    class="text-danger">*</span></label>
                                             <select id="resultado" class="form-select" required>
                                                 <option value="">Seleccione...</option>
                                                 <option>Ejecutado</option>
