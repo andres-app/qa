@@ -34,6 +34,7 @@ switch ($_GET["op"]) {
             $_POST["prioridad"],
             $_POST["base_datos"],
             $_POST["version_origen"],
+            $_POST["modulo"],
             $_POST["estado_incidencia"] ?? "Pendiente"
         );
         echo json_encode(["status" => "ok", "msg" => "Incidencia actualizada correctamente"]);
