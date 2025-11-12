@@ -62,7 +62,7 @@
             <div class="col-md-6 mb-3">
               <label for="actividad" class="form-label">Actividad</label>
               <select class="form-control" id="actividad" name="actividad" required>
-                <option value="Revisión" selected>Revisión</option>
+                <option value="Revision" selected>Revision</option>
                 <option value="Elaboración">Elaboración</option>
                 <option value="Análisis">Análisis</option>
                 <option value="Coordinación">Coordinación</option>
@@ -73,8 +73,8 @@
               <label for="tipo_incidencia" class="form-label">Tipo de Incidencia</label>
               <select class="form-control" id="tipo_incidencia" name="tipo_incidencia">
                 <option value="">Seleccione...</option>
+                <option value="Documentacion">Documentacion</option>
                 <option value="Funcional">Funcional</option>
-                <option value="Interfaz">Interfaz</option>
                 <option value="Validación">Validación</option>
                 <option value="Integración">Integración</option>
                 <option value="Base de Datos">Base de Datos</option>

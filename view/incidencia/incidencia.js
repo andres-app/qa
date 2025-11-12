@@ -136,17 +136,14 @@ $(document).ready(function () {
         width: "60px"
       },
       {
-        // 🔹 Controlar texto largo del campo “Descripción”
+        // 🔹 Mostrar solo 20 caracteres en la columna Descripción
         targets: 3,
         render: function (data, type, row) {
           if (!data) return "";
-          const limite = 10;
-          const palabras = data.split(" ");
+          const limite = 20;
           const textoCorto =
-            palabras.length > limite
-              ? palabras.slice(0, limite).join(" ") + "…"
-              : data;
-    
+            data.length > limite ? data.substring(0, limite) + "…" : data;
+      
           return `
             <div class="descripcion-columna" title="${data}">
                 ${textoCorto}
@@ -154,6 +151,7 @@ $(document).ready(function () {
           `;
         }
       },
+      
       {
         // 🔹 Mostrar badge de estado con color
         targets: 8,
@@ -161,7 +159,7 @@ $(document).ready(function () {
           if (!data) return "";
           let badgeStyle = "";
           const estado = data.toLowerCase();
-    
+
           switch (estado) {
             case "pendiente":
               badgeStyle = "border border-warning text-warning bg-white";
@@ -172,12 +170,11 @@ $(document).ready(function () {
             default:
               badgeStyle = "border border-secondary text-muted bg-white";
           }
-    
+
           return `<span class="badge rounded-pill ${badgeStyle} px-3 py-2 fw-semibold">${data}</span>`;
         }
       },
       {
-        // 🔹 Botones de acción
         targets: -1,
         orderable: false,
         searchable: false,
@@ -185,9 +182,9 @@ $(document).ready(function () {
         render: function (data, type, row) {
           return `
             <div class="d-flex justify-content-center gap-1">
-                <button class="btn btn-soft-info btn-sm" onClick="mostrar(${row.id_incidencia})" title="Ver / Editar">
-                    <i class="bx bx-edit-alt"></i>
-                </button>
+                <a href="detalle.php?id=${row.id_incidencia}" class="btn btn-soft-info btn-sm" title="Ver Detalle">
+                    <i class="bx bx-show"></i>
+                </a>
                 <button class="btn btn-soft-danger btn-sm" onClick="eliminar(${row.id_incidencia})" title="Eliminar">
                     <i class="bx bx-trash-alt"></i>
                 </button>
@@ -196,7 +193,7 @@ $(document).ready(function () {
         }
       }
     ],
-    
+
     columns: [
       { data: "id_incidencia", title: "ID" },
       { data: "actividad", title: "Actividad" },

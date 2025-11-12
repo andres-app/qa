@@ -17,6 +17,35 @@ class Incidencia extends Conectar
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // 🟧 Actualizar incidencia completa
+    public function actualizar($data)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "UPDATE incidencia SET 
+                descripcion = ?, 
+                accion_recomendada = ?, 
+                tipo_incidencia = ?, 
+                prioridad = ?, 
+                base_datos = ?, 
+                version_origen = ?, 
+                estado_incidencia = ?
+            WHERE id_incidencia = ?";
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([
+            $data["descripcion"],
+            $data["accion_recomendada"],
+            $data["tipo_incidencia"],
+            $data["prioridad"],
+            $data["base_datos"],
+            $data["version_origen"],
+            $data["estado_incidencia"],
+            $data["id_incidencia"]
+        ]);
+    }
+
+
     // 🟩 Insertar incidencia
     public function insertar($data)
     {
