@@ -143,7 +143,7 @@ $(document).ready(function () {
           const limite = 20;
           const textoCorto =
             data.length > limite ? data.substring(0, limite) + "…" : data;
-      
+
           return `
             <div class="descripcion-columna" title="${data}">
                 ${textoCorto}
@@ -151,7 +151,7 @@ $(document).ready(function () {
           `;
         }
       },
-      
+
       {
         // 🔹 Mostrar badge de estado con color
         targets: 8,
@@ -185,13 +185,24 @@ $(document).ready(function () {
                 <a href="detalle.php?id=${row.id_incidencia}" class="btn btn-soft-info btn-sm" title="Ver Detalle">
                     <i class="bx bx-show"></i>
                 </a>
-                <button class="btn btn-soft-danger btn-sm" onClick="eliminar(${row.id_incidencia})" title="Eliminar">
+      
+                <a href="../../controller/incidencia_pdf.php?id=${row.id_incidencia}" 
+                   target="_blank" 
+                   class="btn btn-soft-primary btn-sm" 
+                   title="Generar PDF">
+                    <i class="bx bxs-file-pdf"></i>
+                </a>
+      
+                <button class="btn btn-soft-danger btn-sm" 
+                        onClick="eliminar(${row.id_incidencia})" 
+                        title="Eliminar">
                     <i class="bx bx-trash-alt"></i>
                 </button>
             </div>
           `;
         }
       }
+
     ],
 
     columns: [
