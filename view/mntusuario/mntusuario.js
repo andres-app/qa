@@ -25,7 +25,7 @@ function guardaryeditar(e) {
                     title: "Exito",
                     html: "Usuario registrado con éxito.",
                     icon: "success",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             } else if(datos == 2) {
                 // Cuando se actualiza un colaborador (incluida la edición de la contraseña)
@@ -35,14 +35,14 @@ function guardaryeditar(e) {
                     title: "Exito",
                     html: "Usuario actualizado con éxito.",
                     icon: "success",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             } else if(datos == 0) {
                 Swal.fire({
                     title: "Error",
                     html: "El usuario ya existe, por favor valide.",
                     icon: "error",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             }
         },
@@ -152,7 +152,7 @@ function eliminar(usu_id){
                     title: "TEMPLATE",
                     html: "Se elimino con exito.",
                     icon: "success",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             });
         }

@@ -26,14 +26,14 @@ function guardaryeditar(e){
                     title: "TEMPLATE",
                     html: "Se registro con exito.",
                     icon: "success",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             }else if(datos == 0){
                 Swal.fire({
                     title: "TEMPLATE",
                     html: "Registro ya existe, por favor validar.",
                     icon: "error",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             }else if(datos == 2){
                 $("#tra_id").val('');
@@ -44,7 +44,7 @@ function guardaryeditar(e){
                     title: "TEMPLATE",
                     html: "Se actualizo con exito.",
                     icon: "success",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             }
         }
@@ -140,7 +140,7 @@ function eliminar(tra_id){
                     title: "TEMPLATE",
                     html: "Se elimino con exito.",
                     icon: "success",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             });
         }

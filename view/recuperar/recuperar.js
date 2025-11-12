@@ -12,7 +12,7 @@ $(document).on("click","#btnrecuperar",function(){
             title: "Recuperar",
             text: "El campo esta vacio, por favor validar.",
             icon: "error",
-            confirmButtonColor: "#5156be",
+            confirmButtonColor: "#3A0305",
         });
     }else{
         $.ajax({
@@ -27,7 +27,7 @@ $(document).on("click","#btnrecuperar",function(){
                         title: "Recuperar",
                         text: "Se cambio la contraseña, y se envio a su correo electronico.",
                         icon: "success",
-                        confirmButtonColor: "#5156be",
+                        confirmButtonColor: "#3A0305",
                     });
 
                     $('#btnrecuperar').prop("disabled",false);
@@ -38,7 +38,7 @@ $(document).on("click","#btnrecuperar",function(){
                         title: "Recuperar",
                         text: "El correo electronico no existe.",
                         icon: "error",
-                        confirmButtonColor: "#5156be",
+                        confirmButtonColor: "#3A0305",
                     });
                 }
             },beforeSend: function(){

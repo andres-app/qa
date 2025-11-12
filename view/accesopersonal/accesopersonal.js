@@ -26,7 +26,7 @@ function handleCredentialResponse(response){
                     title: "Ingreso Colaborador",
                     text: "Su cuenta no tiene acceso.",
                     icon: "error",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             }
         }

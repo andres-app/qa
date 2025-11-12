@@ -92,7 +92,7 @@ function registrar(){
                     title: "Registro",
                     text: "Se registro correctamente. Por Favor iniciar sesion. Redireccionando en 10 segundos.",
                     icon: "success",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                     timer: 5000,
                     timerProgressBar: true,
                     didOpen: function(){
@@ -120,7 +120,7 @@ function registrar(){
                     title: "Registro",
                     text: "El correo electronico ya existe.",
                     icon: "error",
-                    confirmButtonColor: "#5156be",
+                    confirmButtonColor: "#3A0305",
                 });
             }
             /* console.log(datos); */
