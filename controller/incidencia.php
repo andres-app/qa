@@ -14,6 +14,7 @@ switch ($_GET["op"]) {
         echo json_encode(["aaData" => $incidencia->listar()]);
         break;
 
+
     case "guardar":
         $nuevo_id = $incidencia->insertar($_POST);
         echo json_encode([

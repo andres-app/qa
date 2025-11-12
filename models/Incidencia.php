@@ -31,21 +31,22 @@ class Incidencia extends Conectar
 
         $stmt = $conectar->prepare($sql);
         $stmt->execute([
-            $data["actividad"],
+            $data["actividad"] ?? '',
             $data["id_documentacion"] ?? null,
-            $data["descripcion"],
-            $data["accion_recomendada"],
-            $data["fecha_recepcion"],
-            $data["fecha_registro"],
-            $data["fecha_respuesta"],
-            $data["prioridad"],
+            $data["descripcion"] ?? '',
+            $data["accion_recomendada"] ?? '',
+            $data["fecha_recepcion"] ?? date('Y-m-d'),
+            $data["fecha_registro"] ?? date('Y-m-d'),
+            $data["fecha_respuesta"] ?? null, // ✅ controlado
+            $data["prioridad"] ?? 'Media',
             $data["analista_id"],
-            $data["tipo_incidencia"],
-            $data["base_datos"],
-            $data["version_origen"],
-            $data["modulo"],
-            $data["estado_incidencia"]
+            $data["tipo_incidencia"] ?? '',
+            $data["base_datos"] ?? '',
+            $data["version_origen"] ?? '',
+            $data["modulo"] ?? '',
+            $data["estado_incidencia"] ?? 'Pendiente'
         ]);
+
 
         // Retornar el ID recién insertado
         return $conectar->lastInsertId();
