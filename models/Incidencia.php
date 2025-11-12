@@ -122,5 +122,24 @@ class Incidencia extends Conectar
         return (int) $row["siguiente"];
     }
 
+    public function editar($id_incidencia, $descripcion, $accion_recomendada, $tipo_incidencia, $prioridad, $base_datos, $version_origen, $estado_incidencia)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "UPDATE incidencia 
+            SET descripcion = ?, 
+                accion_recomendada = ?, 
+                tipo_incidencia = ?, 
+                prioridad = ?, 
+                base_datos = ?, 
+                version_origen = ?, 
+                estado_incidencia = ?
+            WHERE id_incidencia = ?";
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$descripcion, $accion_recomendada, $tipo_incidencia, $prioridad, $base_datos, $version_origen, $estado_incidencia, $id_incidencia]);
+    }
+
+
 }
 ?>

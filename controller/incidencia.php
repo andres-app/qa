@@ -25,9 +25,20 @@ switch ($_GET["op"]) {
         break;
 
     case "editar":
-        $incidencia->actualizar($_POST);
+        $incidencia = new Incidencia();
+        $incidencia->editar(
+            $_POST["id_incidencia"],
+            $_POST["descripcion"],
+            $_POST["accion_recomendada"],
+            $_POST["tipo_incidencia"],
+            $_POST["prioridad"],
+            $_POST["base_datos"],
+            $_POST["version_origen"],
+            $_POST["estado_incidencia"] ?? "Pendiente"
+        );
         echo json_encode(["status" => "ok", "msg" => "Incidencia actualizada correctamente"]);
         break;
+
 
 
 
