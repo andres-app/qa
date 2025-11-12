@@ -1,7 +1,10 @@
 <?php
-class Incidencia extends Conectar {
+class Incidencia extends Conectar
+{
 
-    public function listar() {
+    // 🟦 Listar incidencias
+    public function listar()
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
@@ -14,21 +17,22 @@ class Incidencia extends Conectar {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function insertar($data) {
+    // 🟩 Insertar incidencia
+    public function insertar($data)
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
         $sql = "INSERT INTO incidencia
-                (numero_incidencia, actividad, documentacion, descripcion, accion_recomendada,
+                (actividad, id_documentacion, descripcion, accion_recomendada,
                  fecha_recepcion, fecha_registro, fecha_respuesta, prioridad,
                  analista_id, tipo_incidencia, base_datos, version_origen, modulo, estado_incidencia)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         $stmt = $conectar->prepare($sql);
         $stmt->execute([
-            $data["numero_incidencia"],
             $data["actividad"],
-            $data["documentacion"],
+            $data["id_documentacion"] ?? null,
             $data["descripcion"],
             $data["accion_recomendada"],
             $data["fecha_recepcion"],
@@ -42,9 +46,14 @@ class Incidencia extends Conectar {
             $data["modulo"],
             $data["estado_incidencia"]
         ]);
+
+        // Retornar el ID recién insertado
+        return $conectar->lastInsertId();
     }
 
-    public function mostrar($id) {
+    // 🟨 Mostrar incidencia
+    public function mostrar($id)
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
@@ -57,7 +66,9 @@ class Incidencia extends Conectar {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function actualizar_estado($id, $estado) {
+    // 🟧 Actualizar estado
+    public function actualizar_estado($id, $estado)
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
@@ -65,5 +76,21 @@ class Incidencia extends Conectar {
         $stmt = $conectar->prepare($sql);
         $stmt->execute([$estado, $id]);
     }
+
+    // 🟪 Obtener correlativo (ahora usa el próximo ID autoincrement)
+    public function get_correlativo()
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "SELECT AUTO_INCREMENT AS siguiente
+                FROM information_schema.TABLES
+                WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'incidencia'";
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int) $row["siguiente"];
+    }
+
 }
 ?>
