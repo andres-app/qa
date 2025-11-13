@@ -16,65 +16,112 @@ if (!$data) {
     die("No se encontró la incidencia solicitada.");
 }
 
-// ==========================================================
+// ==============================
 // CONFIGURACIÓN DEL PDF
-// ==========================================================
-$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-$pdf->SetCreator('Sistema QA - Poder Judicial');
-$pdf->SetAuthor('Equipo QA4');
-$pdf->SetTitle('Informe de Pruebas - Incidencia');
+// ==============================
+$pdf = new TCPDF("P", "mm", "A4", true, "UTF-8", false);
+
+$pdf->SetCreator("Sistema QA - P.J");
+$pdf->SetAuthor("Sistema QA");
+$pdf->SetTitle("Informe de Pruebas INC-" . $data["id_incidencia"]);
+
+// Quitar header y footer por defecto
+$pdf->setPrintHeader(false);
+$pdf->setPrintFooter(false);
+
 $pdf->SetMargins(15, 20, 15);
+$pdf->SetAutoPageBreak(true, 20);
+
 $pdf->AddPage();
 
-// ==========================================================
-// ENCABEZADO PRINCIPAL
-// ==========================================================
+// ==============================
+// ESTILOS
+// ==============================
+$style_title = 'font-size:16px; font-weight:bold; text-align:center;';
+$style_sub = 'font-size:12px; text-align:center; color:#444; margin-bottom:10px;';
+$style_th = 'background-color:#efefef; font-weight:bold; font-size:11px; border:1px solid #000; padding:4px;';
+$style_td = 'font-size:11px; border:1px solid #000; padding:4px;';
+$style_section = 'font-size:12px; font-weight:bold; margin-top:10px;';
+$style_p = 'font-size:11px; text-align:justify;';
+
+// ==============================
+// TÍTULO PRINCIPAL
+// ==============================
 $html = '
-<h3 style="text-align:center; font-weight:bold;">INFORME DE PRUEBAS N° ' . $data["id_incidencia"] . '</h3>
-<p style="text-align:center;">Versión ' . htmlspecialchars($data["version_origen"] ?? '1.0') . '</p>
-<hr>
-<table border="1" cellpadding="4" width="100%">
-    <tr style="background-color:#f2f2f2; font-weight:bold;">
-        <td width="35%">N° Incidencia</td>
-        <td width="65%">INC-' . $data["id_incidencia"] . '</td>
+<br><br>
+<div style="'.$style_title.'">INFORME DE PRUEBAS N° '.$data["id_incidencia"].'</div>
+<div style="'.$style_sub.'">Versión V1.0</div>
+<br>
+';
+
+// ==============================
+// TABLA PRINCIPAL
+// ==============================
+$html .= '
+<table cellpadding="3">
+    <tr>
+        <td style="'.$style_th.' width:30%;">N° Incidencia</td>
+        <td style="'.$style_td.' width:70%;">INC-'.$data["id_incidencia"].'</td>
     </tr>
     <tr>
-        <td><b>Módulo del Sistema</b></td>
-        <td>' . htmlspecialchars($data["modulo"]) . '</td>
+        <td style="'.$style_th.'">Módulo del Sistema</td>
+        <td style="'.$style_td.'">'.htmlspecialchars($data["modulo"]).'</td>
     </tr>
     <tr>
-        <td><b>Tipo de Incidencia</b></td>
-        <td>' . htmlspecialchars($data["tipo_incidencia"]) . '</td>
+        <td style="'.$style_th.'">Tipo de Incidencia</td>
+        <td style="'.$style_td.'">'.htmlspecialchars($data["tipo_incidencia"]).'</td>
     </tr>
     <tr>
-        <td><b>Prioridad</b></td>
-        <td>' . htmlspecialchars($data["prioridad"]) . '</td>
+        <td style="'.$style_th.'">Prioridad</td>
+        <td style="'.$style_td.'">'.htmlspecialchars($data["prioridad"]).'</td>
     </tr>
     <tr>
-        <td><b>Base de Datos</b></td>
-        <td>' . htmlspecialchars($data["base_datos"]) . '</td>
+        <td style="'.$style_th.'">Base de Datos</td>
+        <td style="'.$style_td.'">'.htmlspecialchars($data["base_datos"]).'</td>
     </tr>
     <tr>
-        <td><b>Versión del Sistema</b></td>
-        <td>' . htmlspecialchars($data["version_origen"]) . '</td>
+        <td style="'.$style_th.'">Versión del Sistema</td>
+        <td style="'.$style_td.'">'.htmlspecialchars($data["version_origen"]).'</td>
     </tr>
     <tr>
-        <td><b>Analista QA</b></td>
-        <td>' . htmlspecialchars($data["analista"]) . '</td>
+        <td style="'.$style_th.'">Analista QA</td>
+        <td style="'.$style_td.'">'.htmlspecialchars($data["analista"]).'</td>
     </tr>
     <tr>
-        <td><b>Estado Actual</b></td>
-        <td>' . htmlspecialchars($data["estado_incidencia"]) . '</td>
+        <td style="'.$style_th.'">Estado Actual</td>
+        <td style="'.$style_td.'">'.htmlspecialchars($data["estado_incidencia"]).'</td>
     </tr>
 </table>
 <br>
-<h4 style="background-color:#f2f2f2; padding:6px;">Descripción de la Incidencia</h4>
-<p>' . nl2br(htmlspecialchars($data["descripcion"])) . '</p>
-<h4 style="background-color:#f2f2f2; padding:6px;">Acción Recomendada / Correctiva</h4>
-<p>' . nl2br(htmlspecialchars($data["accion_recomendada"])) . '</p>
-<hr>
-<p style="font-size:10px; text-align:center; margin-top:15px;">Informe generado automáticamente por el Sistema QA - Poder Judicial del Perú</p>
+';
+
+// ==============================
+// DESCRIPCIÓN
+// ==============================
+$html .= '
+<div style="'.$style_section.'">Descripción de la Incidencia</div>
+<p style="'.$style_p.'">'.nl2br(htmlspecialchars($data["descripcion"])).'</p>
+';
+
+// ==============================
+// ACCIÓN RECOMENDADA
+// ==============================
+$html .= '
+<div style="'.$style_section.'">Acción Recomendada / Correctiva</div>
+<p style="'.$style_p.'">'.nl2br(htmlspecialchars($data["accion_recomendada"])).'</p>
+';
+
+// ==============================
+// PIE DE PÁGINA
+// ==============================
+$html .= '
+<br><br><br>
+<div style="text-align:center; font-size:10px; color:#555;">
+Informe generado automáticamente por el Sistema QA - Poder Judicial del Perú
+</div>
 ';
 
 $pdf->writeHTML($html, true, false, true, false, '');
-$pdf->Output('Incidencia_' . $data["id_incidencia"] . '.pdf', 'I');
+
+$pdf->Output("Informe_INC_".$data["id_incidencia"].".pdf", "I");
+?>
