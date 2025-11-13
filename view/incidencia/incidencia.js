@@ -80,29 +80,44 @@ function mostrar(id_incidencia) {
 // ELIMINAR INCIDENCIA (si implementas botón eliminar)
 // =======================================================
 function eliminar(id_incidencia) {
+
   Swal.fire({
     title: "¿Está seguro?",
-    text: "La incidencia será eliminada permanentemente.",
+    text: "La incidencia será ANULADA.",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33"
+    confirmButtonText: "Sí, anular",
+    cancelButtonText: "Cancelar"
   }).then((result) => {
     if (result.isConfirmed) {
-      $.post("../../controller/incidencia.php?op=eliminar", { id_incidencia: id_incidencia }, function (data) {
-        data = JSON.parse(data);
-        if (data.success) {
-          Swal.fire("Eliminado", data.success, "success");
-          tabla.ajax.reload();
-        } else {
-          Swal.fire("Error", data.error || "No se pudo eliminar la incidencia", "error");
+
+      $.ajax({
+        url: "../../controller/incidencia.php?op=eliminar",
+        type: "POST",
+        data: { id_incidencia },
+        dataType: "json", // 🔥 Importante
+        success: function (data) {
+
+          console.log("DATA CRUDA:", data); // 👉 ya es un OBJETO
+
+          if (data.success) {
+            Swal.fire("Anulada", data.success, "success").then(() => {
+              tabla.ajax.reload(null, false); // 🔥 se refresca sin F5
+            });
+          } else {
+            Swal.fire("Error", data.error || "No se pudo anular", "error");
+          }
+        },
+        error: function (xhr) {
+          console.error("Error AJAX:", xhr.responseText);
+          Swal.fire("Error", "No se pudo procesar la solicitud", "error");
         }
       });
+
     }
   });
 }
+
 
 // =======================================================
 // CONFIGURACIÓN DEL DATATABLE

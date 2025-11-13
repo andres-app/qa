@@ -2,7 +2,7 @@
 class Incidencia extends Conectar
 {
 
-    // 🟦 Listar incidencias
+    // 🟦 Listar incidencias (solo activas)
     public function listar()
     {
         $conectar = parent::conexion();
@@ -11,13 +11,14 @@ class Incidencia extends Conectar
         $sql = "SELECT i.*, u.usu_nomape AS analista
                 FROM incidencia i
                 LEFT JOIN tm_usuario u ON i.analista_id = u.usu_id
+                WHERE i.estado = 1             -- ✔ solo activas
                 ORDER BY i.id_incidencia DESC";
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // 🟧 Actualizar incidencia completa
+    // 🟧 Actualizar incidencia (funcional)
     public function actualizar($data)
     {
         $conectar = parent::conexion();
@@ -30,8 +31,10 @@ class Incidencia extends Conectar
                 prioridad = ?, 
                 base_datos = ?, 
                 version_origen = ?, 
-                estado_incidencia = ?
+                modulo = ?, 
+                estado_incidencia = ?      -- ✔ no se toca
             WHERE id_incidencia = ?";
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute([
             $data["descripcion"],
@@ -40,13 +43,13 @@ class Incidencia extends Conectar
             $data["prioridad"],
             $data["base_datos"],
             $data["version_origen"],
-            $data["estado_incidencia"],
+            $data["modulo"],
+            $data["estado_incidencia"],   // ✔ correcto
             $data["id_incidencia"]
         ]);
     }
 
-
-    // 🟩 Insertar incidencia
+    // 🟩 Insertar incidencia (estado siempre = 1)
     public function insertar($data)
     {
         $conectar = parent::conexion();
@@ -55,8 +58,9 @@ class Incidencia extends Conectar
         $sql = "INSERT INTO incidencia
                 (actividad, id_documentacion, descripcion, accion_recomendada,
                  fecha_recepcion, fecha_registro, fecha_respuesta, prioridad,
-                 analista_id, tipo_incidencia, base_datos, version_origen, modulo, estado_incidencia)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                 analista_id, tipo_incidencia, base_datos, version_origen, modulo,
+                 estado_incidencia, estado)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";   // ✔ estado=1
 
         $stmt = $conectar->prepare($sql);
         $stmt->execute([
@@ -66,22 +70,19 @@ class Incidencia extends Conectar
             $data["accion_recomendada"] ?? '',
             $data["fecha_recepcion"] ?? date('Y-m-d'),
             $data["fecha_registro"] ?? date('Y-m-d'),
-            $data["fecha_respuesta"] ?? null, // ✅ controlado
+            $data["fecha_respuesta"] ?? null,
             $data["prioridad"] ?? 'Media',
             $data["analista_id"],
             $data["tipo_incidencia"] ?? '',
             $data["base_datos"] ?? '',
             $data["version_origen"] ?? '',
             $data["modulo"] ?? '',
-            $data["estado_incidencia"] ?? 'Pendiente'
+            $data["estado_incidencia"] ?? 'Pendiente'   // ✔ se mantiene
         ]);
 
-
-        // Retornar el ID recién insertado
         return $conectar->lastInsertId();
     }
 
-    // 🟨 Mostrar incidencia
     public function mostrar($id)
     {
         $conectar = parent::conexion();
@@ -96,18 +97,28 @@ class Incidencia extends Conectar
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // 🟧 Actualizar estado
-    public function actualizar_estado($id, $estado)
+    // 🟧 Actualizar solo estado funcional
+    public function actualizar_estado($id, $estado_incidencia)
     {
         $conectar = parent::conexion();
         parent::set_names();
 
         $sql = "UPDATE incidencia SET estado_incidencia = ? WHERE id_incidencia = ?";
         $stmt = $conectar->prepare($sql);
-        $stmt->execute([$estado, $id]);
+        $stmt->execute([$estado_incidencia, $id]);
     }
 
-    // 🟪 Obtener correlativo (ahora usa el próximo ID autoincrement)
+    // 🟥 Anular incidencia (estado = 0)
+    public function anular($id_incidencia)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "UPDATE incidencia SET estado = 0 WHERE id_incidencia = ?";
+        $query = $conectar->prepare($sql);
+        return $query->execute([$id_incidencia]);
+    }
+
     public function get_correlativo()
     {
         $conectar = parent::conexion();
@@ -121,27 +132,6 @@ class Incidencia extends Conectar
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int) $row["siguiente"];
     }
-
-    public function editar($id_incidencia, $descripcion, $accion_recomendada, $tipo_incidencia, $prioridad, $base_datos, $version_origen, $modulo, $estado_incidencia)
-    {
-        $conectar = parent::conexion();
-        parent::set_names();
-    
-        $sql = "UPDATE incidencia 
-                SET descripcion = ?, 
-                    accion_recomendada = ?, 
-                    tipo_incidencia = ?, 
-                    prioridad = ?, 
-                    base_datos = ?, 
-                    version_origen = ?, 
-                    modulo = ?, 
-                    estado_incidencia = ?
-                WHERE id_incidencia = ?";
-        $stmt = $conectar->prepare($sql);
-        $stmt->execute([$descripcion, $accion_recomendada, $tipo_incidencia, $prioridad, $base_datos, $version_origen, $modulo, $estado_incidencia, $id_incidencia]);
-    }
-    
-
 
 }
 ?>

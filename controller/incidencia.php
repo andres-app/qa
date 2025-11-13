@@ -10,11 +10,16 @@ header('Content-Type: application/json; charset=utf-8');
 
 switch ($_GET["op"]) {
 
+    // ============================================================
+    // LISTAR
+    // ============================================================
     case "listar":
         echo json_encode(["aaData" => $incidencia->listar()]);
         break;
 
-
+    // ============================================================
+    // GUARDAR
+    // ============================================================
     case "guardar":
         $nuevo_id = $incidencia->insertar($_POST);
         echo json_encode([
@@ -24,44 +29,80 @@ switch ($_GET["op"]) {
         ]);
         break;
 
+    // ============================================================
+    // EDITAR
+    // ============================================================
     case "editar":
-        $incidencia = new Incidencia();
-        $incidencia->editar(
-            $_POST["id_incidencia"],
-            $_POST["descripcion"],
-            $_POST["accion_recomendada"],
-            $_POST["tipo_incidencia"],
-            $_POST["prioridad"],
-            $_POST["base_datos"],
-            $_POST["version_origen"],
-            $_POST["modulo"],
-            $_POST["estado_incidencia"] ?? "Pendiente"
-        );
+
+        $data = [
+            "id_incidencia"      => $_POST["id_incidencia"],
+            "descripcion"        => $_POST["descripcion"],
+            "accion_recomendada" => $_POST["accion_recomendada"],
+            "tipo_incidencia"    => $_POST["tipo_incidencia"],
+            "prioridad"          => $_POST["prioridad"],
+            "base_datos"         => $_POST["base_datos"],
+            "version_origen"     => $_POST["version_origen"],
+            "modulo"             => $_POST["modulo"],
+            "estado_incidencia"  => $_POST["estado_incidencia"]  // ✔ correcto
+        ];
+    
+        $incidencia->actualizar($data);
+    
         echo json_encode(["status" => "ok", "msg" => "Incidencia actualizada correctamente"]);
         break;
+       
 
-
-
-
+    // ============================================================
+    // MOSTRAR
+    // ============================================================
     case "mostrar":
         echo json_encode($incidencia->mostrar($_POST["id_incidencia"]));
         break;
 
+    // ============================================================
+    // ACTUALIZAR ESTADO
+    // ============================================================
     case "actualizar_estado":
-        $incidencia->actualizar_estado($_POST["id_incidencia"], $_POST["estado_incidencia"]);
+        $incidencia->actualizar_estado($_POST["id_incidencia"], $_POST["estado"]);
         echo json_encode(["status" => "ok"]);
         break;
 
+    // ============================================================
+    // CORRELATIVO
+    // ============================================================
     case "correlativo":
-        header('Content-Type: application/json; charset=utf-8');
         $data = $incidencia->get_correlativo();
         echo json_encode(["id_incidencia" => $data], JSON_UNESCAPED_UNICODE);
         break;
 
+    // ============================================================
+    // COMBO DOCUMENTACIÓN
+    // ============================================================
     case "combo_documentacion":
         echo json_encode($doc->listar());
         break;
 
+    // ============================================================
+    // ANULAR (NO ELIMINAR)
+    // ============================================================
+    case "eliminar":
+
+        $id = $_POST["id_incidencia"];
+    
+        $result = $incidencia->anular($id);
+    
+        if ($result) {
+            echo json_encode(["success" => "Incidencia anulada correctamente"]);
+        } else {
+            echo json_encode(["error" => "No se pudo anular la incidencia"]);
+        }
+        break;
+    
+
+
+    // ============================================================
+    // DEFAULT
+    // ============================================================
     default:
         echo json_encode(["status" => "error", "msg" => "Operación no válida"]);
         break;
