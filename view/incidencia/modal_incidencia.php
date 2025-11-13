@@ -14,21 +14,71 @@
         <div class="modal-body">
           <input type="hidden" id="id_incidencia" name="id_incidencia">
 
-          <!-- 🟦 1️⃣ Identificación de la incidencia -->
+          <!-- 🔽 Opciones Avanzadas (ligero y casual) -->
+<!-- 🔽 Opciones Avanzadas (claro, sin fondo, con indicador) -->
+<div class="mb-3">
+
+  <button class="btn btn-link text-decoration-none p-0 fw-semibold" 
+          type="button" data-bs-toggle="collapse" data-bs-target="#opcionesAvanzadas">
+
+    <i class="bi bi-gear-fill me-1"></i>
+    <span class="text-primary">Opciones avanzadas</span>
+    <i class="bi bi-chevron-down ms-1"></i>
+
+    <small class="text-muted ms-2">(....)</small>
+  </button>
+
+  <div class="collapse mt-2" id="opcionesAvanzadas">
+
+    <div class="p-2">
+
+      <div class="row">
+
+        <!-- Fecha Registro -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Fecha de Registro</label>
+          <input type="date" class="form-control" id="fecha_registro" name="fecha_registro" readonly>
+        </div>
+
+        <!-- Estado -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Estado</label>
+          <input type="text" class="form-control" value="Pendiente" readonly>
+          <input type="hidden" name="estado_incidencia" id="estado_incidencia" value="Pendiente">
+        </div>
+
+        <!-- Base de Datos -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Base de Datos</label>
+          <input type="text" class="form-control" id="base_datos" name="base_datos"
+            placeholder="Ej: SAJ_QA, SAJ_PRD">
+        </div>
+
+        <!-- Analista -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Analista QA Responsable</label>
+          <input type="hidden" id="analista_id" name="analista_id" value="<?= $_SESSION['usu_id']; ?>">
+          <input type="text" class="form-control" id="analista" value="<?= $_SESSION['usu_nomape']; ?>" readonly>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+          <!-- 🟦 1️⃣ Identificación -->
           <div class="row">
             <div class="col-md-4 mb-3">
-              <label for="id_incidencia_visible" class="form-label">N° Incidencia (*)</label>
-              <input type="text" class="form-control bg-light border-0 fw-bold ps-2" id="id_incidencia_visible"
-                style="font-size: 1rem" readonly>
-              <small class="text-muted">Se genera automáticamente (ID autoincremental).</small>
+              <label class="form-label">N° Incidencia (*)</label>
+              <input type="text" class="form-control bg-light border-0 fw-bold" id="id_incidencia_visible" readonly>
+              <small class="text-muted">Se genera automáticamente</small>
             </div>
 
             <div class="col-md-4 mb-3">
-              <label for="fecha_registro" class="form-label">Fecha de Registro</label>
-              <input type="date" class="form-control" id="fecha_registro" name="fecha_registro" readonly>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="modulo" class="form-label">Módulo del Sistema</label>
+              <label class="form-label">Módulo del Sistema</label>
               <select class="form-control" id="modulo" name="modulo" required>
                 <option value="">Seleccione...</option>
                 <option value="EJENP">EJENP</option>
@@ -39,71 +89,8 @@
                 <option value="Actuaciones Judiciales">Actuaciones Judiciales</option>
               </select>
             </div>
-
-
-            <!-- 🟩 2️⃣ Documentación y módulo relacionado -->
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="id_documentacion" class="form-label">Documentación Asociada</label>
-                <select class="form-control" id="id_documentacion" name="id_documentacion" required>
-                  <option value="">Seleccione documentación</option>
-                </select>
-                <small class="text-muted">Seleccione un documento base existente (ejemplo: Informe, Carta o
-                  Acta).</small>
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <label for="fecha_recepcion" class="form-label">Fecha de Recepción</label>
-                <input type="date" class="form-control" id="fecha_recepcion" name="fecha_recepcion" readonly>
-              </div>
-            </div>
-          </div>
-
-          <!-- 🟨 3️⃣ Actividad y tipo de incidencia -->
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="actividad" class="form-label">Actividad</label>
-              <select class="form-control" id="actividad" name="actividad" required>
-                <option value="Revision" selected>Revision</option>
-                <option value="Elaboración">Elaboración</option>
-                <option value="Análisis">Análisis</option>
-                <option value="Coordinación">Coordinación</option>
-              </select>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label for="tipo_incidencia" class="form-label">Tipo de Incidencia</label>
-              <select class="form-control" id="tipo_incidencia" name="tipo_incidencia">
-                <option value="">Seleccione...</option>
-                <option value="Documentacion">Documentacion</option>
-                <option value="Funcional">Funcional</option>
-                <option value="Validación">Validación</option>
-                <option value="Integración">Integración</option>
-                <option value="Base de Datos">Base de Datos</option>
-                <option value="Otro">Otro</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- 🟪 5️⃣ Clasificación y estado -->
-          <div class="row">
             <div class="col-md-4 mb-3">
-              <label for="prioridad" class="form-label">Prioridad</label>
-              <select class="form-control" id="prioridad" name="prioridad">
-                <option value="Alta">Alta</option>
-                <option value="Media" selected>Media</option>
-                <option value="Baja">Baja</option>
-              </select>
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <label for="estado_incidencia" class="form-label">Estado</label>
-              <input type="text" class="form-control" value="Pendiente" readonly>
-              <input type="hidden" name="estado_incidencia" id="estado_incidencia" value="Pendiente">
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <label for="version_origen" class="form-label">Versión del Sistema</label>
+              <label class="form-label">Versión del Sistema</label>
               <select class="form-control" id="version_origen" name="version_origen">
                 <option value="1.0" selected>1.0</option>
                 <option value="2.0">2.0</option>
@@ -112,40 +99,78 @@
             </div>
           </div>
 
-          <!-- 🟫 6️⃣ Base de datos y analista responsable -->
+          <!-- 🟩 2️⃣ Documentación asociada -->
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="base_datos" class="form-label">Base de Datos</label>
-              <input type="text" class="form-control" id="base_datos" name="base_datos"
-                placeholder="Ej: SAJ_QA, SAJ_PRD">
+              <label class="form-label">Documentación Asociada</label>
+              <select class="form-control" id="id_documentacion" name="id_documentacion" required>
+                <option value="">Seleccione documentación</option>
+              </select>
+              <small class="text-muted">Ej: Informe, Carta, Acta</small>
             </div>
 
             <div class="col-md-6 mb-3">
-              <label for="analista" class="form-label">Analista QA Responsable</label>
-              <input type="hidden" id="analista_id" name="analista_id" value="<?= $_SESSION['usu_id']; ?>">
-              <input type="text" class="form-control" id="analista" value="<?= $_SESSION['usu_nomape']; ?>" readonly>
+              <label class="form-label">Fecha de Recepción</label>
+              <input type="date" class="form-control" id="fecha_recepcion" name="fecha_recepcion" readonly>
             </div>
           </div>
 
-          <!-- 🟧 4️⃣ Descripción y acción recomendada -->
+          <!-- 🟨 3️⃣ Actividad y tipo -->
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Actividad</label>
+              <select class="form-control" id="actividad" name="actividad" required>
+                <option value="Revision" selected>Revisión</option>
+                <option value="Elaboración">Elaboración</option>
+                <option value="Análisis">Análisis</option>
+                <option value="Coordinación">Coordinación</option>
+              </select>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Tipo de Incidencia</label>
+              <select class="form-control" id="tipo_incidencia" name="tipo_incidencia">
+                <option value="">Seleccione...</option>
+                <option value="Documentacion">Documentación</option>
+                <option value="Funcional">Funcional</option>
+                <option value="Validación">Validación</option>
+                <option value="Integración">Integración</option>
+                <option value="Base de Datos">Base de Datos</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <!-- 🟪 4️⃣ Clasificación -->
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Prioridad</label>
+              <select class="form-control" id="prioridad" name="prioridad">
+                <option value="Alta">Alta</option>
+                <option value="Media" selected>Media</option>
+                <option value="Baja">Baja</option>
+              </select>
+            </div>
+          </div>
+
+
+
+
+
+          <!-- 🟧 6️⃣ Descripción -->
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="descripcion" class="form-label">Descripción de la Incidencia</label>
+              <label class="form-label">Descripción de la Incidencia</label>
               <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
                 placeholder="Detalle la incidencia detectada durante las pruebas."></textarea>
             </div>
 
             <div class="col-md-6 mb-3">
-              <label for="accion_recomendada" class="form-label">Acción Recomendada / Correctiva</label>
+              <label class="form-label">Acción Recomendada / Correctiva</label>
               <textarea class="form-control" id="accion_recomendada" name="accion_recomendada" rows="3"
                 placeholder="Indique la acción sugerida o corrección esperada por desarrollo."></textarea>
             </div>
           </div>
         </div>
 
-
-
-        <!-- 🟩 Pie del modal -->
+        <!-- 🟩 Pie -->
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="submit" class="btn btn-primary">Guardar</button>

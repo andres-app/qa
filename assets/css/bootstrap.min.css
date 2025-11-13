@@ -239,7 +239,7 @@ a {
 }
 
 a:hover {
-    color: #414598;
+    color: #a31f24;
     text-decoration: underline
 }
 
@@ -3509,15 +3509,15 @@ fieldset:disabled .btn {
 
 .btn-primary:hover {
     color: #fff;
-    background-color: #4549a2;
-    border-color: #414598
+    background-color: #a31f24;
+    border-color: #a31f24
 }
 
 .btn-check:focus+.btn-primary,
 .btn-primary:focus {
     color: #fff;
-    background-color: #4549a2;
-    border-color: #414598;
+    background-color: #a31f24;
+    border-color: #a31f24;
     -webkit-box-shadow: 0 0 0 .15rem rgba(107, 111, 200, .5);
     box-shadow: 0 0 0 .15rem rgba(107, 111, 200, .5)
 }
@@ -3528,8 +3528,8 @@ fieldset:disabled .btn {
 .btn-primary:active,
 .show>.btn-primary.dropdown-toggle {
     color: #fff;
-    background-color: #414598;
-    border-color: #3d418f
+    background-color: #a31f24;
+    border-color: #a31f24
 }
 
 .btn-check:active+.btn-primary:focus,
@@ -4309,7 +4309,7 @@ fieldset:disabled .btn {
 }
 
 .btn-link:hover {
-    color: #414598;
+    color: #a31f24;
     text-decoration: underline
 }
 
@@ -4807,7 +4807,7 @@ fieldset:disabled .btn {
 
 .nav-link:focus,
 .nav-link:hover {
-    color: #414598;
+    color: #a31f24;
     text-decoration: none
 }
 
@@ -5762,7 +5762,7 @@ fieldset:disabled .btn {
 
 .page-link:hover {
     z-index: 2;
-    color: #414598;
+    color: #a31f24;
     text-decoration: none;
     background-color: #e9e9ef;
     border-color: #ced4da
@@ -5770,7 +5770,7 @@ fieldset:disabled .btn {
 
 .page-link:focus {
     z-index: 3;
-    color: #414598;
+    color: #a31f24;
     background-color: #e9e9ef;
     outline: 0;
     -webkit-box-shadow: 0 0 0 .15rem rgba(81, 86, 190, .25);
@@ -7669,7 +7669,7 @@ fieldset:disabled .btn {
 
 .link-primary:focus,
 .link-primary:hover {
-    color: #414598
+    color: #a31f24
 }
 
 .link-secondary {
