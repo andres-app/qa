@@ -132,6 +132,70 @@ class Incidencia extends Conectar
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int) $row["siguiente"];
     }
+    public function incidencias_por_documento()
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "
+            SELECT d.nombre AS documento,
+                   COUNT(i.id_incidencia) AS total
+            FROM documentacion d
+            LEFT JOIN incidencia i ON i.id_documentacion = d.id_documentacion AND i.estado = 1
+            WHERE d.estado = 1
+            GROUP BY d.id_documentacion
+            ORDER BY d.nombre ASC
+        ";
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function incidencias_por_modulo()
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "
+        SELECT modulo,
+               COUNT(id_incidencia) AS total
+        FROM incidencia
+        WHERE estado = 1
+        GROUP BY modulo
+        ORDER BY total DESC
+    ";
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function incidencias_por_mes()
+{
+    $conectar = parent::conexion();
+    parent::set_names();
+
+    $sql = "
+        SELECT DATE_FORMAT(fecha_registro, '%Y-%m') AS periodo,
+               COUNT(id_incidencia) AS total
+        FROM incidencia
+        WHERE estado = 1
+        GROUP BY DATE_FORMAT(fecha_registro, '%Y-%m')
+        ORDER BY periodo ASC
+    ";
+    $stmt = $conectar->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function contar_todas()
+{
+    $conectar = parent::conexion();
+    parent::set_names();
+    $sql = "SELECT COUNT(*) total FROM incidencia WHERE estado = 1";
+    return $conectar->query($sql)->fetchColumn();
+}
+
+
 
 }
 ?>

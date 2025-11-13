@@ -4,6 +4,7 @@ require_once("../../models/Reporte.php");
 require_once("../../models/Requerimiento.php");
 require_once("../../models/Rol.php");
 
+
 $rol = new Rol();
 $datos = $rol->validar_menu_x_rol($_SESSION["rol_id"], "iniciocolaborador");
 
@@ -85,6 +86,14 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     $data_observado = array_column($seguimiento_especialidad, "observado");
     $data_pendiente = array_column($seguimiento_especialidad, "pendiente");
 
+    require_once("../../models/Incidencia.php");
+    $inc = new Incidencia();
+
+    $inc_por_doc = $inc->incidencias_por_documento();
+    $inc_por_mod = $inc->incidencias_por_modulo();
+    $inc_por_mes = $inc->incidencias_por_mes();
+    $inc_total = $inc->contar_todas();
+
 
     // === Resumen consolidado ===
     $resumen = $reporte->get_resumen_por_especialidad() ?? [];
@@ -110,7 +119,9 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
                         <h4 class="mb-4 fw-bold text-secondary">Dashboard - Matriz General</h4>
 
-                        <!-- KPIs Superiores -->
+                        <!-- ============================= -->
+                        <!-- KPIs SUPERIORES -->
+                        <!-- ============================= -->
                         <div class="row mb-4 g-3">
                             <div class="col-md-4">
                                 <div class="card kpi-card text-center shadow-sm">
@@ -143,36 +154,58 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                             </div>
                         </div>
 
-                        <!-- Gráficos principales -->
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="card shadow-sm">
-                                    <div class="card-header text-center bg-light fw-semibold">
-                                        Casos de Prueba por Órgano Jurisdiccional
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="chart-container">
-                                            <canvas id="chartCasosOrgano"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- ============================= -->
+                        <!-- GRÁFICOS ORIGINALES -->
+                        <!-- ============================= -->
+                        <!-- 🔹 SECCIÓN: ANÁLISIS DE CASOS DE PRUEBA -->
+                        <div class="card shadow-sm border-0 mt-5">
+                            <div class="card-header bg-dark text-white py-3">
+                                <h4 class="mb-0 text-white">
+                                    <i class="fas fa-tasks me-2"></i> Análisis de Casos de Prueba
+                                </h4>
                             </div>
 
-                            <div class="col-md-8">
-                                <div class="card shadow-sm">
-                                    <div class="card-header text-center bg-light fw-semibold">
-                                        Casos de Prueba por Especialidad
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="chart-container">
-                                            <canvas id="chartEspecialidad"></canvas>
+                            <div class="card-body">
+
+                                <div class="row g-3">
+
+                                    <!-- Casos por Órgano -->
+                                    <div class="col-md-4">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-header text-center bg-light fw-semibold">
+                                                Casos de Prueba por Órgano Jurisdiccional
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container">
+                                                    <canvas id="chartCasosOrgano"></canvas>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <!-- Casos por Especialidad -->
+                                    <div class="col-md-8">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-header text-center bg-light fw-semibold">
+                                                Casos de Prueba por Especialidad
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container-lg">
+                                                    <canvas id="chartEspecialidad"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
+
                             </div>
                         </div>
 
-                        <!-- === ANÁLISIS POR FUNCIONALIDAD === -->
+
+                        <!-- ============================= -->
+                        <!-- ANÁLISIS POR FUNCIONALIDAD -->
+                        <!-- ============================= -->
                         <div class="row mt-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
@@ -181,17 +214,16 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <!-- Gráfico -->
+
                                             <div class="col-md-7">
-                                                <div class="chart-container" style="height:400px;">
+                                                <div class="chart-container-lg">
                                                     <canvas id="chartAnalisisFuncionalidad"></canvas>
                                                 </div>
                                             </div>
 
-                                            <!-- Tabla -->
                                             <div class="col-md-5">
                                                 <div class="table-responsive">
-                                                    <table id="tablaAnalisisFuncionalidad"
+                                                    <table
                                                         class="table table-sm table-bordered align-middle text-center shadow-sm">
                                                         <thead class="table-light">
                                                             <tr>
@@ -228,13 +260,16 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                     </table>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- === Resumen Consolidado === -->
+                        <!-- ============================= -->
+                        <!-- RESUMEN CONSOLIDADO -->
+                        <!-- ============================= -->
                         <div class="row mt-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
@@ -269,9 +304,73 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                         </div>
 
 
-                    </div>
+                        <!-- =================================================== -->
+                        <!-- 🎯 NUEVO DASHBOARD DE INCIDENCIAS -->
+                        <!-- =================================================== -->
 
+                        <!-- 🔹 SECCIÓN: ANÁLISIS DE INCIDENCIAS -->
+                        <div class="card shadow-sm border-0 mt-5">
+                            <div class="card-header bg-dark text-white py-3">
+                                <h4 class="mb-0 text-white">
+                                    <i class="fas fa-chart-pie me-2"></i> Análisis de Incidencias
+                                </h4>
+                            </div>
+
+                            <div class="card-body">
+
+                                <div class="row mt-3">
+
+                                    <!-- Incidencias por Documentación -->
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-header bg-light text-center fw-semibold">
+                                                Incidencias por Documentación
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container">
+                                                    <canvas id="chartDocumento"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Incidencias por Módulo -->
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-header bg-light text-center fw-semibold">
+                                                Distribución de Incidencias por Módulo
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container">
+                                                    <canvas id="chartModulo"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Incidencias por Mes (FULL WIDTH) -->
+                                    <div class="card shadow-sm mt-4 mb-5">
+                                        <div class="card-header bg-light text-center fw-semibold">
+                                            Evolución de Incidencias por Mes
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="chart-container-lg">
+                                                <canvas id="chartMes"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
                 </div>
+
                 <?php require_once("../html/footer.php") ?>
             </div>
         </div>
@@ -280,15 +379,15 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
         <div class="rightbar-overlay"></div>
         <?php require_once("../html/js.php") ?>
 
-        <!-- Variables PHP accesibles desde JS -->
+        <!-- ============================= -->
+        <!-- VARIABLES PARA JS -->
+        <!-- ============================= -->
         <script>
-            // Variables PHP exportadas a JS
             const dataOrgano = {
                 ids: <?= json_encode($ids_organo); ?>,
                 labels: <?= json_encode($labels_organo); ?>,
                 valores: <?= json_encode($valores_organo); ?>
             };
-
 
             const dataEspecialidad = {
                 labels: <?= json_encode($labels_especialidad); ?>,
@@ -298,11 +397,24 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
             };
 
             const analisisData = <?= json_encode($analisis_funcionalidad_limpio); ?>;
+
+            /* Variables nuevas de incidencias */
+            const docLabels = <?= json_encode(array_column($inc_por_doc, "documento")); ?>;
+            const docData = <?= json_encode(array_column($inc_por_doc, "total")); ?>;
+
+            const modLabels = <?= json_encode(array_column($inc_por_mod, "modulo")); ?>;
+            const modData = <?= json_encode(array_column($inc_por_mod, "total")); ?>;
+
+            const mesLabels = <?= json_encode(array_column($inc_por_mes, "mes")); ?>;
+            const mesData = <?= json_encode(array_column($inc_por_mes, "total")); ?>;
         </script>
+
         <script src="homecolaborador.js"></script>
     </body>
 
     </html>
+
+
     <?php
 } else {
     header("Location:" . Conectar::ruta() . "index.php");
