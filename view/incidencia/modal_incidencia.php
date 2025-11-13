@@ -27,24 +27,7 @@
               <label for="fecha_registro" class="form-label">Fecha de Registro</label>
               <input type="date" class="form-control" id="fecha_registro" name="fecha_registro" readonly>
             </div>
-
             <div class="col-md-4 mb-3">
-              <label for="fecha_recepcion" class="form-label">Fecha de Recepción</label>
-              <input type="date" class="form-control" id="fecha_recepcion" name="fecha_recepcion" readonly>
-            </div>
-          </div>
-
-          <!-- 🟩 2️⃣ Documentación y módulo relacionado -->
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="id_documentacion" class="form-label">Documentación Asociada</label>
-              <select class="form-control" id="id_documentacion" name="id_documentacion" required>
-                <option value="">Seleccione documentación</option>
-              </select>
-              <small class="text-muted">Seleccione un documento base existente (ejemplo: Informe, Carta o Acta).</small>
-            </div>
-
-            <div class="col-md-6 mb-3">
               <label for="modulo" class="form-label">Módulo del Sistema</label>
               <select class="form-control" id="modulo" name="modulo" required>
                 <option value="">Seleccione...</option>
@@ -55,6 +38,24 @@
                 <option value="Programación de Audiencias">Programación de Audiencias</option>
                 <option value="Actuaciones Judiciales">Actuaciones Judiciales</option>
               </select>
+            </div>
+
+
+            <!-- 🟩 2️⃣ Documentación y módulo relacionado -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="id_documentacion" class="form-label">Documentación Asociada</label>
+                <select class="form-control" id="id_documentacion" name="id_documentacion" required>
+                  <option value="">Seleccione documentación</option>
+                </select>
+                <small class="text-muted">Seleccione un documento base existente (ejemplo: Informe, Carta o
+                  Acta).</small>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="fecha_recepcion" class="form-label">Fecha de Recepción</label>
+                <input type="date" class="form-control" id="fecha_recepcion" name="fecha_recepcion" readonly>
+              </div>
             </div>
           </div>
 
@@ -84,21 +85,6 @@
             </div>
           </div>
 
-          <!-- 🟧 4️⃣ Descripción y acción recomendada -->
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="descripcion" class="form-label">Descripción de la Incidencia</label>
-              <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
-                placeholder="Detalle la incidencia detectada durante las pruebas."></textarea>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label for="accion_recomendada" class="form-label">Acción Recomendada / Correctiva</label>
-              <textarea class="form-control" id="accion_recomendada" name="accion_recomendada" rows="3"
-                placeholder="Indique la acción sugerida o corrección esperada por desarrollo."></textarea>
-            </div>
-          </div>
-
           <!-- 🟪 5️⃣ Clasificación y estado -->
           <div class="row">
             <div class="col-md-4 mb-3">
@@ -118,7 +104,11 @@
 
             <div class="col-md-4 mb-3">
               <label for="version_origen" class="form-label">Versión del Sistema</label>
-              <input type="text" class="form-control" id="version_origen" name="version_origen" placeholder="Ej: 1.0.4">
+              <select class="form-control" id="version_origen" name="version_origen">
+                <option value="1.0" selected>1.0</option>
+                <option value="2.0">2.0</option>
+                <option value="3.0">3.0</option>
+              </select>
             </div>
           </div>
 
@@ -136,7 +126,24 @@
               <input type="text" class="form-control" id="analista" value="<?= $_SESSION['usu_nomape']; ?>" readonly>
             </div>
           </div>
+
+          <!-- 🟧 4️⃣ Descripción y acción recomendada -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="descripcion" class="form-label">Descripción de la Incidencia</label>
+              <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
+                placeholder="Detalle la incidencia detectada durante las pruebas."></textarea>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="accion_recomendada" class="form-label">Acción Recomendada / Correctiva</label>
+              <textarea class="form-control" id="accion_recomendada" name="accion_recomendada" rows="3"
+                placeholder="Indique la acción sugerida o corrección esperada por desarrollo."></textarea>
+            </div>
+          </div>
         </div>
+
+
 
         <!-- 🟩 Pie del modal -->
         <div class="modal-footer">
