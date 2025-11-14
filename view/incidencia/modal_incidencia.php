@@ -73,7 +73,7 @@
           <!-- 🟦 1️⃣ Identificación -->
           <div class="row">
             <div class="col-md-4 mb-3">
-              <label class="form-label">N° Incidencia (*)</label>
+              <label class="form-label">ID (*)</label>
               <input type="text" class="form-control bg-light border-0 fw-bold" id="id_incidencia_visible" readonly>
               <small class="text-muted">Se genera automáticamente</small>
             </div>
@@ -111,7 +111,7 @@
             </div>
 
             <div class="col-md-3 mb-3">
-              <label class="form-label">N° Correlativo por Documento</label>
+              <label class="form-label">N° Incidencia</label>
               <input type="text" class="form-control bg-light border-0 fw-bold" id="correlativo_doc"
                 name="correlativo_doc" readonly>
               <small class="text-muted">Correlativo interno según la documentación</small>

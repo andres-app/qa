@@ -132,15 +132,23 @@ class Incidencia extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-
-        $sql = "SELECT i.*, u.usu_nomape AS analista
+    
+        $sql = "SELECT 
+                    i.*, 
+                    u.usu_nomape AS analista,
+                    d.nombre AS documentacion_nombre
                 FROM incidencia i
-                LEFT JOIN tm_usuario u ON i.analista_id = u.usu_id
+                LEFT JOIN tm_usuario u 
+                    ON i.analista_id = u.usu_id
+                LEFT JOIN documentacion d
+                    ON i.id_documentacion = d.id_documentacion
                 WHERE i.id_incidencia = ?";
+                
         $stmt = $conectar->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    
 
     // 🟧 Actualizar solo estado funcional
     public function actualizar_estado($id, $estado_incidencia)

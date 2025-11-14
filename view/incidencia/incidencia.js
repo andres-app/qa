@@ -231,7 +231,7 @@ $(document).ready(function () {
 
     columns: [
       { data: "id_incidencia", title: "ID" },              // 0
-      { data: "correlativo_doc", title: "N° Doc" },        // 1
+      { data: "correlativo_doc", title: "N° Inc." },        // 1
       { data: "actividad", title: "Actividad" },           // 2
       { data: "documentacion", title: "Documentación" },   // 3
       { data: "modulo", title: "Módulo" },                 // 4

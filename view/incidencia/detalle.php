@@ -56,16 +56,42 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                         <div class="card mb-3 border-0 shadow-sm" style="background: #f8f9fc;">
                             <div
                                 class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3 border-start border-4 border-primary rounded-3">
+
                                 <div class="d-flex align-items-center flex-wrap gap-4">
+
+                                    <!-- N° Incidencia -->
                                     <div>
-                                        <div class="text-muted small fw-semibold">N° Incidencia</div>
+                                        <div class="text-muted small fw-semibold">ID</div>
                                         <div class="fs-5 fw-semibold text-primary mb-0">
-                                            INC-<?= htmlspecialchars($info["id_incidencia"]); ?>
+                                            <?= htmlspecialchars($info["id_incidencia"]); ?>
                                         </div>
                                     </div>
 
                                     <div class="text-muted fs-4">|</div>
 
+                                    <!-- Correlativo -->
+                                    <div>
+                                        <div class="text-muted small fw-semibold">N° Inc</div>
+                                        <div class="fw-semibold text-dark mb-0">
+                                            <?= htmlspecialchars($info["correlativo_doc"] ?? "-"); ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-muted fs-4">|</div>
+
+                                    <!-- Documentación asociada -->
+                                    <div>
+                                        <div class="text-muted small fw-semibold">Documentación Asociada</div>
+                                        <div class="fw-semibold mb-0">
+                                            <span class="badge bg-light text-primary border px-2 py-1">
+                                                <?= htmlspecialchars($info["documentacion_nombre"] ?? "-"); ?>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-muted fs-4">|</div>
+
+                                    <!-- Actividad -->
                                     <div>
                                         <div class="text-muted small fw-semibold">Actividad</div>
                                         <div class="fw-semibold text-dark mb-0">
@@ -75,6 +101,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
                                     <div class="text-muted fs-4">|</div>
 
+                                    <!-- Módulo -->
                                     <div>
                                         <div class="text-muted small fw-semibold">Módulo del Sistema</div>
                                         <div class="fw-semibold mb-0">
@@ -83,23 +110,33 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                             </span>
                                         </div>
                                     </div>
+
                                 </div>
 
+                                <!-- Estado + Volver -->
                                 <div class="d-flex align-items-center gap-3 ms-auto">
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="text-muted small fw-semibold">Estado:</span>
-                                        <select id="estado_incidencia" class="form-select form-select-sm">
-                                            <option value="Pendiente" <?= $info["estado_incidencia"] == "Pendiente" ? "selected" : ""; ?>>Pendiente</option>
-                                            <option value="Resuelto" <?= $info["estado_incidencia"] == "Resuelto" ? "selected" : ""; ?>>Resuelto</option>
-                                        </select>
+
+                                        <span class="badge px-3 py-2 fw-semibold 
+                                            <?php
+                                            echo ($info['estado_incidencia'] == 'Pendiente') ? 'border border-warning text-warning bg-white' :
+                                                (($info['estado_incidencia'] == 'Resuelto') ? 'border border-success text-success bg-white' :
+                                                    'border border-secondary text-muted bg-white');
+                                            ?>">
+                                            <?= htmlspecialchars($info["estado_incidencia"]); ?>
+                                        </span>
                                     </div>
+
 
                                     <a href="index.php" class="btn btn-outline-secondary btn-sm">
                                         <i class="bx bx-arrow-back"></i> Volver
                                     </a>
                                 </div>
+
                             </div>
                         </div>
+
 
                         <!-- Formulario de edición -->
                         <form id="form_editar_incidencia">
@@ -225,15 +262,16 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="text-end mt-5 mb-4">
+                                        <button type="submit" class="btn btn-primary px-4 shadow-sm rounded-pill">
+                                            <i class="bx bx-save"></i> Guardar cambios
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Botón guardar -->
-                            <div class="text-end mt-3">
-                                <button type="submit" class="btn btn-primary px-4">
-                                    <i class="bx bx-save"></i> Guardar cambios
-                                </button>
-                            </div>
+
+
                         </form>
 
 

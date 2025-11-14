@@ -63,8 +63,8 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                         class="table table-striped table-bordered dt-responsive nowrap w-100">
                                         <thead class="table-light text-center">
                                             <tr>
-                                                <th>N° Inc.</th>
-                                                <th>N°.</th>
+                                                <th>ID.</th>
+                                                <th>N° Incidencia.</th>
                                                 <th>Actividad</th>
                                                 <th>Documentación</th>
                                                 <th>Módulo</th>
