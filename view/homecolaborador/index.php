@@ -379,34 +379,50 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
         <div class="rightbar-overlay"></div>
         <?php require_once("../html/js.php") ?>
 
-        <!-- ============================= -->
-        <!-- VARIABLES PARA JS -->
-        <!-- ============================= -->
         <script>
-            const dataOrgano = {
-                ids: <?= json_encode($ids_organo); ?>,
-                labels: <?= json_encode($labels_organo); ?>,
-                valores: <?= json_encode($valores_organo); ?>
-            };
+            // =======================
+            //  FORMATEAR MESES YYYY-MM → "Mes Año"
+            // =======================
+            function formatearMeses(periodos) {
+                const nombres = [
+                    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                ];
 
-            const dataEspecialidad = {
-                labels: <?= json_encode($labels_especialidad); ?>,
-                completado: <?= json_encode(array_map('intval', $data_completado)); ?>,
-                observado: <?= json_encode(array_map('intval', $data_observado)); ?>,
-                pendiente: <?= json_encode(array_map('intval', $data_pendiente)); ?>
-            };
+                return periodos.map(p => {
+                    const [anio, mes] = p.split("-");
+                    return `${nombres[parseInt(mes) - 1]} ${anio}`;
+                });
+            }
 
-            const analisisData = <?= json_encode($analisis_funcionalidad_limpio); ?>;
+                    const dataOrgano = {
+                        ids: <?= json_encode($ids_organo); ?>,
+                    labels: <?= json_encode($labels_organo); ?>,
+                    valores: <?= json_encode($valores_organo); ?>
+                };
 
-            /* Variables nuevas de incidencias */
-            const docLabels = <?= json_encode(array_column($inc_por_doc, "documento")); ?>;
-            const docData = <?= json_encode(array_column($inc_por_doc, "total")); ?>;
+                    const dataEspecialidad = {
+                        labels: <?= json_encode($labels_especialidad); ?>,
+                    completado: <?= json_encode(array_map('intval', $data_completado)); ?>,
+                    observado: <?= json_encode(array_map('intval', $data_observado)); ?>,
+                    pendiente: <?= json_encode(array_map('intval', $data_pendiente)); ?>
+                };
 
-            const modLabels = <?= json_encode(array_column($inc_por_mod, "modulo")); ?>;
-            const modData = <?= json_encode(array_column($inc_por_mod, "total")); ?>;
+                    const analisisData = <?= json_encode($analisis_funcionalidad_limpio); ?>;
 
-            const mesLabels = <?= json_encode(array_column($inc_por_mes, "mes")); ?>;
-            const mesData = <?= json_encode(array_column($inc_por_mes, "total")); ?>;
+                    /* Variables nuevas de incidencias */
+                    const docLabels = <?= json_encode(array_column($inc_por_doc, "documento")); ?>;
+                    const docData = <?= json_encode(array_column($inc_por_doc, "total")); ?>;
+
+                    const modLabels = <?= json_encode(array_column($inc_por_mod, "modulo")); ?>;
+                    const modData = <?= json_encode(array_column($inc_por_mod, "total")); ?>;
+
+                    // 💥 OJO: acá usar 'periodo' en lugar de 'mes'
+                    const mesLabels = <?= json_encode(array_column($inc_por_mes, "periodo")); ?>;
+                    const mesData = <?= json_encode(array_column($inc_por_mes, "total")); ?>;
+                    const mesLabelsBonitos = formatearMeses(mesLabels);
+
+
         </script>
 
         <script src="homecolaborador.js"></script>

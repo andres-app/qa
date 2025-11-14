@@ -275,6 +275,34 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("⚠️ No hay datos para el gráfico de análisis funcionalidad");
   }
 
+
+  // ===============================================
+// 🔌 Plugin para mostrar los valores encima de los puntos
+// ===============================================
+const mostrarNumerosLinea = {
+  id: "mostrarNumerosLinea",
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const dataset = chart.data.datasets[0];
+    const meta = chart.getDatasetMeta(0);
+
+    ctx.save();
+    ctx.font = "bold 13px sans-serif";
+    ctx.fillStyle = "#1E3A8A"; // color del texto
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+
+    meta.data.forEach((point, index) => {
+      const value = dataset.data[index];
+      if (value !== undefined && value !== null) {
+        ctx.fillText(value, point.x, point.y - 8); // posición del número
+      }
+    });
+
+    ctx.restore();
+  }
+};
+
 /// ======================================================
 // 🔌 Plugin para mostrar valores
 // ======================================================
@@ -391,34 +419,77 @@ if (document.getElementById("chartModulo")) {
 
 
 
-  // ======================================================
-  //  📊 GRÁFICO: INCIDENCIAS POR MES (LINE CHART)
-  // ======================================================
-  if (document.getElementById("chartMes")) {
-    new Chart(document.getElementById("chartMes"), {
-      type: "line",
-      data: {
-        labels: mesLabels,
-        datasets: [{
-          label: "Incidencias",
-          data: mesData,
-          borderColor: "#3B82F6",
-          backgroundColor: "rgba(59,130,246,0.2)",
-          borderWidth: 2,
-          fill: true,
-          tension: 0.3,
-          pointRadius: 6,
-          pointBackgroundColor: "#1D4ED8",
-          pointBorderColor: "#1E3A8A"
-        }]
+// ======================================================
+//  📊 GRÁFICO: INCIDENCIAS POR MES (LINE CHART) — VERSIÓN PRO
+// ======================================================
+if (document.getElementById("chartMes")) {
+
+  const ctxMes = document.getElementById("chartMes").getContext("2d");
+
+  new Chart(ctxMes, {
+    type: "line",
+    data: {
+      labels: mesLabelsBonitos,
+      datasets: [{
+        label: "Incidencias",
+        data: mesData,
+        borderColor: "#2563EB",
+        borderWidth: 3,
+        tension: 0.35,
+        fill: true,
+        backgroundColor: "rgba(37, 99, 235, 0.12)",
+        pointRadius: 6,
+        pointHoverRadius: 9,
+        pointBackgroundColor: "#1E40AF",
+        pointBorderColor: "#1E3A8A",
+        pointBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          position: "top",
+          labels: {
+            boxWidth: 20,
+            padding: 15
+          }
+        },
+        tooltip: {
+          backgroundColor: "#1E3A8A",
+          titleColor: "#fff",
+          bodyColor: "#fff",
+          padding: 10,
+          cornerRadius: 6
+        }
       },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: "top" } },
-        scales: { y: { beginAtZero: true } }
+      scales: {
+        x: {
+          ticks: {
+            color: "#444",
+            padding: 8
+          },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: "#666",
+            stepSize: 10
+          },
+          grid: {
+            color: "rgba(0,0,0,0.07)",
+            borderDash: [4, 4]
+          }
+        }
       }
-    });
-  }
+    },
+    plugins: [mostrarNumerosLinea]  // 👈 AQUÍ ACTIVAMOS LOS NÚMEROS
+  });
+}
+
+
 
 
 });
