@@ -126,7 +126,8 @@ $(document).ready(function () {
   cargarDocumentacion(); // 🔹 ahora sí carga el combo al iniciar
   tabla = $("#incidencia_table").DataTable({
     aProcessing: true,
-    aServerSide: true,
+    aServerSide: false,
+    processing: true,
     dom: "Bfrtip",
     buttons: ["copyHtml5", "excelHtml5", "csvHtml5", "pdfHtml5"],
     ajax: {
@@ -145,20 +146,28 @@ $(document).ready(function () {
     iDisplayLength: 10,
     order: [[0, "desc"]],
     columnDefs: [
+
+      // ✔ Columna ID
       {
         targets: 0,
         className: "text-center fw-semibold",
         width: "60px"
       },
+
+      // ✔ Columna N° Doc
       {
-        // 🔹 Mostrar solo 20 caracteres en la columna Descripción
-        targets: 3,
-        render: function (data, type, row) {
+        targets: 1,
+        className: "text-center fw-semibold",
+        width: "60px"
+      },
+
+      // ✔ Descripción (recorte a 20 caracteres)
+      {
+        targets: 4, // ahora sí en la posición correcta
+        render: function (data) {
           if (!data) return "";
           const limite = 20;
-          const textoCorto =
-            data.length > limite ? data.substring(0, limite) + "…" : data;
-
+          const textoCorto = data.length > limite ? data.substring(0, limite) + "…" : data;
           return `
             <div class="descripcion-columna" title="${data}">
                 ${textoCorto}
@@ -167,15 +176,13 @@ $(document).ready(function () {
         }
       },
 
+      // ✔ Estado (badge)
       {
-        // 🔹 Mostrar badge de estado con color
-        targets: 8,
-        render: function (data, type, row) {
+        targets: 9, // nueva posición correcta
+        render: function (data) {
           if (!data) return "";
           let badgeStyle = "";
-          const estado = data.toLowerCase();
-
-          switch (estado) {
+          switch (data.toLowerCase()) {
             case "pendiente":
               badgeStyle = "border border-warning text-warning bg-white";
               break;
@@ -185,29 +192,31 @@ $(document).ready(function () {
             default:
               badgeStyle = "border border-secondary text-muted bg-white";
           }
-
           return `<span class="badge rounded-pill ${badgeStyle} px-3 py-2 fw-semibold">${data}</span>`;
         }
       },
+
+      // ✔ Acciones
       {
-        targets: -1,
+        targets: 10,
         orderable: false,
         searchable: false,
         className: "text-center",
         render: function (data, type, row) {
           return `
             <div class="d-flex justify-content-center gap-1">
-                <a href="detalle.php?id=${row.id_incidencia}" class="btn btn-soft-info btn-sm" title="Ver Detalle">
+                <a href="detalle.php?id=${row.id_incidencia}" 
+                   class="btn btn-soft-info btn-sm" title="Ver Detalle">
                     <i class="bx bx-show"></i>
                 </a>
-      
+    
                 <a href="../../controller/incidencia_pdf.php?id=${row.id_incidencia}" 
-                   target="_blank" 
+                   target="_blank"
                    class="btn btn-soft-primary btn-sm" 
                    title="Generar PDF">
                     <i class="bx bxs-file-pdf"></i>
                 </a>
-      
+    
                 <button class="btn btn-soft-danger btn-sm" 
                         onClick="eliminar(${row.id_incidencia})" 
                         title="Eliminar">
@@ -221,16 +230,17 @@ $(document).ready(function () {
     ],
 
     columns: [
-      { data: "id_incidencia", title: "ID" },
-      { data: "actividad", title: "Actividad" },
-      { data: "modulo", title: "Módulo" },
-      { data: "descripcion", title: "Descripción" },
-      { data: "analista", title: "Analista" },
-      { data: "prioridad", title: "Prioridad" },
-      { data: "tipo_incidencia", title: "Tipo" },
-      { data: "fecha_registro", title: "Fecha Registro" },
-      { data: "estado_incidencia", title: "Estado" },
-      { data: null, title: "Acciones" }
+      { data: "id_incidencia", title: "ID" },              // 0
+      { data: "correlativo_doc", title: "N° Inc" },          // 1
+      { data: "actividad", title: "Actividad" },       // 2
+      { data: "modulo", title: "Módulo" },          // 3
+      { data: "descripcion", title: "Descripción" },     // 4
+      { data: "analista", title: "Analista" },        // 5
+      { data: "prioridad", title: "Prioridad" },       // 6
+      { data: "tipo_incidencia", title: "Tipo" },            // 7
+      { data: "fecha_registro", title: "Fecha Registro" },  // 8
+      { data: "estado_incidencia", title: "Estado" },          // 9
+      { data: null, title: "Acciones" }         // 10
     ],
     language: {
       sProcessing: "Procesando...",
@@ -326,9 +336,36 @@ function cargarDocumentacion() {
 // ACTUALIZAR FECHA DE RECEPCIÓN AL SELECCIONAR DOCUMENTO
 // =======================================================
 $("#id_documentacion").on("change", function () {
+
+  const id_doc = $(this).val();
+
+  // 1️⃣ Actualizar la fecha desde el combo
   const fecha = $(this).find(":selected").data("fecha") || new Date().toISOString().split("T")[0];
   $("#fecha_recepcion").val(fecha);
+
+  // 2️⃣ Si no selecciona nada, limpiar el correlativo
+  if (!id_doc) {
+    $("#correlativo_doc").val("");
+    return;
+  }
+
+  // 3️⃣ Obtener correlativo por documento desde backend
+  $.ajax({
+    url: "../../controller/incidencia.php?op=correlativo_doc",
+    type: "POST",
+    data: { id_documentacion: id_doc },
+    dataType: "json",
+    success: function (resp) {
+      console.log("Correlativo recibido:", resp);
+      $("#correlativo_doc").val(resp.correlativo);
+    },
+    error: function (xhr) {
+      console.error("Error obteniendo correlativo_doc:", xhr.responseText);
+    }
+  });
+
 });
+
 
 
 

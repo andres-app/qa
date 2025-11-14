@@ -14,8 +14,17 @@ switch ($_GET["op"]) {
     // LISTAR
     // ============================================================
     case "listar":
-        echo json_encode(["aaData" => $incidencia->listar()]);
+
+        $datos = $incidencia->listar();
+    
+        echo json_encode([
+            "data" => $datos,
+            "recordsTotal" => count($datos),
+            "recordsFiltered" => count($datos)
+        ]);
+    
         break;
+    
 
     // ============================================================
     // GUARDAR
@@ -35,22 +44,22 @@ switch ($_GET["op"]) {
     case "editar":
 
         $data = [
-            "id_incidencia"      => $_POST["id_incidencia"],
-            "descripcion"        => $_POST["descripcion"],
+            "id_incidencia" => $_POST["id_incidencia"],
+            "descripcion" => $_POST["descripcion"],
             "accion_recomendada" => $_POST["accion_recomendada"],
-            "tipo_incidencia"    => $_POST["tipo_incidencia"],
-            "prioridad"          => $_POST["prioridad"],
-            "base_datos"         => $_POST["base_datos"],
-            "version_origen"     => $_POST["version_origen"],
-            "modulo"             => $_POST["modulo"],
-            "estado_incidencia"  => $_POST["estado_incidencia"]  // ✔ correcto
+            "tipo_incidencia" => $_POST["tipo_incidencia"],
+            "prioridad" => $_POST["prioridad"],
+            "base_datos" => $_POST["base_datos"],
+            "version_origen" => $_POST["version_origen"],
+            "modulo" => $_POST["modulo"],
+            "estado_incidencia" => $_POST["estado_incidencia"]  // ✔ correcto
         ];
-    
+
         $incidencia->actualizar($data);
-    
+
         echo json_encode(["status" => "ok", "msg" => "Incidencia actualizada correctamente"]);
         break;
-       
+
 
     // ============================================================
     // MOSTRAR
@@ -88,16 +97,23 @@ switch ($_GET["op"]) {
     case "eliminar":
 
         $id = $_POST["id_incidencia"];
-    
+
         $result = $incidencia->anular($id);
-    
+
         if ($result) {
             echo json_encode(["success" => "Incidencia anulada correctamente"]);
         } else {
             echo json_encode(["error" => "No se pudo anular la incidencia"]);
         }
         break;
-    
+
+    case "correlativo_doc":
+        $id_documentacion = $_POST["id_documentacion"];
+        $nro = $incidencia->generar_correlativo_doc($id_documentacion);
+        echo json_encode(["correlativo" => $nro]);
+        break;
+
+
 
 
     // ============================================================

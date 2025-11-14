@@ -8,11 +8,22 @@ class Incidencia extends Conectar
         $conectar = parent::conexion();
         parent::set_names();
 
-        $sql = "SELECT i.*, u.usu_nomape AS analista
-                FROM incidencia i
-                LEFT JOIN tm_usuario u ON i.analista_id = u.usu_id
-                WHERE i.estado = 1             -- ✔ solo activas
-                ORDER BY i.id_incidencia DESC";
+        $sql = "SELECT 
+        i.id_incidencia,
+        i.correlativo_doc,
+        i.actividad,
+        i.modulo,
+        i.descripcion,
+        u.usu_nomape AS analista,
+        i.prioridad,
+        i.tipo_incidencia,
+        i.fecha_registro,
+        i.estado_incidencia
+    FROM incidencia i
+    LEFT JOIN tm_usuario u ON i.analista_id = u.usu_id
+    WHERE i.estado = 1
+    ORDER BY i.id_incidencia DESC";
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -54,34 +65,63 @@ class Incidencia extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-
-        $sql = "INSERT INTO incidencia
-                (actividad, id_documentacion, descripcion, accion_recomendada,
-                 fecha_recepcion, fecha_registro, fecha_respuesta, prioridad,
-                 analista_id, tipo_incidencia, base_datos, version_origen, modulo,
-                 estado_incidencia, estado)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";   // ✔ estado=1
-
-        $stmt = $conectar->prepare($sql);
-        $stmt->execute([
-            $data["actividad"] ?? '',
-            $data["id_documentacion"] ?? null,
-            $data["descripcion"] ?? '',
-            $data["accion_recomendada"] ?? '',
-            $data["fecha_recepcion"] ?? date('Y-m-d'),
-            $data["fecha_registro"] ?? date('Y-m-d'),
-            $data["fecha_respuesta"] ?? null,
-            $data["prioridad"] ?? 'Media',
-            $data["analista_id"],
-            $data["tipo_incidencia"] ?? '',
-            $data["base_datos"] ?? '',
-            $data["version_origen"] ?? '',
-            $data["modulo"] ?? '',
-            $data["estado_incidencia"] ?? 'Pendiente'   // ✔ se mantiene
-        ]);
-
-        return $conectar->lastInsertId();
+    
+        // 1️⃣ obtener correlativo inicial
+        $correlativo_doc = !empty($data["correlativo_doc"])
+            ? intval($data["correlativo_doc"])
+            : $this->generar_correlativo_doc($data["id_documentacion"]);
+    
+        // 2️⃣ Intentar varias veces por si ocurre colisión
+        $intentos = 3;
+        while ($intentos > 0) {
+    
+            try {
+    
+                $sql = "INSERT INTO incidencia
+                        (actividad, id_documentacion, correlativo_doc, descripcion, accion_recomendada,
+                         fecha_recepcion, fecha_registro, fecha_respuesta, prioridad,
+                         analista_id, tipo_incidencia, base_datos, version_origen, modulo,
+                         estado_incidencia, estado)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";
+    
+                $stmt = $conectar->prepare($sql);
+                $stmt->execute([
+                    $data["actividad"],
+                    $data["id_documentacion"],
+                    $correlativo_doc,
+                    $data["descripcion"],
+                    $data["accion_recomendada"],
+                    $data["fecha_recepcion"],
+                    $data["fecha_registro"],
+                    $data["fecha_respuesta"] ?? null,
+                    $data["prioridad"],
+                    $data["analista_id"],
+                    $data["tipo_incidencia"],
+                    $data["base_datos"],
+                    $data["version_origen"],
+                    $data["modulo"],
+                    $data["estado_incidencia"]
+                ]);
+    
+                // ✔ Insert correcto → salir
+                return $conectar->lastInsertId();
+    
+            } catch (PDOException $e) {
+    
+                // 🛑 Error 1062 = duplicado por colisión simultánea
+                if ($e->errorInfo[1] == 1062) {
+                    $correlativo_doc++;   // ➜ incrementar y reintentar
+                    $intentos--;
+                } else {
+                    throw $e; // otro error, lo re-lanzamos
+                }
+            }
+        }
+    
+        throw new Exception("No se pudo generar correlativo único");
     }
+    
+    
 
     public function mostrar($id)
     {
@@ -195,6 +235,21 @@ public function contar_todas()
     return $conectar->query($sql)->fetchColumn();
 }
 
+public function generar_correlativo_doc($id_documentacion)
+{
+    $conectar = parent::conexion();
+    parent::set_names();
+
+    $sql = "SELECT IFNULL(MAX(correlativo_doc),0)+1 AS correlativo
+            FROM incidencia
+            WHERE id_documentacion = ?";
+
+    $stmt = $conectar->prepare($sql);
+    $stmt->execute([$id_documentacion]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return intval($row["correlativo"]);
+}
 
 
 }

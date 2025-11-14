@@ -15,57 +15,58 @@
           <input type="hidden" id="id_incidencia" name="id_incidencia">
 
           <!-- 🔽 Opciones Avanzadas (ligero y casual) -->
-<!-- 🔽 Opciones Avanzadas (claro, sin fondo, con indicador) -->
-<div class="mb-3">
+          <!-- 🔽 Opciones Avanzadas (claro, sin fondo, con indicador) -->
+          <div class="mb-3">
 
-  <button class="btn btn-link text-decoration-none p-0 fw-semibold" 
-          type="button" data-bs-toggle="collapse" data-bs-target="#opcionesAvanzadas">
+            <button class="btn btn-link text-decoration-none p-0 fw-semibold" type="button" data-bs-toggle="collapse"
+              data-bs-target="#opcionesAvanzadas">
 
-    <i class="bi bi-gear-fill me-1"></i>
-    <span class="text-primary">Opciones avanzadas</span>
-    <i class="bi bi-chevron-down ms-1"></i>
+              <i class="bi bi-gear-fill me-1"></i>
+              <span class="text-primary">Opciones avanzadas</span>
+              <i class="bi bi-chevron-down ms-1"></i>
 
-    <small class="text-muted ms-2">(....)</small>
-  </button>
+              <small class="text-muted ms-2">(....)</small>
+            </button>
 
-  <div class="collapse mt-2" id="opcionesAvanzadas">
+            <div class="collapse mt-2" id="opcionesAvanzadas">
 
-    <div class="p-2">
+              <div class="p-2">
 
-      <div class="row">
+                <div class="row">
 
-        <!-- Fecha Registro -->
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Fecha de Registro</label>
-          <input type="date" class="form-control" id="fecha_registro" name="fecha_registro" readonly>
-        </div>
+                  <!-- Fecha Registro -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">Fecha de Registro</label>
+                    <input type="date" class="form-control" id="fecha_registro" name="fecha_registro" readonly>
+                  </div>
 
-        <!-- Estado -->
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Estado</label>
-          <input type="text" class="form-control" value="Pendiente" readonly>
-          <input type="hidden" name="estado_incidencia" id="estado_incidencia" value="Pendiente">
-        </div>
+                  <!-- Estado -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">Estado</label>
+                    <input type="text" class="form-control" value="Pendiente" readonly>
+                    <input type="hidden" name="estado_incidencia" id="estado_incidencia" value="Pendiente">
+                  </div>
 
-        <!-- Base de Datos -->
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Base de Datos</label>
-          <input type="text" class="form-control" id="base_datos" name="base_datos"
-            placeholder="Ej: SAJ_QA, SAJ_PRD">
-        </div>
+                  <!-- Base de Datos -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">Base de Datos</label>
+                    <input type="text" class="form-control" id="base_datos" name="base_datos"
+                      placeholder="Ej: SAJ_QA, SAJ_PRD">
+                  </div>
 
-        <!-- Analista -->
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Analista QA Responsable</label>
-          <input type="hidden" id="analista_id" name="analista_id" value="<?= $_SESSION['usu_id']; ?>">
-          <input type="text" class="form-control" id="analista" value="<?= $_SESSION['usu_nomape']; ?>" readonly>
-        </div>
+                  <!-- Analista -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">Analista QA Responsable</label>
+                    <input type="hidden" id="analista_id" name="analista_id" value="<?= $_SESSION['usu_id']; ?>">
+                    <input type="text" class="form-control" id="analista" value="<?= $_SESSION['usu_nomape']; ?>"
+                      readonly>
+                  </div>
 
-      </div>
+                </div>
 
-    </div>
-  </div>
-</div>
+              </div>
+            </div>
+          </div>
 
 
 
@@ -109,7 +110,15 @@
               <small class="text-muted">Ej: Informe, Carta, Acta</small>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="col-md-3 mb-3">
+              <label class="form-label">N° Correlativo por Documento</label>
+              <input type="text" class="form-control bg-light border-0 fw-bold" id="correlativo_doc"
+                name="correlativo_doc" readonly>
+              <small class="text-muted">Correlativo interno según la documentación</small>
+            </div>
+
+
+            <div class="col-md-3 mb-3">
               <label class="form-label">Fecha de Recepción</label>
               <input type="date" class="form-control" id="fecha_recepcion" name="fecha_recepcion" readonly>
             </div>
