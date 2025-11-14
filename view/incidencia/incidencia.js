@@ -163,7 +163,7 @@ $(document).ready(function () {
 
       // ✔ Descripción (recorte a 20 caracteres)
       {
-        targets: 4, // ahora sí en la posición correcta
+        targets: 5, // ahora sí en la posición correcta
         render: function (data) {
           if (!data) return "";
           const limite = 20;
@@ -178,7 +178,7 @@ $(document).ready(function () {
 
       // ✔ Estado (badge)
       {
-        targets: 9, // nueva posición correcta
+        targets: 10, // nueva posición correcta
         render: function (data) {
           if (!data) return "";
           let badgeStyle = "";
@@ -198,7 +198,7 @@ $(document).ready(function () {
 
       // ✔ Acciones
       {
-        targets: 10,
+        targets: 11,
         orderable: false,
         searchable: false,
         className: "text-center",
@@ -231,17 +231,19 @@ $(document).ready(function () {
 
     columns: [
       { data: "id_incidencia", title: "ID" },              // 0
-      { data: "correlativo_doc", title: "N° Inc" },          // 1
-      { data: "actividad", title: "Actividad" },       // 2
-      { data: "modulo", title: "Módulo" },          // 3
-      { data: "descripcion", title: "Descripción" },     // 4
-      { data: "analista", title: "Analista" },        // 5
-      { data: "prioridad", title: "Prioridad" },       // 6
-      { data: "tipo_incidencia", title: "Tipo" },            // 7
-      { data: "fecha_registro", title: "Fecha Registro" },  // 8
-      { data: "estado_incidencia", title: "Estado" },          // 9
-      { data: null, title: "Acciones" }         // 10
-    ],
+      { data: "correlativo_doc", title: "N° Doc" },        // 1
+      { data: "actividad", title: "Actividad" },           // 2
+      { data: "documentacion", title: "Documentación" },   // 3
+      { data: "modulo", title: "Módulo" },                 // 4
+      { data: "descripcion", title: "Descripción" },       // 5
+      { data: "analista", title: "Analista" },             // 6
+      { data: "prioridad", title: "Prioridad" },           // 7
+      { data: "tipo_incidencia", title: "Tipo" },          // 8
+      { data: "fecha_registro", title: "Fecha Registro" }, // 9
+      { data: "estado_incidencia", title: "Estado" },      // 10
+      { data: null, title: "Acciones" }                    // 11
+  ],
+  
     language: {
       sProcessing: "Procesando...",
       sLengthMenu: "Mostrar _MENU_ registros",

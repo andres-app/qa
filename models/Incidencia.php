@@ -7,27 +7,32 @@ class Incidencia extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "SELECT 
-        i.id_incidencia,
-        i.correlativo_doc,
-        i.actividad,
-        i.modulo,
-        i.descripcion,
-        u.usu_nomape AS analista,
-        i.prioridad,
-        i.tipo_incidencia,
-        i.fecha_registro,
-        i.estado_incidencia
-    FROM incidencia i
-    LEFT JOIN tm_usuario u ON i.analista_id = u.usu_id
-    WHERE i.estado = 1
-    ORDER BY i.id_incidencia DESC";
-
+                i.id_incidencia,
+                i.correlativo_doc,
+                i.actividad,
+                d.nombre AS documentacion,   -- 👈 NUEVA COLUMNA AQUÍ
+                i.modulo,
+                i.descripcion,
+                u.usu_nomape AS analista,
+                i.prioridad,
+                i.tipo_incidencia,
+                i.fecha_registro,
+                i.estado_incidencia
+            FROM incidencia i
+            LEFT JOIN tm_usuario u 
+                ON i.analista_id = u.usu_id
+            LEFT JOIN documentacion d 
+                ON i.id_documentacion = d.id_documentacion  -- 👈 JOIN AQUÍ
+            WHERE i.estado = 1
+            ORDER BY i.id_incidencia DESC";
+    
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
 
     // 🟧 Actualizar incidencia (funcional)
     public function actualizar($data)
