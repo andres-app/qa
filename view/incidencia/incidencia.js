@@ -128,27 +128,27 @@ $(document).ready(function () {
                     },
                     format: {
                         body: function (data, row, column, node) {
-                
+
                             // Si la columna es ESTADO
                             if (column === 10) {
                                 let div = document.createElement("div");
                                 div.innerHTML = data;
                                 return div.textContent || div.innerText || "";
                             }
-                
+
                             // Si es descripción (columna 5)
                             if (column === 5) {
                                 let full = tabla.row(row).data().descripcion;
                                 return full ? full : "";
                             }
-                
+
                             // Para todas las demás
                             let div = document.createElement("div");
                             div.innerHTML = data;
                             return div.textContent || div.innerText || "";
                         }
                     }
-                }                
+                }
             },
             "pdfHtml5"
         ],
@@ -158,35 +158,74 @@ $(document).ready(function () {
             type: "GET",
             dataType: "json"
         },
-        scrollX: true,
+        scrollX: false,
         autoWidth: false,
         iDisplayLength: 10,
         order: [[0, "desc"]],
 
         columnDefs: [
-            { targets: 0, className: "text-center fw-semibold" },
-            { targets: 1, className: "text-center fw-semibold" },
-
-            // Descripción recortada
+            { targets: 0, width: "60px", className: "text-center fw-semibold" }, // ID
+            { targets: 1, width: "60px", className: "text-center fw-semibold" }, // Nº Incidencia
+            // Documentación recortada
             {
-                targets: 5,
+                targets: 3,
                 render: function (data, type, row) {
-
-                    // 🔹 Si exporta → texto completo
+            
+                    // Exportaciones → completo
                     if (type === "filter" || type === "sort" || type === "export") {
                         return data;
                     }
-
-                    // 🔹 Si muestra en pantalla → mostrar recortado
-                    if (type === "display") {
-                        if (!data) return "";
-                        return data.length > 50 ? data.substring(0, 20) + "…" : data;
-                    }
-
-                    return data;
+            
+                    if (!data) return "";
+            
+                    let corto = data.length > 20 ? data.substring(0, 20) + "…" : data;
+            
+                    return `<span title="${data}">${corto}</span>`;
                 }
-            }
-            ,
+            },
+
+            {
+                targets: 4,
+                render: function (data, type, row) {
+            
+                    // Exportaciones → completo
+                    if (type === "filter" || type === "sort" || type === "export") {
+                        return data;
+                    }
+            
+                    if (!data) return "";
+            
+                    let corto = data.length > 20 ? data.substring(0, 20) + "…" : data;
+            
+                    return `<span title="${data}">${corto}</span>`;
+                }
+            },
+            
+            
+
+// Descripción recortada
+{
+    targets: 5,
+    render: function (data, type, row) {
+
+        // 🔹 Exportar / ordenar / filtrar → texto completo
+        if (type === "filter" || type === "sort" || type === "export") {
+            return data;
+        }
+
+        if (!data) return "";
+
+        // Texto completo y versión corta (20 caracteres)
+        let full  = data;
+        let corto = full.length > 20 ? full.substring(0, 20) + "…" : full;
+
+        // Evitar problemas con comillas en el title
+        let safeTitle = full.replace(/"/g, '&quot;');
+
+        return `<span title="${safeTitle}">${corto}</span>`;
+    }
+},
+
 
             // Estado en badge
             {

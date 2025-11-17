@@ -148,7 +148,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                             <thead class="table-light text-center">
                                                 <tr>
                                                     <th>ID.</th>
-                                                    <th>N° Incidencia.</th>
+                                                    <th>N° Inc.</th>
                                                     <th>Actividad</th>
                                                     <th>Documentación</th>
                                                     <th>Módulo</th>
