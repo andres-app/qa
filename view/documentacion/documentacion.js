@@ -1,8 +1,8 @@
 var tabla;
 
-function init(){
+function init() {
     // Guardar o editar
-    $("#mnt_form").on("submit", function(e){
+    $("#mnt_form").on("submit", function (e) {
         guardaryeditar(e);
     });
 }
@@ -10,7 +10,7 @@ function init(){
 // ==============================
 // GUARDAR O EDITAR
 // ==============================
-function guardaryeditar(e){
+function guardaryeditar(e) {
     e.preventDefault();
 
     var formData = new FormData($("#mnt_form")[0]);
@@ -22,7 +22,7 @@ function guardaryeditar(e){
         contentType: false,
         processData: false,
         dataType: "json", // la respuesta ya viene como JSON
-        success: function(response){
+        success: function (response) {
 
             console.log("RESPUESTA GUARDAR:", response);
 
@@ -47,7 +47,7 @@ function guardaryeditar(e){
                 });
             }
         },
-        error: function(xhr, status, error){
+        error: function (xhr, status, error) {
             console.log("ERROR AJAX GUARDAR:", xhr.responseText);
         }
     });
@@ -56,7 +56,7 @@ function guardaryeditar(e){
 // ==============================
 // CARGAR DATATABLE
 // ==============================
-$(document).ready(function(){ 
+$(document).ready(function () {
 
     tabla = $("#documentacion_table").dataTable({
         "aProcessing": true,
@@ -71,12 +71,12 @@ $(document).ready(function(){
             'csvHtml5',
             'pdfHtml5'
         ],
-        "ajax":{
+        "ajax": {
             url: '../../controller/documentacion.php?op=listar',
-            type : "get",
-            dataType : "json",
+            type: "get",
+            dataType: "json",
             dataSrc: "aaData",
-            error:function(e){
+            error: function (e) {
                 console.log("ERROR AJAX LISTAR:", e.responseText);
             }
         },
@@ -85,16 +85,10 @@ $(document).ready(function(){
             { data: "nombre" },
             { data: "tipo_documento" },
             { data: "fecha_recepcion" },
-            { 
+            { data: "fecha_creacion" },
+            {
                 data: null,
-                render: function(data){
-                    // Por ahora usamos la misma fecha como "Fecha Creación"
-                    return data.fecha_recepcion;  
-                }
-            },
-            { 
-                data: null,
-                render: function(data){
+                render: function (data) {
                     return `
                         <button class="btn btn-warning btn-sm" onclick="editar(${data.id_documentacion})">
                             <i class="bx bx-edit"></i>
@@ -113,19 +107,19 @@ $(document).ready(function(){
         "iDisplayLength": 10,
         "autoWidth": false,
         "language": {
-            "sProcessing":     "Procesando...",
-            "sLengthMenu":     "Mostrar _MENU_ registros",
-            "sZeroRecords":    "No se encontraron resultados",
-            "sEmptyTable":     "Ningún dato disponible en esta tabla",
-            "sInfo":           "Mostrando un total de _TOTAL_ registros",
-            "sInfoEmpty":      "Mostrando un total de 0 registros",
-            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
-            "sSearch":         "Buscar:",
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_ registros",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible en esta tabla",
+            "sInfo": "Mostrando un total de _TOTAL_ registros",
+            "sInfoEmpty": "Mostrando un total de 0 registros",
+            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+            "sSearch": "Buscar:",
             "sLoadingRecords": "Cargando...",
             "oPaginate": {
-                "sFirst":    "Primero",
-                "sLast":     "Último",
-                "sNext":     "Siguiente",
+                "sFirst": "Primero",
+                "sLast": "Último",
+                "sNext": "Siguiente",
                 "sPrevious": "Anterior"
             }
         }
@@ -136,7 +130,7 @@ $(document).ready(function(){
 // ==============================
 // NUEVO DOCUMENTO
 // ==============================
-$(document).on("click","#btnnuevo",function(){
+$(document).on("click", "#btnnuevo", function () {
     $("#id_documento_mnt").val('');
     $("#mnt_form")[0].reset();
     $("#modalLabel").html('Nuevo Documento');
@@ -146,14 +140,14 @@ $(document).on("click","#btnnuevo",function(){
 // ==============================
 // EDITAR DOCUMENTO
 // ==============================
-function editar(id_documentacion){
+function editar(id_documentacion) {
 
     $("#modalLabel").html('Editar Documento');
 
     $.post(
         "../../controller/documentacion.php?op=mostrar",
         { id_documentacion: id_documentacion },
-        function(data){
+        function (data) {
 
             console.log("RESPUESTA MOSTRAR:", data);
 
@@ -174,7 +168,7 @@ function editar(id_documentacion){
 // ==============================
 // ELIMINAR DOCUMENTO
 // ==============================
-function eliminar(id_documentacion){
+function eliminar(id_documentacion) {
     Swal.fire({
         title: "¿Está seguro de eliminar el registro?",
         icon: "question",
@@ -186,7 +180,7 @@ function eliminar(id_documentacion){
             $.post(
                 "../../controller/documentacion.php?op=eliminar",
                 { id_documentacion: id_documentacion },
-                function(resp){
+                function (resp) {
                     console.log("RESPUESTA ELIMINAR:", resp);
                     $("#documentacion_table").DataTable().ajax.reload();
                     Swal.fire("TEMPLATE", "Se eliminó con éxito", "success");

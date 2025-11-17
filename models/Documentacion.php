@@ -1,21 +1,25 @@
 <?php
-class Documentacion extends Conectar {
+class Documentacion extends Conectar
+{
 
     // 🟩 Listar todos los registros
-    public function listar() {
+    public function listar()
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
         $sql = "SELECT 
-                    id_documentacion,
-                    nombre,
-                    descripcion,
-                    fecha_recepcion,
-                    tipo_documento,
-                    estado
-                FROM documentacion
-                WHERE estado = 1
-                ORDER BY fecha_recepcion DESC";
+    id_documentacion,
+    nombre,
+    descripcion,
+    fecha_recepcion,
+    fecha_creacion, 
+    tipo_documento,
+    estado
+FROM documentacion
+WHERE estado = 1
+ORDER BY fecha_recepcion DESC";
+
 
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
@@ -23,7 +27,8 @@ class Documentacion extends Conectar {
     }
 
     // 🟦 Obtener una documentación específica
-    public function mostrar($id_documentacion) {
+    public function mostrar($id_documentacion)
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
@@ -34,7 +39,8 @@ class Documentacion extends Conectar {
     }
 
     // 🟨 Insertar nueva documentación
-    public function insertar($nombre, $descripcion, $fecha_recepcion, $tipo_documento) {
+    public function insertar($nombre, $descripcion, $fecha_recepcion, $tipo_documento)
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
@@ -45,7 +51,8 @@ class Documentacion extends Conectar {
     }
 
     // 🟧 Actualizar registro existente
-    public function actualizar($id_documentacion, $nombre, $descripcion, $fecha_recepcion, $tipo_documento) {
+    public function actualizar($id_documentacion, $nombre, $descripcion, $fecha_recepcion, $tipo_documento)
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
@@ -57,7 +64,8 @@ class Documentacion extends Conectar {
     }
 
     // 🟥 Eliminación lógica
-    public function eliminar($id_documentacion) {
+    public function eliminar($id_documentacion)
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
@@ -67,7 +75,8 @@ class Documentacion extends Conectar {
     }
 
     // 🟪 Combo para otros módulos (incidencias, requerimientos, etc.)
-    public function combo() {
+    public function combo()
+    {
         $conectar = parent::conexion();
         parent::set_names();
 
