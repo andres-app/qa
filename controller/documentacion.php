@@ -37,8 +37,13 @@ switch ($_GET["op"]) {
 
     // 🟨 Mostrar un registro específico
     case "mostrar":
+        if (!isset($_POST["id_documentacion"])) {
+            echo json_encode(["error" => "ID no recibido"]);
+            exit;
+        }
         echo json_encode($documentacion->mostrar($_POST["id_documentacion"]));
         break;
+
 
     // 🟧 Eliminar (lógico)
     case "eliminar":
