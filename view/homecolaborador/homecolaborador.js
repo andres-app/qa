@@ -71,6 +71,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Filtrar etiquetas y datos que NO estén vacíos ni null
+let cleanLabels = [];
+let cleanData = [];
+
+for (let i = 0; i < modLabels.length; i++) {
+    if (modLabels[i] !== null && modLabels[i] !== "" && modData[i] > 0) {
+        cleanLabels.push(modLabels[i]);
+        cleanData.push(modData[i]);
+    }
+}
+
 
 
   // ==============================
@@ -397,9 +408,9 @@ if (document.getElementById("chartModulo")) {
   new Chart(document.getElementById("chartModulo"), {
     type: "doughnut",
     data: {
-      labels: modLabels,
+      labels: cleanLabels,
       datasets: [{
-        data: modData,
+        data: cleanData,
         backgroundColor: [
           "#3B82F6", "#10B981", "#F59E0B",
           "#EF4444", "#8B5CF6", "#14B8A6"
@@ -410,10 +421,10 @@ if (document.getElementById("chartModulo")) {
       responsive: true,
       plugins: {
         legend: { position: "bottom" },
-        doughnutLabels: {} // activar plugin
+        doughnutLabels: {}
       }
     },
-    plugins: [doughnutLabels] // registrar plugin
+    plugins: [doughnutLabels]
   });
 }
 
