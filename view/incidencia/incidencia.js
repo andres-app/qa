@@ -118,7 +118,41 @@ $(document).ready(function () {
     tabla = $("#incidencia_table").DataTable({
         processing: true,
         dom: "Bfrtip",
-        buttons: ["copyHtml5", "excelHtml5", "csvHtml5", "pdfHtml5"],
+        buttons: [
+            {
+                extend: "excelHtml5",
+                exportOptions: {
+                    columns: function (idx, data, node) {
+                        // ❌ Omitir columna ACCIONES (columna 11)
+                        return idx !== 11;
+                    },
+                    format: {
+                        body: function (data, row, column, node) {
+                
+                            // Si la columna es ESTADO
+                            if (column === 10) {
+                                let div = document.createElement("div");
+                                div.innerHTML = data;
+                                return div.textContent || div.innerText || "";
+                            }
+                
+                            // Si es descripción (columna 5)
+                            if (column === 5) {
+                                let full = tabla.row(row).data().descripcion;
+                                return full ? full : "";
+                            }
+                
+                            // Para todas las demás
+                            let div = document.createElement("div");
+                            div.innerHTML = data;
+                            return div.textContent || div.innerText || "";
+                        }
+                    }
+                }                
+            },
+            "pdfHtml5"
+        ],
+
         ajax: {
             url: "../../controller/incidencia.php?op=listar",
             type: "GET",
@@ -136,11 +170,23 @@ $(document).ready(function () {
             // Descripción recortada
             {
                 targets: 5,
-                render: function (data) {
-                    if (!data) return "";
-                    return data.length > 20 ? data.substring(0, 20) + "…" : data;
+                render: function (data, type, row) {
+
+                    // 🔹 Si exporta → texto completo
+                    if (type === "filter" || type === "sort" || type === "export") {
+                        return data;
+                    }
+
+                    // 🔹 Si muestra en pantalla → mostrar recortado
+                    if (type === "display") {
+                        if (!data) return "";
+                        return data.length > 50 ? data.substring(0, 20) + "…" : data;
+                    }
+
+                    return data;
                 }
-            },
+            }
+            ,
 
             // Estado en badge
             {
