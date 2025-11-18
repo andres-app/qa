@@ -18,70 +18,75 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ dataOrgano:", dataOrgano);
   console.log("✅ dataEspecialidad:", dataEspecialidad);
 
-  // ==============================
-  //  GRÁFICO: ÓRGANO JURISDICCIONAL
-  // ==============================
-  const ctxOrg = document.getElementById("chartCasosOrgano")?.getContext("2d");
-  if (ctxOrg && dataOrgano?.labels?.length > 0) {
+ // ==============================
+//  GRÁFICO: ÓRGANO JURISDICCIONAL
+// ==============================
+const ctxOrg = document.getElementById("chartCasosOrgano")?.getContext("2d");
+
+if (ctxOrg && dataOrgano?.labels?.length > 0) {
+
     const chartOrg = new Chart(ctxOrg, {
-      type: "pie",
-      data: {
-        labels: dataOrgano.labels,
-        datasets: [{
-          data: dataOrgano.valores,
-          backgroundColor: [
-            "rgba(96,165,250,0.8)",
-            "rgba(147,197,253,0.8)",
-            "rgba(191,219,254,0.8)",
-            "rgba(219,234,254,0.8)",
-            "rgba(59,130,246,0.8)",
-            "rgba(37,99,235,0.8)"
-          ],
-          borderColor: "#fff",
-          borderWidth: 2
-        }]
-      },
-      options: {
-        onClick: (evt, activeEls) => {
-          if (!activeEls.length) return;
-
-          const index = activeEls[0].index;
-          const id_organo = dataOrgano.ids[index];
-          const nombre = dataOrgano.labels[index];
-
-          // ✅ Redirigir al módulo seg_org_juri con parámetros GET
-          const url = `../seg_org_juri/index.php?id_organo=${id_organo}&nombre=${encodeURIComponent(nombre)}`;
-          window.location.href = url;
+        type: "pie",
+        data: {
+            labels: dataOrgano.labels,
+            datasets: [{
+                data: dataOrgano.valores,
+                backgroundColor: [
+                    "rgba(96,165,250,0.8)",
+                    "rgba(147,197,253,0.8)",
+                    "rgba(191,219,254,0.8)",
+                    "rgba(219,234,254,0.8)",
+                    "rgba(59,130,246,0.8)",
+                    "rgba(37,99,235,0.8)"
+                ],
+                borderColor: "#fff",
+                borderWidth: 2
+            }]
         },
 
-        plugins: {
-          legend: { position: "bottom" },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => {
-                const value = ctx.raw;
-                const total = ctx.chart._metasets[0].total;
-                const pct = ((value / total) * 100).toFixed(1);
-                return `${ctx.label}: ${value} (${pct}%)`;
-              }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            // ⭐⭐⭐ LEYENDA A LA DERECHA ⭐⭐⭐
+            plugins: {
+                legend: {
+                    position: "right",
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        boxWidth: 12,
+                        padding: 10,
+                        font: { size: 12 }
+                    }
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => {
+                            const value = ctx.raw;
+                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = ((value / total) * 100).toFixed(1);
+                            return `${ctx.label}: ${value} (${pct}%)`;
+                        }
+                    }
+                }
+            },
+
+            // ⭐ Click para redirigir (tu lógica original)
+            onClick: (evt, activeEls) => {
+                if (!activeEls.length) return;
+
+                const index = activeEls[0].index;
+                const id_organo = dataOrgano.ids[index];
+                const nombre = dataOrgano.labels[index];
+
+                const url = `../seg_org_juri/index.php?id_organo=${id_organo}&nombre=${encodeURIComponent(nombre)}`;
+                window.location.href = url;
             }
-          }
         }
-      }
     });
-  }
-
-  // Filtrar etiquetas y datos que NO estén vacíos ni null
-let cleanLabels = [];
-let cleanData = [];
-
-for (let i = 0; i < modLabels.length; i++) {
-    if (modLabels[i] !== null && modLabels[i] !== "" && modData[i] > 0) {
-        cleanLabels.push(modLabels[i]);
-        cleanData.push(modData[i]);
-    }
 }
-
 
 
   // ==============================

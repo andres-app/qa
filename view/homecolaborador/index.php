@@ -176,9 +176,11 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                 Casos de Prueba por Órgano Jurisdiccional
                                             </div>
                                             <div class="card-body">
-                                                <div class="chart-container">
+                                                <div class="chart-container d-flex justify-content-center align-items-center"
+                                                    style="height: 380px;">
                                                     <canvas id="chartCasosOrgano"></canvas>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -221,7 +223,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-5">
+                                            <div class="col-md-5 d-flex justify-content-center align-items-center">
                                                 <div class="table-responsive">
                                                     <table
                                                         class="table table-sm table-bordered align-middle text-center shadow-sm">
@@ -395,32 +397,32 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                 });
             }
 
-                    const dataOrgano = {
-                        ids: <?= json_encode($ids_organo); ?>,
-                    labels: <?= json_encode($labels_organo); ?>,
-                    valores: <?= json_encode($valores_organo); ?>
-                };
+            const dataOrgano = {
+                ids: <?= json_encode($ids_organo); ?>,
+                labels: <?= json_encode($labels_organo); ?>,
+                valores: <?= json_encode($valores_organo); ?>
+            };
 
-                    const dataEspecialidad = {
-                        labels: <?= json_encode($labels_especialidad); ?>,
-                    completado: <?= json_encode(array_map('intval', $data_completado)); ?>,
-                    observado: <?= json_encode(array_map('intval', $data_observado)); ?>,
-                    pendiente: <?= json_encode(array_map('intval', $data_pendiente)); ?>
-                };
+            const dataEspecialidad = {
+                labels: <?= json_encode($labels_especialidad); ?>,
+                completado: <?= json_encode(array_map('intval', $data_completado)); ?>,
+                observado: <?= json_encode(array_map('intval', $data_observado)); ?>,
+                pendiente: <?= json_encode(array_map('intval', $data_pendiente)); ?>
+            };
 
-                    const analisisData = <?= json_encode($analisis_funcionalidad_limpio); ?>;
+            const analisisData = <?= json_encode($analisis_funcionalidad_limpio); ?>;
 
-                    /* Variables nuevas de incidencias */
-                    const docLabels = <?= json_encode(array_column($inc_por_doc, "documento")); ?>;
-                    const docData = <?= json_encode(array_column($inc_por_doc, "total")); ?>;
+            /* Variables nuevas de incidencias */
+            const docLabels = <?= json_encode(array_column($inc_por_doc, "documento")); ?>;
+            const docData = <?= json_encode(array_column($inc_por_doc, "total")); ?>;
 
-                    const modLabels = <?= json_encode(array_column($inc_por_mod, "modulo")); ?>;
-                    const modData = <?= json_encode(array_column($inc_por_mod, "total")); ?>;
+            const modLabels = <?= json_encode(array_column($inc_por_mod, "modulo")); ?>;
+            const modData = <?= json_encode(array_column($inc_por_mod, "total")); ?>;
 
-                    // 💥 OJO: acá usar 'periodo' en lugar de 'mes'
-                    const mesLabels = <?= json_encode(array_column($inc_por_mes, "periodo")); ?>;
-                    const mesData = <?= json_encode(array_column($inc_por_mes, "total")); ?>;
-                    const mesLabelsBonitos = formatearMeses(mesLabels);
+            // 💥 OJO: acá usar 'periodo' en lugar de 'mes'
+            const mesLabels = <?= json_encode(array_column($inc_por_mes, "periodo")); ?>;
+            const mesData = <?= json_encode(array_column($inc_por_mes, "total")); ?>;
+            const mesLabelsBonitos = formatearMeses(mesLabels);
 
 
         </script>
