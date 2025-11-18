@@ -53,7 +53,10 @@ function mostrar(id_incidencia) {
         data: { id_incidencia },
         dataType: "json",
         success: function (data) {
-            if (data) {
+
+            cargarModulos(); // cargar catálogo
+
+            setTimeout(() => {
                 $("#id_incidencia").val(data.id_incidencia);
                 $("#actividad").val(data.actividad);
                 $("#descripcion").val(data.descripcion);
@@ -61,20 +64,21 @@ function mostrar(id_incidencia) {
                 $("#prioridad").val(data.prioridad);
                 $("#tipo_incidencia").val(data.tipo_incidencia);
                 $("#base_datos").val(data.base_datos);
-                $("#modulo").val(data.modulo);
+                $("#id_modulo").val(data.id_modulo); // CORREGIDO
                 $("#version_origen").val(data.version_origen);
                 $("#fecha_registro").val(data.fecha_registro);
                 $("#fecha_recepcion").val(data.fecha_recepcion);
+            }, 150);
 
-                $("#modalLabel").html("Editar Incidencia");
-                $("#mnt_modal").modal("show");
-            }
+            $("#modalLabel").html("Editar Incidencia");
+            $("#mnt_modal").modal("show");
         },
         error: function () {
             Swal.fire("Error", "No se pudo mostrar la incidencia", "error");
         }
     });
 }
+
 
 // =======================================================
 // ELIMINAR INCIDENCIA
@@ -114,6 +118,8 @@ function eliminar(id_incidencia) {
 $(document).ready(function () {
 
     cargarDocumentacion(); // 🔹 Combo documentación modal + filtros
+    cargarModulos();
+
 
     tabla = $("#incidencia_table").DataTable({
         processing: true,
@@ -334,6 +340,7 @@ $(document).ready(function () {
     // NUEVA INCIDENCIA
     // =======================================================
     $("#btnnuevo").on("click", function () {
+        cargarModulos(); // ← necesario aquí
         $("#mnt_form")[0].reset();
         $("#modalLabel").html("Nueva Incidencia");
         $("#mnt_modal").modal("show");
@@ -403,6 +410,22 @@ $("#id_documentacion").on("change", function () {
         }
     });
 });
+
+function cargarModulos() {
+    $.ajax({
+        url: "../../controller/modulo.php?op=combo",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            let select = $("#id_modulo");
+            select.empty().append('<option value="">Seleccione…</option>');
+            data.forEach(m => {
+                select.append(`<option value="${m.id_modulo}">${m.nombre}</option>`);
+            });
+        }
+    });
+}
+
 
 // Ejecutar init
 init();

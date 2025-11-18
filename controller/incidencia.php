@@ -51,7 +51,7 @@ switch ($_GET["op"]) {
             "prioridad" => $_POST["prioridad"],
             "base_datos" => $_POST["base_datos"],
             "version_origen" => $_POST["version_origen"],
-            "modulo" => $_POST["modulo"],
+            "id_modulo" => $_POST["id_modulo"],
             "estado_incidencia" => $_POST["estado_incidencia"]  // ✔ correcto
         ];
 

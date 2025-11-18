@@ -80,16 +80,11 @@
 
             <div class="col-md-4 mb-3">
               <label class="form-label">Módulo del Sistema</label>
-              <select class="form-control" id="modulo" name="modulo" required>
+              <select class="form-control" id="id_modulo" name="id_modulo" required>
                 <option value="">Seleccione...</option>
-                <option value="EJENP">EJENP</option>
-                <option value="SAJ - PJ">SAJ - PJ</option>
-                <option value="Casos de Prueba">Casos de Prueba</option>
-                <option value="Grabaciones Judiciales">Grabaciones Judiciales</option>
-                <option value="Programación de Audiencias">Programación de Audiencias</option>
-                <option value="Actuaciones Judiciales">Actuaciones Judiciales</option>
               </select>
             </div>
+
             <div class="col-md-4 mb-3">
               <label class="form-label">Versión del Sistema</label>
               <select class="form-control" id="version_origen" name="version_origen">
