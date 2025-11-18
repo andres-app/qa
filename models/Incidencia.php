@@ -212,19 +212,22 @@ class Incidencia extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "
-        SELECT modulo,
-               COUNT(id_incidencia) AS total
-        FROM incidencia
-        WHERE estado = 1
-        GROUP BY modulo
-        ORDER BY total DESC
-    ";
+            SELECT m.nombre AS modulo,
+                   COUNT(i.id_incidencia) AS total
+            FROM incidencia i
+            LEFT JOIN modulos m ON i.id_modulo = m.id_modulo
+            WHERE i.estado = 1
+            GROUP BY m.nombre
+            ORDER BY total DESC
+        ";
+    
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
 
     public function incidencias_por_mes()
     {
