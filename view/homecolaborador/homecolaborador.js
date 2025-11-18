@@ -408,9 +408,9 @@ if (document.getElementById("chartModulo")) {
   new Chart(document.getElementById("chartModulo"), {
     type: "doughnut",
     data: {
-      labels: cleanLabels,
+      labels: modLabels,   // <-- RESTAURADO
       datasets: [{
-        data: cleanData,
+        data: modData,     // <-- RESTAURADO
         backgroundColor: [
           "#3B82F6", "#10B981", "#F59E0B",
           "#EF4444", "#8B5CF6", "#14B8A6"
@@ -419,14 +419,24 @@ if (document.getElementById("chartModulo")) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: "bottom" },
-        doughnutLabels: {}
+        legend: {
+          position: "right",
+          labels: {
+            usePointStyle: true,
+            pointStyle: "circle",
+            boxWidth: 12,
+            padding: 15,
+            font: { size: 12 }
+          }
+        }
       }
     },
     plugins: [doughnutLabels]
   });
 }
+
 
 
 

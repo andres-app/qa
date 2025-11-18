@@ -214,8 +214,9 @@ class Incidencia extends Conectar
         parent::set_names();
     
         $sql = "
-            SELECT m.nombre AS modulo,
-                   COUNT(i.id_incidencia) AS total
+            SELECT 
+                IFNULL(m.nombre, 'Sin módulo') AS modulo,
+                COUNT(i.id_incidencia) AS total
             FROM incidencia i
             LEFT JOIN modulos m ON i.id_modulo = m.id_modulo
             WHERE i.estado = 1
@@ -227,6 +228,7 @@ class Incidencia extends Conectar
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
     
 
     public function incidencias_por_mes()
