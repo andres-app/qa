@@ -222,46 +222,52 @@ $html .= '
 <br>
 ';
 
-
-
-
-// Estados
+// ==============================
+// ESTADOS — FORMATO IGUAL AL BLOQUE NEGRO OFICIAL
+// ==============================
 $html .= '
-<table width="100%" cellpadding="2">
-    <tr>
-        <td width="70%" style="font-size:11px;">
-            <b>Estado Inicial:</b> ' . $estado_inicial . '
+<table width="100%" cellpadding="4" cellspacing="0" style="border-collapse:collapse; font-size:12px;">
+
+    <!-- ESTADO INICIAL -->
+    <tr style="background-color:#000000; color:#FFFFFF; font-weight:bold;">
+        <td width="40%" align="right" style="border:0.5px solid #000;">
+            Estado Inicial:
         </td>
-        <td width="30%" align="right" style="font-size:11px;">
+        <td width="30%" align="left" style="border:0.5px solid #000; color:#8DB4FF;">
+            ' . $estado_actual . '
+        </td>
+        <td width="30%" align="right" style="border:0.5px solid #000;">
+            [' . $fecha_actual . ']
+        </td>
+    </tr>
+
+    <!-- ESTADO ACTUAL -->
+    <tr style="background-color:#000000; color:#FFFFFF; font-weight:bold;">
+        <td align="right" style="border:0.5px solid #000;">
+            Estado Actual:
+        </td>
+        <td align="left" style="border:0.5px solid #000; color:#8DB4FF;">
+            ' . $estado_inicial . '
+        </td>
+        <td align="right" style="border:0.5px solid #000;">
             [' . $fecha_inicial . ']
         </td>
     </tr>
 
-    <tr>
-        <td style="font-size:11px;">
-            <b>Estado Actual:</b> ' . $estado_actual . '
-        </td>
-        <td align="right" style="font-size:11px;">
-            [' . $fecha_actual . ']
-        </td>
-    </tr>
 </table>
-
-<br>
-
-<div class="parrafo" style="font-size:11px;">
-    Ambiente de pruebas v 1.0-SAJ – PJ / Registro de expediente
-</div>
 <br>
 ';
+
+
 
 
 // Tabla Documento de análisis (igual al formato)
 $html .= '
 <table class="tbl-analisis" width="100%" cellpadding="3">
-    <tr>
-        <td class="header-negro" colspan="4">Documento de análisis</td>
-    </tr>
+<tr>
+    <td class="label" width="100%">' . v($data, "documentacion_nombre") . '</td>
+</tr>
+
 
     <tr>
         <td class="label" width="20%">Nro. Incidencia</td>
