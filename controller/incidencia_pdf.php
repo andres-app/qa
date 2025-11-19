@@ -153,26 +153,76 @@ $css = '
 // ==============================
 $html = $css;
 
-// LOGO + TÍTULO OFICIAL
+// ==============================
+// ENCABEZADO EXACTO PODER JUDICIAL
+// ==============================
 $html .= '
-<table width="100%" cellpadding="2">
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+
     <tr>
-        <td width="25%" align="left">
-            <img src="../assets/img/logo_pj.png" width="90">
+
+        <!-- LOGO -->
+        <td width="20%" 
+            style="
+                border:0.5px solid #000; 
+                border-right:none;
+                padding:8px; 
+                text-align:center;
+                vertical-align:middle;
+            ">
+            <img src="https://tse4.mm.bing.net/th/id/OIP.OgB_zffZXepRWKo6PRkJjwHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" style="height:65px;">
         </td>
 
-        <td width="50%" align="center" style="font-size:14px; font-weight:bold;">
-            INFORME DE PRUEBAS N° 001
-        </td>
+        <!-- TÍTULO CENTRADO REAL -->
+<td width="60%" 
+    style="
+        border:0.5px solid #000;
+        font-size:16px;
+        font-weight:bold;
+        text-align:center;
+    ">
+    <div style="display:flex; align-items:center; justify-content:center; height:80px;">
+        INFORME DE PRUEBAS N° 001
+    </div>
+</td>
 
 
-        <td width="25%" align="center" style="border:0.5px solid #000; font-size:12px;">
-            <b>Versión</b><br>1.0
-        </td>
+<td width="20%" 
+    style="
+        border:0.5px solid #000;
+        text-align:center;
+        vertical-align:middle;
+        height:80px; /* altura fija en la celda */
+        padding:0;
+    ">
+    <div style="
+        display:flex;
+        flex-direction:column;
+        justify-content:center; /* centra vertical */
+        align-items:center;     /* centra horizontal */
+        height:100%;            /* ocupa toda la altura del td */
+        font-size:14px;
+        font-weight:normal;
+        box-sizing:border-box;
+    ">
+        <b>Versión</b>
+        <span>1.0</span>
+    </div>
+</td>
+
+
+
+
+
+
     </tr>
+
 </table>
-<br><br>
+
+<br>
 ';
+
+
 
 
 // Estados
