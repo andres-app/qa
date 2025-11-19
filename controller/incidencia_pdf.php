@@ -1,6 +1,8 @@
 <?php
 // Limpia cualquier salida previa para evitar "Some data has already been output"
-if (ob_get_length()) { ob_end_clean(); }
+if (ob_get_length()) {
+    ob_end_clean();
+}
 ob_start();
 
 require_once("../config/conexion.php");
@@ -15,58 +17,67 @@ if ($id_incidencia <= 0) {
     die("ID de incidencia inválido");
 }
 
-$inc  = new Incidencia();
+$inc = new Incidencia();
 $data = $inc->mostrar($id_incidencia);
+
+// Obtener imágenes (JSON → array)
+$imagenes = [];
+if (!empty($data["imagenes"])) {
+    $imagenes = json_decode($data["imagenes"], true);
+}
+
 
 if (!$data) {
     die("No se encontró la incidencia solicitada.");
 }
 
 // Helpers para evitar warnings
-function v($array, $key, $default = "-") {
+function v($array, $key, $default = "-")
+{
     return isset($array[$key]) && $array[$key] !== "" ? $array[$key] : $default;
 }
-function cb($actual, $value) {
+function cb($actual, $value)
+{
     return ($actual === $value) ? "[ X ]" : "[   ]";
 }
 
 // Mapeo de campos (ajusta estos nombres a tu tabla)
-$estado_inicial  = v($data, "estado_inicial", "PENDIENTE");
-$fecha_inicial   = v($data, "fecha_inicial", "dd/mm/aaaa");
-$estado_actual   = v($data, "estado_incidencia", "PENDIENTE");
-$fecha_actual    = date("d/m/Y");
+$estado_inicial = v($data, "estado_inicial", "PENDIENTE");
+$fecha_inicial = v($data, "fecha_inicial", "dd/mm/aaaa");
+$estado_actual = v($data, "estado_incidencia", "PENDIENTE");
+$fecha_actual = date("d/m/Y");
 
-$ambiente        = v($data, "ambiente_pruebas", "Ambiente de pruebas v 1.0-SAJ – PJ / Registro de expediente");
+$ambiente = v($data, "ambiente_pruebas", "Ambiente de pruebas v 1.0-SAJ – PJ / Registro de expediente");
 
-$nro_incidencia  = v($data, "id_incidencia");
-$nro_glpi        = v($data, "glpi");
-$version_origen  = v($data, "version_origen");
-$caso_prueba     = v($data, "caso_prueba");
-$paso_cp         = v($data, "paso_cp");
+$nro_incidencia = v($data, "id_incidencia");
+$nro_glpi = v($data, "glpi");
+$version_origen = v($data, "version_origen");
+$caso_prueba = v($data, "caso_prueba");
+$paso_cp = v($data, "paso_cp");
 
-$tipo_error      = v($data, "tipo_incidencia"); // Ej: Funcional, Datos, Diseño, Otros
-$criticidad      = v($data, "prioridad");       // Ej: Alto, Medio, Bajo
+$tipo_error = v($data, "tipo_incidencia"); // Ej: Funcional, Datos, Diseño, Otros
+$criticidad = v($data, "prioridad");       // Ej: Alto, Medio, Bajo
 
-$motor_bd        = v($data, "motor_bd");
-$base_datos      = v($data, "base_datos");
-$perfil          = v($data, "perfil");
-$usuario         = v($data, "usuario");
+$motor_bd = v($data, "motor_bd");
+$base_datos = v($data, "base_datos");
+$perfil = v($data, "perfil");
+$usuario = v($data, "usuario");
 
-$descripcion     = v($data, "descripcion", "");
-$pasos           = v($data, "pasos", "");
-$observaciones   = v($data, "observaciones", "");
-$analista        = v($data, "analista", "");
+$descripcion = v($data, "descripcion", "");
+$pasos = v($data, "pasos", "");
+$observaciones = v($data, "observaciones", "");
+$analista = v($data, "analista", "");
 
 // Checkboxes Tipo de Error
 $cb_funcional = cb($tipo_error, "Funcional");
-$cb_datos     = cb($tipo_error, "Datos");
-$cb_diseno    = cb($tipo_error, "Diseño");
-$cb_otros     = cb($tipo_error, "Otros");
+$cb_datos = cb($tipo_error, "Datos");
+$cb_diseno = cb($tipo_error, "Diseño");
+$cb_otros = cb($tipo_error, "Otros");
 
 // Checkboxes Criticidad
-$cb_alto  = cb($criticidad, "Alto");
+$cb_alto = cb($criticidad, "Alto");
 $cb_medio = cb($criticidad, "Medio");
-$cb_bajo  = cb($criticidad, "Bajo");
+$cb_bajo = cb($criticidad, "Bajo");
 
 // ==============================
 // CONFIGURACIÓN DEL PDF
@@ -142,65 +153,83 @@ $css = '
 // ==============================
 $html = $css;
 
-// Título
+// LOGO + TÍTULO OFICIAL
 $html .= '
-<div class="titulo-principal">INFORME DE PRUEBAS N° '.str_pad($nro_incidencia, 4, "0", STR_PAD_LEFT).'</div>
-<div class="version-text">Versión</div>
-<div class="version-text">1.0</div>
-<br><br>
-';
+<table width="100%" cellpadding="2">
+    <tr>
+        <td width="25%" align="left">
+            <img src="../assets/img/logo_pj.png" width="90">
+        </td>
 
-// Estados
-$html .= '
-<table class="tbl-estados" width="100%" cellpadding="2">
-    <tr>
-        <td width="50%">
-            <span class="estado-label">Estado Inicial: </span>
-            <span class="estado-valor">'.$estado_inicial.'</span>
+        <td width="50%" align="center" style="font-size:14px; font-weight:bold;">
+            INFORME DE PRUEBAS N° 001
         </td>
-        <td width="50%" style="text-align:right;">
-            <span class="estado-label">['.$fecha_inicial.']</span>
-        </td>
-    </tr>
-    <tr>
-        <td width="50%">
-            <span class="estado-label">Estado Actual: </span>
-            <span class="estado-valor">'.$estado_actual.'</span>
-        </td>
-        <td width="50%" style="text-align:right;">
-            <span class="estado-label">['.$fecha_actual.']</span>
+
+
+        <td width="25%" align="center" style="border:0.5px solid #000; font-size:12px;">
+            <b>Versión</b><br>1.0
         </td>
     </tr>
 </table>
+<br><br>
+';
+
+
+// Estados
+$html .= '
+<table width="100%" cellpadding="2">
+    <tr>
+        <td width="70%" style="font-size:11px;">
+            <b>Estado Inicial:</b> ' . $estado_inicial . '
+        </td>
+        <td width="30%" align="right" style="font-size:11px;">
+            [' . $fecha_inicial . ']
+        </td>
+    </tr>
+
+    <tr>
+        <td style="font-size:11px;">
+            <b>Estado Actual:</b> ' . $estado_actual . '
+        </td>
+        <td align="right" style="font-size:11px;">
+            [' . $fecha_actual . ']
+        </td>
+    </tr>
+</table>
+
 <br>
-<div class="parrafo">'.$ambiente.'</div>
+
+<div class="parrafo" style="font-size:11px;">
+    Ambiente de pruebas v 1.0-SAJ – PJ / Registro de expediente
+</div>
 <br>
 ';
 
+
 // Tabla Documento de análisis (igual al formato)
 $html .= '
-<table class="tbl-analisis" width="100%" cellpadding="2">
+<table class="tbl-analisis" width="100%" cellpadding="3">
     <tr>
         <td class="header-negro" colspan="4">Documento de análisis</td>
     </tr>
 
     <tr>
         <td class="label" width="20%">Nro. Incidencia</td>
-        <td width="30%">'.$nro_incidencia.'</td>
+        <td width="30%">' . $nro_incidencia . '</td>
         <td class="label" width="20%">N° GLPI</td>
-        <td width="30%">'.$nro_glpi.'</td>
+        <td width="30%">' . $nro_glpi . '</td>
     </tr>
 
     <tr>
         <td class="label">Versión Origen</td>
-        <td>'.$version_origen.'</td>
+        <td>' . $version_origen . '</td>
         <td class="label">Caso de Prueba</td>
-        <td>'.$caso_prueba.'</td>
+        <td>' . $caso_prueba . '</td>
     </tr>
 
     <tr>
         <td class="label">Paso del CP</td>
-        <td>'.$paso_cp.'</td>
+        <td>' . $paso_cp . '</td>
         <td class="label"></td>
         <td></td>
     </tr>
@@ -208,76 +237,119 @@ $html .= '
     <tr>
         <td class="label" valign="top">Tipo de Error</td>
         <td valign="top">
-            '.$cb_funcional.' Funcional<br>
-            '.$cb_datos.' Datos<br>
-            '.$cb_diseno.' Diseño<br>
-            '.$cb_otros.' Otros
+            ' . $cb_funcional . ' Funcional<br>
+            ' . $cb_datos . ' Datos<br>
+            ' . $cb_diseno . ' Diseño<br>
+            ' . $cb_otros . ' Otros
         </td>
+
         <td class="label" valign="top">Criticidad</td>
         <td valign="top">
-            '.$cb_alto.' Alto<br>
-            '.$cb_medio.' Medio<br>
-            '.$cb_bajo.' Bajo
+            ' . $cb_alto . ' Alto<br>
+            ' . $cb_medio . ' Medio<br>
+            ' . $cb_bajo . ' Bajo
         </td>
     </tr>
 
     <tr>
         <td class="label">Motor de BD</td>
-        <td>'.$motor_bd.'</td>
+        <td>' . $motor_bd . '</td>
         <td class="label">Base de datos</td>
-        <td>'.$base_datos.'</td>
+        <td>' . $base_datos . '</td>
     </tr>
 
     <tr>
         <td class="label">Perfil</td>
-        <td>'.$perfil.'</td>
+        <td>' . $perfil . '</td>
         <td class="label">Usuario</td>
-        <td>'.$usuario.'</td>
+        <td>' . $usuario . '</td>
     </tr>
 
     <tr>
         <td class="label" valign="top">Descripción<br>|Incidencia</td>
         <td colspan="3" valign="top">
-            '.nl2br(htmlspecialchars($descripcion)).'
+            ' . nl2br(htmlspecialchars($descripcion)) . '
         </td>
     </tr>
 </table>
+
 <br>
 ';
 
-// Secuencia de pasos
+
+// ==============================
+// SECUENCIA DE PASOS + IMÁGENES EN LA MISMA TABLA
+// ==============================
+
+// Construimos el contenido de la celda derecha
+$contenido_pasos = nl2br(htmlspecialchars($pasos));
+
+// Ahora añadimos cada imagen como <img> dentro del mismo contenido
+if (!empty($imagenes)) {
+
+    $contenido_pasos .= '<br><br><b>Evidencias gráficas (capturas)</b><br><br>';
+
+    foreach ($imagenes as $img) {
+
+        $rutaLocal = "../" . $img;
+
+        if (file_exists($rutaLocal)) {
+
+            // IMPORTANTE: convertir la ruta en absoluta para TCPDF
+            $rutaAbs = realpath($rutaLocal);
+
+            $contenido_pasos .= '
+                <div style="margin-top:10px; text-align:center;">
+                    <img src="' . $rutaAbs . '" width="520">
+                </div>
+                <br>
+            ';
+        }
+    }
+}
+
+// Armamos la tabla final EXACTAMENTE como tu ejemplo
 $html .= '
 <div class="seccion-titulo">Secuencia de pasos realizados</div>
-<table class="tbl-analisis" width="100%" cellpadding="2">
+
+<table class="tbl-analisis" width="100%" cellpadding="3">
     <tr>
         <td width="5%" class="label" valign="top">1</td>
         <td width="95%" valign="top">
-            '.nl2br(htmlspecialchars($pasos)).'
+            ' . $contenido_pasos . '
         </td>
     </tr>
 </table>
+
 <br>
 ';
+
+
+
+
 
 // Observaciones
 $html .= '
 <div class="seccion-titulo">Observaciones.</div>
-<div class="parrafo">'.nl2br(htmlspecialchars($observaciones)).'</div>
+<div class="parrafo">' . nl2br(htmlspecialchars($observaciones)) . '</div>
 <br><br><br>
 ';
+
+
 
 // Firma
 $html .= '
 <div style="font-size:9px; text-align:left;">
     Analista de Calidad<br>
-    '.$analista.'
+    ' . $analista . '
 </div>
 ';
+
 
 // ==============================
 // GENERAR PDF
 // ==============================
 $pdf->writeHTML($html, true, false, true, false, '');
-$pdf->Output("Informe_INC_".$nro_incidencia.".pdf", "I");
+$pdf->Output("Informe_INC_" . $nro_incidencia . ".pdf", "I");
 
 ob_end_flush();
