@@ -72,16 +72,31 @@ class Actividad extends Conectar {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function actualizar_estado($id_actividad, $estado, $avance) {
+    public function actualizar_estado($id, $estado, $avance, $fecha_inicio, $fecha_respuesta, $observacion)
+    {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "UPDATE actividad 
-                SET estado = ?, avance = ?
+                SET estado = ?, 
+                    avance = ?, 
+                    fecha_inicio = IFNULL(?, fecha_inicio),
+                    fecha_respuesta = IFNULL(?, fecha_respuesta),
+                    observacion = ?
                 WHERE id_actividad = ?";
+    
         $stmt = $conectar->prepare($sql);
-        $stmt->execute([$estado, $avance, $id_actividad]);
+        return $stmt->execute([
+            $estado,
+            $avance,
+            $fecha_inicio,
+            $fecha_respuesta,
+            $observacion,
+            $id
+        ]);
     }
+    
+    
 
     public function get_correlativo() {
         $conectar = parent::conexion();

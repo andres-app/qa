@@ -45,33 +45,46 @@ switch ($_GET["op"]) {
         break;
 
     case "actualizar_estado":
-        $actividad->actualizar_estado($_POST["id_actividad"], $_POST["estado"], $_POST["avance"]);
+
+        $estado = $_POST["estado"];
+
+        $actividad->actualizar_estado(
+            $_POST["id_actividad"],
+            $_POST["estado"],
+            $_POST["avance"],
+            $_POST["fecha_inicio"] ?? null,
+            $_POST["fecha_respuesta"] ?? null,
+            $_POST["observacion"] ?? null
+        );
+
         echo json_encode(["status" => "ok"]);
         break;
+
+
 
     case "correlativo":
         $data = $actividad->get_correlativo();
         echo json_encode(["id" => $data]);
         break;
 
-        case "eliminar":
-            $id = $_POST["id_actividad"];
-            $result = $actividad->eliminar($id);
-        
-            if ($result) {
-                echo json_encode([
-                    "status" => "ok",
-                    "msg" => "Actividad anulada correctamente"
-                ]);
-            } else {
-                echo json_encode([
-                    "status" => "error",
-                    "msg" => "No se pudo anular"
-                ]);
-            }
-            break;
-        
-        
+    case "eliminar":
+        $id = $_POST["id_actividad"];
+        $result = $actividad->eliminar($id);
+
+        if ($result) {
+            echo json_encode([
+                "status" => "ok",
+                "msg" => "Actividad anulada correctamente"
+            ]);
+        } else {
+            echo json_encode([
+                "status" => "error",
+                "msg" => "No se pudo anular"
+            ]);
+        }
+        break;
+
+
 
 
 

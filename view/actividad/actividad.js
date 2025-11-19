@@ -109,6 +109,30 @@ function eliminar(id_actividad) {
   });
 }
 
+function marcarInicio(id) {
+
+  const fechaActual = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+  $.ajax({
+    url: "../../controller/actividad.php?op=actualizar_estado",
+    type: "POST",
+    data: {
+      id_actividad: id,
+      estado: "En Progreso",
+      avance: "25%",
+      fecha_inicio: fechaActual,
+      fecha_respuesta: null
+    },
+    dataType: "json",
+    success: function () {
+      Swal.fire("Actividad Iniciada", "La actividad ha sido marcada como 'En Progreso'", "success");
+      tabla.ajax.reload();
+    }
+  });
+}
+
+
+
 
 // =======================================================
 // CONFIGURACIÓN DEL DATATABLE
@@ -141,19 +165,31 @@ $(document).ready(function () {
       },
       {
         targets: 8,
-        render: function (data) {
-          if (!data) return "";
-          let badge = "";
+        render: function (data, type, row) {
+
+          // Si data es numérico (0 = anulado)
+          if (data === 0) {
+            return `<span class="badge bg-danger">Anulado</span>`;
+          }
+
+          // Si data no es string, convertirlo
+          if (typeof data !== "string") {
+            data = String(data || "").trim();
+          }
+
           let estado = data.toLowerCase();
+          let badge = "";
 
           if (estado === "pendiente") badge = "badge bg-warning text-dark";
           else if (estado === "en progreso") badge = "badge bg-info text-dark";
           else if (estado === "atendido") badge = "badge bg-primary";
           else if (estado === "cerrado") badge = "badge bg-success";
+          else badge = "badge bg-secondary";
 
           return `<span class="${badge}">${data}</span>`;
-        },
+        }
       },
+
     ],
     columns: [
       { data: "id_actividad" },
@@ -163,32 +199,44 @@ $(document).ready(function () {
       { data: "fecha_recepcion" },
       { data: "fecha_inicio" },
       { data: "fecha_respuesta" },
-  
+
       // 👉 Primero ESTADO
       { data: "estado" },
-  
+
       // 👉 Luego AVANCE
       { data: "avance" },
-  
+
       { data: "prioridad" },
-  
+
       {
         data: "id_actividad",
-        render: function (data) {
+        render: function (data, type, row) {
           return `
             <div class="d-flex gap-1 justify-content-center">
+      
+              <!-- EDITAR -->
               <button class="btn btn-soft-primary btn-sm" onclick="mostrar(${data})" title="Editar">
                 <i class="bx bx-edit"></i>
               </button>
+      
+              <!-- NUEVA ACCIÓN -->
+              <button class="btn btn-soft-success btn-sm" onclick="abrirModalEstado(${data})" title="Actualizar Estado">
+                  <i class="bx bx-play-circle"></i>
+              </button>
+
+      
+              <!-- ELIMINAR -->
               <button class="btn btn-soft-danger btn-sm" onclick="eliminar(${data})" title="Eliminar">
                 <i class="bx bx-trash"></i>
               </button>
+      
             </div>
           `;
         }
       }
-  ],
-  
+
+    ],
+
   });
 
   // =======================================================
@@ -205,19 +253,47 @@ $(document).ready(function () {
     $("#fecha_inicio").val(hoy);
 
     $.ajax({
-        url: "../../controller/actividad.php?op=correlativo",
-        type: "POST",
-        dataType: "json",
-        success: function(info) {
-            $("#id_actividad_visible").val(info.id); // 👈 Solo visible
-            $("#id_actividad").val("");              // 👈 Importante
-        }
+      url: "../../controller/actividad.php?op=correlativo",
+      type: "POST",
+      dataType: "json",
+      success: function (info) {
+        $("#id_actividad_visible").val(info.id); // 👈 Solo visible
+        $("#id_actividad").val("");              // 👈 Importante
+      }
     });
-});
+  });
 
 
 });
 
+$("#form_estado").on("submit", function(e){
+  e.preventDefault();
+
+  const estado = $("#estado").val();
+  let avance = "0%";
+
+  if (estado === "En Progreso") avance = "50%";
+  if (estado === "Atendido" || estado === "Cerrado") avance = "100%";
+
+  $.ajax({
+      url: "../../controller/actividad.php?op=actualizar_estado",
+      type: "POST",
+      data: {
+        id_actividad: $("#estado_id").val(),
+        estado: estado,
+        avance: avance,
+        fecha_inicio: $("#fecha_inicio").val(),
+        fecha_respuesta: $("#fecha_respuesta").val(),
+        observacion: $("#observacion").val()
+      },
+      dataType: "json",
+      success: function(){
+          $("#modal_estado").modal("hide");
+          tabla.ajax.reload();
+          Swal.fire("Listo", "Estado actualizado", "success");
+      }
+  });
+});
 
 // =======================================================
 // EJECUTAR INICIALIZACIÓN
