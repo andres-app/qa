@@ -6,33 +6,56 @@ class Actividad extends Conectar {
         parent::set_names();
 
         $sql = "SELECT a.*, u.usu_nomape AS colaborador
-                FROM actividad a
-                LEFT JOIN tm_usuario u ON a.colaborador_id = u.usu_id
-                ORDER BY a.id_actividad DESC";
+        FROM actividad a
+        LEFT JOIN tm_usuario u ON a.colaborador_id = u.usu_id
+        WHERE a.est = 1
+        ORDER BY a.id_actividad DESC";
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // ✅ INSERTAR NUEVA ACTIVIDAD
     public function insertar($data) {
         $conectar = parent::conexion();
         parent::set_names();
 
         $sql = "INSERT INTO actividad 
-                (colaborador_id, actividad, descripcion, fecha_recepcion, fecha_inicio, 
-                 fecha_respuesta, estado, avance, prioridad)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                (colaborador_id, actividad, descripcion, fecha_recepcion,
+                 fecha_inicio, fecha_respuesta, estado, avance, prioridad)
+                VALUES (?, ?, ?, ?, NULL, NULL, 'Pendiente', '0%', ?)";
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute([
             $data["colaborador_id"],
             $data["actividad"],
             $data["descripcion"],
             $data["fecha_recepcion"],
-            $data["fecha_inicio"],
-            $data["fecha_respuesta"],
-            $data["estado"],
-            $data["avance"],
             $data["prioridad"]
+        ]);
+    }
+
+    // ✅ ACTUALIZAR ACTIVIDAD EXISTENTE (EDICIÓN)
+    public function actualizar($data) {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "UPDATE actividad 
+                SET colaborador_id = ?, 
+                    actividad      = ?, 
+                    descripcion    = ?, 
+                    fecha_recepcion = ?, 
+                    prioridad      = ?
+                WHERE id_actividad = ?";
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([
+            $data["colaborador_id"],
+            $data["actividad"],
+            $data["descripcion"],
+            $data["fecha_recepcion"],
+            $data["prioridad"],
+            $data["id_actividad"]
         ]);
     }
 
@@ -70,5 +93,18 @@ class Actividad extends Conectar {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)$row["id"];
     }
+
+    public function eliminar($id_actividad)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+    
+        $sql = "UPDATE actividad SET est = 0 WHERE id_actividad = ?";
+        $stmt = $conectar->prepare($sql);
+        return $stmt->execute([$id_actividad]);
+    }
+    
+    
 }
+
 ?>

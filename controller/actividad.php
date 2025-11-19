@@ -12,8 +12,32 @@ switch ($_GET["op"]) {
         break;
 
     case "guardar":
-        $actividad->insertar($_POST);
-        echo json_encode(["status" => "ok", "msg" => "Actividad registrada correctamente"]);
+        $id = isset($_POST["id_actividad"]) ? intval($_POST["id_actividad"]) : 0;
+
+        $data = [
+            "id_actividad" => $id,
+            "colaborador_id" => $_POST["colaborador_id"],
+            "actividad" => $_POST["actividad"],
+            "descripcion" => $_POST["descripcion"],
+            "fecha_recepcion" => $_POST["fecha_recepcion"],
+            "prioridad" => $_POST["prioridad"]
+        ];
+
+        if ($id > 0) {
+            // ✅ EDITAR
+            $actividad->actualizar($data);
+            echo json_encode([
+                "status" => "ok",
+                "msg" => "Actividad actualizada correctamente"
+            ]);
+        } else {
+            // ✅ NUEVO
+            $actividad->insertar($data);
+            echo json_encode([
+                "status" => "ok",
+                "msg" => "Actividad registrada correctamente"
+            ]);
+        }
         break;
 
     case "mostrar":
@@ -29,6 +53,27 @@ switch ($_GET["op"]) {
         $data = $actividad->get_correlativo();
         echo json_encode(["id" => $data]);
         break;
+
+        case "eliminar":
+            $id = $_POST["id_actividad"];
+            $result = $actividad->eliminar($id);
+        
+            if ($result) {
+                echo json_encode([
+                    "status" => "ok",
+                    "msg" => "Actividad anulada correctamente"
+                ]);
+            } else {
+                echo json_encode([
+                    "status" => "error",
+                    "msg" => "No se pudo anular"
+                ]);
+            }
+            break;
+        
+        
+
+
 
     default:
         echo json_encode(["error" => "Operación no válida"]);

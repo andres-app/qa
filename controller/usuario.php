@@ -2,11 +2,9 @@
 /* TODO: Incluye el archivo de configuración de la conexión a la base de datos y la clase Usuario */
 require_once("../config/conexion.php");
 require_once("../models/Usuario.php");
-require_once("../models/Email.php");
 
 /* TODO:Crea una instancia de la clase Usuario */
 $usuario = new Usuario();
-$email = new Email();
 
 /* TODO: Utiliza una estructura switch para determinar la operación a realizar según el valor de $_GET["op"] */
 switch ($_GET["op"]) {
@@ -235,14 +233,12 @@ switch ($_GET["op"]) {
         
                 // Mueve la imagen al servidor
                 if (move_uploaded_file($_FILES["usu_img"]["tmp_name"], $ruta_imagen)) {
-                    // Actualiza la sesión y la base de datos con la nueva imagen
                     $_SESSION["usu_img"] = $ruta_imagen;
-                    // $usuario->update_imagen($usu_id, $ruta_imagen);  // Método que debes implementar para actualizar la imagen en la base de datos
                 } else {
                     echo "Error al subir la imagen.";
                 }
             } else {
-                $ruta_imagen = $_SESSION["usu_img"];  // Mantén la imagen anterior si no se subió una nueva
+                $ruta_imagen = $_SESSION["usu_img"]; // Mantener imagen actual
             }
         
             // Actualizar los datos en la base de datos
@@ -251,30 +247,38 @@ switch ($_GET["op"]) {
             // Actualizar los datos en la sesión
             $_SESSION["usu_nomape"] = $usu_nomape;
         
-            // Verificar si la contraseña fue cambiada
+            // Mensaje si la contraseña fue cambiada
             if ($usu_pass) {
-                $_SESSION["mensaje"] = "Los datos han sido actualizada correctamente.";
+                $_SESSION["mensaje"] = "Los datos han sido actualizados correctamente.";
             }
         
-            // Detectar el entorno y definir la URL de redirección
+            // Detectar entorno
             $host = $_SERVER['HTTP_HOST'];
-            $uri = "/view/perfil/perfil.php";  // Ajustamos la ruta correcta
+            $uri = "/view/perfil/perfil.php";
         
-            // Verifica si es producción o localhost
+            // Construir URL según entorno
             if ($host == 'localhost') {
-                // Redirección para localhost
                 $url = "http://localhost/flota" . $uri;
             } else {
-                // Redirección manual para producción
-                $url = "https://$host" . $uri;  // En producción, eliminamos el subdirectorio template
+                $url = "https://" . $host . $uri;
             }
         
-            // Redirigir al perfil
+            // Redirigir
             header("Location: $url");
             exit();
+        break;
         
-            break;
+        case "combo_rol":
+            $rol = isset($_GET["rol"]) ? $_GET["rol"] : 0;
+            $activos = isset($_GET["activos"]) ? $_GET["activos"] : 1;
         
-       
+            $datos = $usuario->combo_rol($rol, $activos);
+            echo json_encode($datos);
+        break;
+        
+        
+
+
+
 }
 ?>
