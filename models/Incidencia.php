@@ -84,30 +84,34 @@ class Incidencia extends Conectar
             try {
 
                 $sql = "INSERT INTO incidencia
-                        (actividad, id_documentacion, correlativo_doc, descripcion, accion_recomendada,
-                         fecha_recepcion, fecha_registro, fecha_respuesta, prioridad,
-                         analista_id, tipo_incidencia, base_datos, version_origen, modulo,
-                         estado_incidencia, estado)
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";
+    (actividad, id_documentacion, correlativo_doc, descripcion, accion_recomendada,
+     fecha_recepcion, fecha_registro, fecha_respuesta, prioridad,
+     analista_id, tipo_incidencia, base_datos, version_origen, id_modulo,
+     imagenes, estado_incidencia, estado)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";
+
+
 
                 $stmt = $conectar->prepare($sql);
                 $stmt->execute([
-                    $data["actividad"],
-                    $data["id_documentacion"],
-                    $correlativo_doc,
-                    $data["descripcion"],
-                    $data["accion_recomendada"],
-                    $data["fecha_recepcion"],
-                    $data["fecha_registro"],
-                    $data["fecha_respuesta"] ?? null,
-                    $data["prioridad"],
-                    $data["analista_id"],
-                    $data["tipo_incidencia"],
-                    $data["base_datos"],
-                    $data["version_origen"],
-                    $data["id_modulo"],
-                    $data["estado_incidencia"]
-                ]);
+                    $data["actividad"],          // 1
+                    $data["id_documentacion"],   // 2
+                    $correlativo_doc,            // 3
+                    $data["descripcion"],        // 4
+                    $data["accion_recomendada"], // 5
+                    $data["fecha_recepcion"],    // 6
+                    $data["fecha_registro"],     // 7
+                    $data["fecha_respuesta"] ?? null, // 8
+                    $data["prioridad"],          // 9
+                    $data["analista_id"],        // 10
+                    $data["tipo_incidencia"],    // 11
+                    $data["base_datos"],         // 12
+                    $data["version_origen"],     // 13
+                    $data["id_modulo"],          // 14
+                    $data["imagenes"],           // 15  🔥 ESTO FALTABA
+                    $data["estado_incidencia"]   // 16
+                    // 🔹 No enviamos estado porque es 1 en el SQL
+                ]);                
 
                 // ✔ Insert correcto → salir
                 return $conectar->lastInsertId();
@@ -135,18 +139,20 @@ class Incidencia extends Conectar
         parent::set_names();
 
         $sql = "SELECT 
-                    i.*, 
-                    u.usu_nomape AS analista,
-                    d.nombre AS documentacion_nombre
-                    m.id_modulo,
-                    m.nombre AS modulo_nombre,
-                FROM incidencia i
-                LEFT JOIN tm_usuario u 
-                    ON i.analista_id = u.usu_id
-                LEFT JOIN documentacion d
-                    ON i.id_documentacion = d.id_documentacion
-                    LEFT JOIN modulos m ON i.id_modulo = m.id_modulo
-                WHERE i.id_incidencia = ?";
+        i.*, 
+        u.usu_nomape AS analista,
+        d.nombre AS documentacion_nombre,
+        m.id_modulo,
+        m.nombre AS modulo_nombre
+    FROM incidencia i
+    LEFT JOIN tm_usuario u 
+        ON i.analista_id = u.usu_id
+    LEFT JOIN documentacion d
+        ON i.id_documentacion = d.id_documentacion
+    LEFT JOIN modulos m 
+        ON i.id_modulo = m.id_modulo
+    WHERE i.id_incidencia = ?";
+
 
         $stmt = $conectar->prepare($sql);
         $stmt->execute([$id]);
@@ -212,7 +218,7 @@ class Incidencia extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "
             SELECT 
                 IFNULL(m.nombre, 'Sin módulo') AS modulo,
@@ -223,13 +229,13 @@ class Incidencia extends Conectar
             GROUP BY m.nombre
             ORDER BY total DESC
         ";
-    
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
-    
+
+
 
     public function incidencias_por_mes()
     {
@@ -272,6 +278,7 @@ class Incidencia extends Conectar
 
         return intval($row["correlativo"]);
     }
+
 
 
 }

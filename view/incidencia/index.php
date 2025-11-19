@@ -2,6 +2,7 @@
 require_once("../../config/conexion.php");
 require_once("../../models/Rol.php");
 
+
 // Validar acceso al módulo
 $rol = new Rol();
 $datos = $rol->validar_menu_x_rol($_SESSION["rol_id"], "incidencia");
@@ -15,6 +16,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     <head>
         <title>Gestión de Incidencias - QA</title>
         <?php require_once("../html/head.php") ?>
+        <link rel="stylesheet" href="incidencia.css">
     </head>
 
     <body>

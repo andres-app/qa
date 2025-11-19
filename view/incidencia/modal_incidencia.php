@@ -160,19 +160,37 @@
 
           <!-- 🟧 6️⃣ Descripción -->
           <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-12 mb-3">
               <label class="form-label">Descripción de la Incidencia</label>
               <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
                 placeholder="Detalle la incidencia detectada durante las pruebas."></textarea>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="col-md-12 mb-3">
               <label class="form-label">Acción Recomendada / Correctiva</label>
               <textarea class="form-control" id="accion_recomendada" name="accion_recomendada" rows="3"
                 placeholder="Indique la acción sugerida o corrección esperada por desarrollo."></textarea>
             </div>
+
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Imágenes adjuntas (pegar con CTRL+V)</label>
+
+              <div id="dropZone" class="dropzone-placeholder">
+                <div class="dz-icon">
+                  <i class="bx bx-image-alt"></i>
+                </div>
+                <p class="dz-text">Arrastra o pega tus imágenes aquí (CTRL + V)</p>
+
+                <div id="preview" class="dz-preview"></div>
+
+                <!-- Aquí guardaremos temporalmente las imágenes en base64 -->
+                <input type="hidden" id="imagenes_base64" name="imagenes_base64">
+              </div>
+            </div>
           </div>
         </div>
+
+
 
         <!-- 🟩 Pie -->
         <div class="modal-footer">

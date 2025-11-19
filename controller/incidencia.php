@@ -16,27 +16,55 @@ switch ($_GET["op"]) {
     case "listar":
 
         $datos = $incidencia->listar();
-    
+
         echo json_encode([
             "data" => $datos,
             "recordsTotal" => count($datos),
             "recordsFiltered" => count($datos)
         ]);
-    
+
         break;
-    
+
 
     // ============================================================
     // GUARDAR
     // ============================================================
     case "guardar":
+
+        $imagenes = json_decode($_POST["imagenes_base64"], true);
+        $rutas_finales = [];
+    
+        if ($imagenes && count($imagenes) > 0) {
+            foreach ($imagenes as $base64) {
+    
+                // Extraer datos
+                list($type, $data) = explode(';', $base64);
+                list(, $data)      = explode(',', $data);
+    
+                $binario = base64_decode($data);
+    
+                // Nombre único
+                $filename = uniqid("inc_") . ".png";
+                $ruta = "../uploads/incidencias/" . $filename;
+    
+                file_put_contents($ruta, $binario);
+    
+                $rutas_finales[] = "uploads/incidencias/" . $filename;
+            }
+        }
+    
+        // Guardar todo en el modelo
+        $_POST["imagenes"] = json_encode($rutas_finales);
+    
         $nuevo_id = $incidencia->insertar($_POST);
+    
         echo json_encode([
             "status" => "ok",
             "msg" => "Incidencia registrada correctamente",
             "id_incidencia" => $nuevo_id
         ]);
-        break;
+    break;
+    
 
     // ============================================================
     // EDITAR
@@ -113,6 +141,22 @@ switch ($_GET["op"]) {
         echo json_encode(["correlativo" => $nro]);
         break;
 
+    case 'subir_imagen':
+        if (isset($_FILES['file'])) {
+
+            $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+            $new_name = uniqid("img_") . "." . $ext;
+
+            $ruta = "../uploads/incidencias/" . $new_name;
+
+            move_uploaded_file($_FILES['file']['tmp_name'], $ruta);
+
+            echo json_encode([
+                "status" => "ok",
+                "url" => "../../uploads/incidencias/" . $new_name
+            ]);
+        }
+        break;
 
 
 

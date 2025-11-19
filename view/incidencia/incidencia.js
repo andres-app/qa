@@ -427,5 +427,100 @@ function cargarModulos() {
 }
 
 
+// Subir imagen vía AJAX
+function uploadImage(file) {
+    let formData = new FormData();
+    formData.append("file", file);
+
+    $.ajax({
+        url: "../../controller/incidencia.php?op=subir_imagen",
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: "json",
+        success: function (r) {
+            if (r.status === "ok") {
+                addPreview(r.url);
+                saveImagePath(r.url);
+            }
+        }
+    });
+}
+
+// Agregar visualmente la imagen pegada
+function addPreview(url) {
+    let preview = document.getElementById("preview");
+
+    let img = document.createElement("img");
+    img.src = url;
+    img.classList.add("img-thumbnail");
+    img.style.maxWidth = "180px";
+
+    preview.appendChild(img);
+}
+
+// Guardar rutas de imágenes para enviarlas al guardar
+function saveImagePath(url) {
+    let input = document.getElementById("imagenes_json");
+    let arr = input.value ? JSON.parse(input.value) : [];
+    arr.push(url);
+    input.value = JSON.stringify(arr);
+}
+
+let imagenesTemp = []; // buffer temporal
+
+document.addEventListener("paste", function (event) {
+    let items = event.clipboardData.items;
+
+    for (let index in items) {
+        let item = items[index];
+        if (item.kind === "file") {
+            let file = item.getAsFile();
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+                let base64 = e.target.result;
+                imagenesTemp.push(base64);
+                updatePreview();
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+});
+
+// Actualizar vista previa
+function updatePreview() {
+    let preview = document.getElementById("preview");
+    preview.innerHTML = "";
+
+    imagenesTemp.forEach((img, index) => {
+        let container = document.createElement("div");
+        container.classList.add("preview-item");
+
+        let image = document.createElement("img");
+        image.src = img;
+        image.classList.add("preview-img");
+
+        let removeBtn = document.createElement("div");
+        removeBtn.classList.add("preview-remove");
+        removeBtn.innerHTML = "✖";
+        removeBtn.onclick = function () {
+            imagenesTemp.splice(index, 1);
+            updatePreview();
+        };
+
+        container.appendChild(image);
+        container.appendChild(removeBtn);
+        preview.appendChild(container);
+    });
+
+    // Guardar array en input oculto
+    document.getElementById("imagenes_base64").value =
+        JSON.stringify(imagenesTemp);
+}
+
+
 // Ejecutar init
 init();

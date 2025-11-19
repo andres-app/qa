@@ -1,0 +1,92 @@
+/* Contenedor del dropzone */
+#dropZone {
+    background: #f8f9fc !important;
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 12px !important;
+    padding: 40px !important;
+    text-align: center !important;
+    position: relative;
+    transition: all 0.25s ease;
+}
+
+/* Hover */
+#dropZone:hover {
+    background: #eef2ff !important;
+    border-color: #6574ff !important;
+}
+
+/* Icono */
+#dropZone .dz-icon i {
+    font-size: 56px;
+    color: #9ca3af;
+    margin-bottom: 12px;
+    display: block;
+}
+
+/* Texto */
+#dropZone .dz-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+
+/* Área donde aparecerán las miniaturas */
+#dropZone .dz-preview {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Miniaturas bonitas */
+.preview-img {
+    width: 160px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    padding: 3px;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.preview-img:hover {
+    transform: scale(1.03);
+}
+
+.preview-item {
+    position: relative;
+    display: inline-block;
+}
+
+.preview-img {
+    width: 160px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    padding: 3px;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin: 5px;
+}
+
+.preview-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff4d4f;
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    line-height: 22px;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
