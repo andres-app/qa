@@ -40,7 +40,7 @@ class Incidencia extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-    
+
         $sql = "UPDATE incidencia SET 
                     descripcion        = ?, 
                     accion_recomendada = ?, 
@@ -52,7 +52,7 @@ class Incidencia extends Conectar
                     estado_incidencia  = ?, 
                     imagenes           = ?
                 WHERE id_incidencia = ?";
-    
+
         $stmt = $conectar->prepare($sql);
         $stmt->execute([
             $data["descripcion"],
@@ -67,7 +67,7 @@ class Incidencia extends Conectar
             $data["id_incidencia"]
         ]);
     }
-    
+
 
     // 🟩 Insertar incidencia (estado siempre = 1)
     public function insertar($data)
@@ -114,7 +114,7 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";
                     $data["imagenes"],           // 15  🔥 ESTO FALTABA
                     $data["estado_incidencia"]   // 16
                     // 🔹 No enviamos estado porque es 1 en el SQL
-                ]);                
+                ]);
 
                 // ✔ Insert correcto → salir
                 return $conectar->lastInsertId();
@@ -282,6 +282,34 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";
         return intval($row["correlativo"]);
     }
 
+    public function agregar_seguimiento($id_incidencia, $usuario_id, $comentario)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "INSERT INTO incidencia_seguimiento (id_incidencia, usuario_id, comentario)
+            VALUES (?, ?, ?)";
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$id_incidencia, $usuario_id, $comentario]);
+    }
+
+
+    public function listar_seguimiento($id_incidencia)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "SELECT s.*, u.usu_nomape AS usuario
+            FROM incidencia_seguimiento s
+            INNER JOIN tm_usuario u ON s.usuario_id = u.usu_id
+            WHERE s.id_incidencia = ?
+            ORDER BY s.fecha_registro ASC";
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$id_incidencia]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
 }

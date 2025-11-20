@@ -3,6 +3,7 @@ require_once("../config/conexion.php");
 require_once("../models/Incidencia.php");
 require_once("../models/Documentacion.php");
 
+
 $incidencia = new Incidencia();
 $doc = new Documentacion();
 
@@ -166,42 +167,42 @@ switch ($op) {
         echo json_encode($doc->listar());
         break;
 
-        case "subir_imagen_unica":
+    case "subir_imagen_unica":
 
-            // carpeta real donde guardas las imágenes
-            $rutaBase = __DIR__ . "/../uploads/incidencias/";
-        
-            // crear carpeta si no existe
-            if (!file_exists($rutaBase)) {
-                mkdir($rutaBase, 0777, true);
+        // carpeta real donde guardas las imágenes
+        $rutaBase = __DIR__ . "/../uploads/incidencias/";
+
+        // crear carpeta si no existe
+        if (!file_exists($rutaBase)) {
+            mkdir($rutaBase, 0777, true);
+        }
+
+        $files = $_FILES["imagenes_nuevas"];
+        $rutaFinal = "";
+
+        for ($i = 0; $i < count($files["name"]); $i++) {
+
+            // limpiar nombre de archivo
+            $nombreLimpio = preg_replace('/[^A-Za-z0-9_.-]/', '_', $files["name"][$i]);
+            $nombreFinal = time() . "_" . $nombreLimpio;
+
+            // ruta completa para guardar
+            $rutaServidor = $rutaBase . $nombreFinal;
+
+            // ruta pública para BD
+            $rutaPublica = "uploads/incidencias/" . $nombreFinal;
+
+            if (move_uploaded_file($files["tmp_name"][$i], $rutaServidor)) {
+                $rutaFinal = $rutaPublica;
             }
-        
-            $files = $_FILES["imagenes_nuevas"];
-            $rutaFinal = "";
-        
-            for ($i = 0; $i < count($files["name"]); $i++) {
-        
-                // limpiar nombre de archivo
-                $nombreLimpio = preg_replace('/[^A-Za-z0-9_.-]/', '_', $files["name"][$i]);
-                $nombreFinal = time() . "_" . $nombreLimpio;
-        
-                // ruta completa para guardar
-                $rutaServidor = $rutaBase . $nombreFinal;
-        
-                // ruta pública para BD
-                $rutaPublica = "uploads/incidencias/" . $nombreFinal;
-        
-                if (move_uploaded_file($files["tmp_name"][$i], $rutaServidor)) {
-                    $rutaFinal = $rutaPublica;
-                }
-            }
-        
-            echo json_encode([
-                "status" => "ok",
-                "ruta"   => $rutaFinal
-            ]);
-            exit;
-        
+        }
+
+        echo json_encode([
+            "status" => "ok",
+            "ruta" => $rutaFinal
+        ]);
+        exit;
+
 
 
     // ============================================================
@@ -235,13 +236,32 @@ switch ($op) {
             $ruta = "../uploads/incidencias/" . $new_name;
 
             move_uploaded_file($_FILES['file']['tmp_name'], $ruta);
-
             echo json_encode([
                 "status" => "ok",
                 "url" => "../../uploads/incidencias/" . $new_name
             ]);
         }
         break;
+
+    case "agregar_seguimiento":
+
+        file_put_contents("debug_seguimiento.txt", "LLEGA OK");
+
+        $incidencia->agregar_seguimiento(
+            $_POST["id_incidencia"],
+            $_SESSION["usu_id"],
+            $_POST["comentario"]
+        );
+
+        echo json_encode(["status" => "ok"]);
+        break;
+
+    case "listar_seguimiento":
+        echo json_encode(
+            $incidencia->listar_seguimiento($_POST["id_incidencia"])
+        );
+        break;
+
 
 
 

@@ -219,6 +219,32 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                         </div>
                                     </div>
 
+                                    <div class="card mb-3">
+    <div class="card-header fw-semibold bg-light">Seguimiento de la incidencia</div>
+
+    <div class="card-body">
+
+        <!-- Formulario para agregar seguimiento -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Agregar seguimiento</label>
+            <textarea id="nuevo_seguimiento" class="form-control" rows="2"
+                placeholder="Escribe una actualización..."></textarea>
+
+                <button type="button" class="btn btn-primary btn-sm mt-2" id="btn_agregar_seguimiento">
+    <i class="bx bx-message-rounded-add"></i> Registrar seguimiento
+</button>
+
+        </div>
+
+        <hr>
+
+        <!-- Línea de tiempo -->
+        <div id="lista_seguimiento" class="mt-3"></div>
+
+    </div>
+</div>
+
+
                                     <!-- EVIDENCIAS -->
                                     <div class="card mb-3">
     <div class="card-header fw-semibold bg-light">Evidencias de la incidencia</div>
@@ -451,8 +477,6 @@ $.ajax({
 });
 });
 
-
-
 /* -----------------------------
    GUARDAR FORMULARIO COMPLETO
 ----------------------------- */
@@ -496,6 +520,83 @@ $("#form_editar_incidencia").on("submit", function (e) {
         }
     });
 });
+
+/* ===========================================================
+   EVITAR SUBMIT ACCIDENTAL DEL BOTÓN DE SEGUIMIENTO
+=========================================================== */
+$("#btn_agregar_seguimiento").attr("type", "button");
+
+
+/* ===========================================================
+   CARGAR SEGUIMIENTOS AL ENTRAR
+=========================================================== */
+function cargarSeguimiento() {
+    $.ajax({
+        url: "../../controller/incidencia.php?op=listar_seguimiento",
+        type: "POST",
+        data: { id_incidencia: $("#id_incidencia").val() },
+        dataType: "json",
+        success: function (data) {
+
+            let html = "";
+
+            if (!data || data.length === 0) {
+                html = "<p class='text-muted'>Sin seguimientos aún.</p>";
+            } else {
+                data.forEach(item => {
+                    html += `
+                        <div class="border-start border-3 border-primary ps-3 mb-3">
+                            <p class="mb-1"><strong>${item.usuario}</strong></p>
+                            <p class="mb-1 text-muted small">${item.fecha_registro}</p>
+                            <p class="mb-0">${item.comentario}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            $("#lista_seguimiento").html(html);
+        }
+    });
+}
+
+cargarSeguimiento();
+
+
+/* ===========================================================
+   AGREGAR SEGUIMIENTO
+=========================================================== */
+$("#btn_agregar_seguimiento").on("click", function () {
+
+    let comentario = $("#nuevo_seguimiento").val().trim();
+    let id = $("#id_incidencia").val();
+
+    if (comentario === "") {
+        Swal.fire("Advertencia", "El comentario no puede estar vacío", "warning");
+        return;
+    }
+
+    $.ajax({
+        url: "../../controller/incidencia.php?op=agregar_seguimiento",
+        type: "POST",
+        data: {
+            id_incidencia: id,
+            comentario: comentario
+        },
+        dataType: "json",
+        success: function (resp) {
+
+            if (resp.status === "ok") {
+
+                $("#nuevo_seguimiento").val("");
+
+                Swal.fire("Registrado", "Seguimiento agregado", "success");
+
+                cargarSeguimiento(); // recargar timeline
+            }
+        }
+    });
+});
+
 
 
 </script>

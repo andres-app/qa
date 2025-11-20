@@ -34,7 +34,7 @@ function guardaryeditar(e) {
                 $("#mnt_form")[0].reset();
                 tabla.ajax.reload();
             } else {
-                Swal.fire("Error", data.msg || "No se pudo registrar la incidencia", "error");
+                Swal.fire("Error", data.msg || "No se pudo registrar", "error");
             }
         },
         error: function () {
@@ -54,7 +54,7 @@ function mostrar(id_incidencia) {
         dataType: "json",
         success: function (data) {
 
-            cargarModulos(); // cargar catálogo
+            cargarModulos();
 
             setTimeout(() => {
                 $("#id_incidencia").val(data.id_incidencia);
@@ -64,11 +64,11 @@ function mostrar(id_incidencia) {
                 $("#prioridad").val(data.prioridad);
                 $("#tipo_incidencia").val(data.tipo_incidencia);
                 $("#base_datos").val(data.base_datos);
-                $("#id_modulo").val(data.id_modulo); // CORREGIDO
+                $("#id_modulo").val(data.id_modulo);
                 $("#version_origen").val(data.version_origen);
                 $("#fecha_registro").val(data.fecha_registro);
                 $("#fecha_recepcion").val(data.fecha_recepcion);
-            }, 150);
+            }, 200);
 
             $("#modalLabel").html("Editar Incidencia");
             $("#mnt_modal").modal("show");
@@ -79,14 +79,13 @@ function mostrar(id_incidencia) {
     });
 }
 
-
 // =======================================================
 // ELIMINAR INCIDENCIA
 // =======================================================
 function eliminar(id_incidencia) {
     Swal.fire({
         title: "¿Está seguro?",
-        text: "La incidencia será ANULADA.",
+        text: "La incidencia será anulada.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, anular",
@@ -117,9 +116,8 @@ function eliminar(id_incidencia) {
 // =======================================================
 $(document).ready(function () {
 
-    cargarDocumentacion(); // 🔹 Combo documentación modal + filtros
+    cargarDocumentacion();
     cargarModulos();
-
 
     tabla = $("#incidencia_table").DataTable({
         processing: true,
@@ -128,30 +126,25 @@ $(document).ready(function () {
             {
                 extend: "excelHtml5",
                 exportOptions: {
-                    columns: function (idx, data, node) {
-                        // ❌ Omitir columna ACCIONES (columna 11)
-                        return idx !== 11;
+                    columns: function (idx) {
+                        return idx !== 11; // sin acciones
                     },
                     format: {
-                        body: function (data, row, column, node) {
+                        body: function (data, row, column) {
 
-                            // Si la columna es ESTADO
                             if (column === 10) {
                                 let div = document.createElement("div");
                                 div.innerHTML = data;
-                                return div.textContent || div.innerText || "";
+                                return div.textContent || "";
                             }
 
-                            // Si es descripción (columna 5)
                             if (column === 5) {
-                                let full = tabla.row(row).data().descripcion;
-                                return full ? full : "";
+                                return tabla.row(row).data().descripcion || "";
                             }
 
-                            // Para todas las demás
                             let div = document.createElement("div");
                             div.innerHTML = data;
-                            return div.textContent || div.innerText || "";
+                            return div.textContent || "";
                         }
                     }
                 }
@@ -164,80 +157,56 @@ $(document).ready(function () {
             type: "GET",
             dataType: "json"
         },
+
         scrollX: false,
         autoWidth: false,
         iDisplayLength: 10,
         order: [[0, "desc"]],
 
         columnDefs: [
-            { targets: 0, width: "60px", className: "text-center fw-semibold" }, // ID
-            { targets: 1, width: "60px", className: "text-center fw-semibold" }, // Nº Incidencia
-            // Documentación recortada
+            { targets: 0, width: "60px", className: "text-center fw-semibold" },
+            { targets: 1, width: "60px", className: "text-center fw-semibold" },
+
+            // recorte documentación
             {
                 targets: 3,
-                render: function (data, type, row) {
-            
-                    // Exportaciones → completo
-                    if (type === "filter" || type === "sort" || type === "export") {
-                        return data;
-                    }
-            
+                render: function (data, type) {
+                    if (type === "export" || type === "filter" || type === "sort") return data;
                     if (!data) return "";
-            
                     let corto = data.length > 20 ? data.substring(0, 20) + "…" : data;
-            
                     return `<span title="${data}">${corto}</span>`;
                 }
             },
 
+            // recorte módulo
             {
                 targets: 4,
-                render: function (data, type, row) {
-            
-                    // Exportaciones → completo
-                    if (type === "filter" || type === "sort" || type === "export") {
-                        return data;
-                    }
-            
+                render: function (data, type) {
+                    if (type === "export" || type === "filter" || type === "sort") return data;
                     if (!data) return "";
-            
                     let corto = data.length > 20 ? data.substring(0, 20) + "…" : data;
-            
                     return `<span title="${data}">${corto}</span>`;
                 }
             },
-            
-            
 
-// Descripción recortada
-{
-    targets: 5,
-    render: function (data, type, row) {
+            // recorte descripción
+            {
+                targets: 5,
+                render: function (data, type) {
+                    if (type === "export" || type === "filter" || type === "sort") return data;
+                    if (!data) return "";
+                    let corto = data.length > 20 ? data.substring(0, 20) + "…" : data;
+                    let safeTitle = data.replace(/"/g, "&quot;");
+                    return `<span title="${safeTitle}">${corto}</span>`;
+                }
+            },
 
-        // 🔹 Exportar / ordenar / filtrar → texto completo
-        if (type === "filter" || type === "sort" || type === "export") {
-            return data;
-        }
-
-        if (!data) return "";
-
-        // Texto completo y versión corta (20 caracteres)
-        let full  = data;
-        let corto = full.length > 20 ? full.substring(0, 20) + "…" : full;
-
-        // Evitar problemas con comillas en el title
-        let safeTitle = full.replace(/"/g, '&quot;');
-
-        return `<span title="${safeTitle}">${corto}</span>`;
-    }
-},
-
-
-            // Estado en badge
+            // estado
             {
                 targets: 10,
                 render: function (data) {
                     let badge = "border-secondary text-muted";
+
                     if (data === "Pendiente") badge = "border-warning text-warning";
                     if (data === "Resuelto") badge = "border-success text-success";
 
@@ -245,28 +214,28 @@ $(document).ready(function () {
                 }
             },
 
-            // Acciones
+            // acciones
             {
                 targets: 11,
                 orderable: false,
-                render: function (data, type, row) {
+                render: function (_, __, row) {
                     return `
-                        <div class="d-flex justify-content-center gap-1">
-                            <a href="detalle.php?id=${row.id_incidencia}" class="btn btn-soft-info btn-sm">
-                                <i class="bx bx-show"></i>
-                            </a>
+                    <div class="d-flex justify-content-center gap-1">
+                        <a href="detalle.php?id=${row.id_incidencia}" class="btn btn-soft-info btn-sm">
+                            <i class="bx bx-show"></i>
+                        </a>
 
-                            <a href="../../controller/incidencia_pdf.php?id=${row.id_incidencia}"
-                               target="_blank"
-                               class="btn btn-soft-primary btn-sm">
-                                <i class="bx bxs-file-pdf"></i>
-                            </a>
+                        <a href="../../controller/incidencia_pdf.php?id=${row.id_incidencia}"
+                           target="_blank"
+                           class="btn btn-soft-primary btn-sm">
+                            <i class="bx bxs-file-pdf"></i>
+                        </a>
 
-                            <button class="btn btn-soft-danger btn-sm"
-                                    onclick="eliminar(${row.id_incidencia})">
-                                <i class="bx bx-trash-alt"></i>
-                            </button>
-                        </div>`;
+                        <button class="btn btn-soft-danger btn-sm"
+                                onclick="eliminar(${row.id_incidencia})">
+                            <i class="bx bx-trash-alt"></i>
+                        </button>
+                    </div>`;
                 }
             }
         ],
@@ -288,50 +257,36 @@ $(document).ready(function () {
     });
 
     // =======================================================
-    // LLENAR SELECTS DINÁMICOS DESDE LA BD
+    // FILTROS
     // =======================================================
     tabla.on("xhr", function () {
         let data = tabla.ajax.json().data;
         if (!data) return;
 
-        llenarSelectUnicos("#filtro_actividad", data.map(d => d.actividad));
-        llenarSelectUnicos("#filtro_modulo", data.map(d => d.modulo));
-        llenarSelectUnicos("#filtro_prioridad", data.map(d => d.prioridad));
-        llenarSelectUnicos("#filtro_tipo", data.map(d => d.tipo_incidencia));
-        llenarSelectUnicos("#filtro_estado", data.map(d => d.estado_incidencia));
+        llenarSelect("#filtro_actividad", data.map(d => d.actividad));
+        llenarSelect("#filtro_modulo", data.map(d => d.modulo));
+        llenarSelect("#filtro_prioridad", data.map(d => d.prioridad));
+        llenarSelect("#filtro_tipo", data.map(d => d.tipo_incidencia));
+        llenarSelect("#filtro_estado", data.map(d => d.estado_incidencia));
     });
 
-    function llenarSelectUnicos(selector, valores) {
-        const unicos = [...new Set(valores.filter(v => v && v !== ""))].sort();
-        const $select = $(selector);
+    function llenarSelect(selector, valores) {
+        const unicos = [...new Set(valores.filter(v => v))].sort();
+        const select = $(selector);
 
-        $select.empty().append('<option value="">Todos</option>');
-        unicos.forEach(v => $select.append(`<option value="${v}">${v}</option>`));
+        select.empty().append('<option value="">Todos</option>');
+        unicos.forEach(v => select.append(`<option value="${v}">${v}</option>`));
     }
 
-    // =======================================================
-    // FILTROS POR COLUMNA
-    // =======================================================
-    $("#filtro_documentacion").on("change", function () {
-        tabla.column(3).search(this.value).draw();
-    });
-    $("#filtro_modulo").on("change", function () {
-        tabla.column(4).search(this.value).draw();
-    });
-    $("#filtro_prioridad").on("change", function () {
-        tabla.column(7).search(this.value).draw();
-    });
-    $("#filtro_tipo").on("change", function () {
-        tabla.column(8).search(this.value).draw();
-    });
-    $("#filtro_actividad").on("change", function () {
-        tabla.column(2).search(this.value).draw();
-    });
-    $("#filtro_estado").on("change", function () {
-        tabla.column(10).search(this.value).draw();
-    });
+    // eventos filtros
+    $("#filtro_documentacion").on("change", () => tabla.column(3).search($("#filtro_documentacion").val()).draw());
+    $("#filtro_modulo").on("change", () => tabla.column(4).search($("#filtro_modulo").val()).draw());
+    $("#filtro_prioridad").on("change", () => tabla.column(7).search($("#filtro_prioridad").val()).draw());
+    $("#filtro_tipo").on("change", () => tabla.column(8).search($("#filtro_tipo").val()).draw());
+    $("#filtro_actividad").on("change", () => tabla.column(2).search($("#filtro_actividad").val()).draw());
+    $("#filtro_estado").on("change", () => tabla.column(10).search($("#filtro_estado").val()).draw());
 
-    // Mostrar/ocultar filtros
+    // toggle filtros
     $("#btnFiltros").on("click", function () {
         $("#panelFiltros").slideToggle(200);
     });
@@ -340,7 +295,7 @@ $(document).ready(function () {
     // NUEVA INCIDENCIA
     // =======================================================
     $("#btnnuevo").on("click", function () {
-        cargarModulos(); // ← necesario aquí
+        cargarModulos();
         $("#mnt_form")[0].reset();
         $("#modalLabel").html("Nueva Incidencia");
         $("#mnt_modal").modal("show");
@@ -349,7 +304,6 @@ $(document).ready(function () {
         $("#fecha_registro").val(hoy);
         $("#fecha_recepcion").val(hoy);
 
-        // Obtener correlativo
         $.ajax({
             url: "../../controller/incidencia.php?op=correlativo",
             type: "POST",
@@ -362,7 +316,7 @@ $(document).ready(function () {
 });
 
 // =======================================================
-// COMBO DOCUMENTACIÓN
+// COMBOS
 // =======================================================
 function cargarDocumentacion() {
     $.ajax({
@@ -388,9 +342,6 @@ function cargarDocumentacion() {
     });
 }
 
-// =======================================================
-// ACTUALIZAR FECHA + CORRELATIVO SEGÚN DOCUMENTO
-// =======================================================
 $("#id_documentacion").on("change", function () {
 
     const idDoc = $(this).val();
@@ -416,7 +367,7 @@ function cargarModulos() {
         url: "../../controller/modulo.php?op=combo",
         type: "GET",
         dataType: "json",
-        success: function(data) {
+        success: function (data) {
             let select = $("#id_modulo");
             select.empty().append('<option value="">Seleccione…</option>');
             data.forEach(m => {
@@ -425,118 +376,6 @@ function cargarModulos() {
         }
     });
 }
-
-
-// Subir imagen vía AJAX
-function uploadImage(file) {
-
-    let fd = new FormData();
-    fd.append("imagenes_nuevas[]", file);  // nombre que SI espera PHP
-
-    $.ajax({
-        url: "../../controller/incidencia.php?op=subir_imagen_unica",
-        type: "POST",
-        data: fd,
-        contentType: false,
-        processData: false,
-        dataType: "json",
-        success: function (data) {
-
-            if (data.status === "ok") {
-
-                // agregarla a la galería real
-                imagenesGuardadas.push(data.ruta);
-
-                // actualizar la vista de imágenes actuales
-                renderImagenesActuales();
-
-                // limpiar previews temporales
-                imagenesTemp = [];
-                updatePreview();
-
-                Swal.fire("Imagen agregada", "La imagen fue subida a la galería.", "success");
-            }
-        },
-        error: function () {
-            Swal.fire("Error", "No se pudo subir la imagen.", "error");
-        }
-    });
-}
-
-
-// Agregar visualmente la imagen pegada
-function addPreview(url) {
-    let preview = document.getElementById("preview");
-
-    let img = document.createElement("img");
-    img.src = url;
-    img.classList.add("img-thumbnail");
-    img.style.maxWidth = "180px";
-
-    preview.appendChild(img);
-}
-
-// Guardar rutas de imágenes para enviarlas al guardar
-function saveImagePath(url) {
-    let input = document.getElementById("imagenes_json");
-    let arr = input.value ? JSON.parse(input.value) : [];
-    arr.push(url);
-    input.value = JSON.stringify(arr);
-}
-
-let imagenesTemp = []; // buffer temporal
-
-document.addEventListener("paste", function (event) {
-    let items = event.clipboardData.items;
-
-    for (let index in items) {
-        let item = items[index];
-        if (item.kind === "file") {
-            let file = item.getAsFile();
-            let reader = new FileReader();
-
-            reader.onload = function (e) {
-                let base64 = e.target.result;
-                imagenesTemp.push(base64);
-                updatePreview();
-            };
-
-            reader.readAsDataURL(file);
-        }
-    }
-});
-
-// Actualizar vista previa
-function updatePreview() {
-    let preview = document.getElementById("preview");
-    preview.innerHTML = "";
-
-    imagenesTemp.forEach((img, index) => {
-        let container = document.createElement("div");
-        container.classList.add("preview-item");
-
-        let image = document.createElement("img");
-        image.src = img;
-        image.classList.add("preview-img");
-
-        let removeBtn = document.createElement("div");
-        removeBtn.classList.add("preview-remove");
-        removeBtn.innerHTML = "✖";
-        removeBtn.onclick = function () {
-            imagenesTemp.splice(index, 1);
-            updatePreview();
-        };
-
-        container.appendChild(image);
-        container.appendChild(removeBtn);
-        preview.appendChild(container);
-    });
-
-    // Guardar array en input oculto
-    document.getElementById("imagenes_base64").value =
-        JSON.stringify(imagenesTemp);
-}
-
 
 // Ejecutar init
 init();
