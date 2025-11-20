@@ -40,18 +40,19 @@ class Incidencia extends Conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-
+    
         $sql = "UPDATE incidencia SET 
-                descripcion = ?, 
-                accion_recomendada = ?, 
-                tipo_incidencia = ?, 
-                prioridad = ?, 
-                base_datos = ?, 
-                version_origen = ?, 
-                modulo = ?, 
-                estado_incidencia = ?      -- ✔ no se toca
-            WHERE id_incidencia = ?";
-
+                    descripcion        = ?, 
+                    accion_recomendada = ?, 
+                    tipo_incidencia    = ?, 
+                    prioridad          = ?, 
+                    base_datos         = ?, 
+                    version_origen     = ?, 
+                    id_modulo          = ?, 
+                    estado_incidencia  = ?, 
+                    imagenes           = ?
+                WHERE id_incidencia = ?";
+    
         $stmt = $conectar->prepare($sql);
         $stmt->execute([
             $data["descripcion"],
@@ -61,10 +62,12 @@ class Incidencia extends Conectar
             $data["base_datos"],
             $data["version_origen"],
             $data["id_modulo"],
-            $data["estado_incidencia"],   // ✔ correcto
+            $data["estado_incidencia"],
+            $data["imagenes"],
             $data["id_incidencia"]
         ]);
     }
+    
 
     // 🟩 Insertar incidencia (estado siempre = 1)
     public function insertar($data)

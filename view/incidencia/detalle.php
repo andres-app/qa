@@ -143,19 +143,21 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                             <input type="hidden" id="id_incidencia" name="id_incidencia" value="<?= $id_incidencia; ?>">
 
                             <div class="row">
-                                <!-- Columna principal -->
+
+                                <!-- COLUMNA IZQUIERDA -->
                                 <div class="col-lg-8">
+
+                                    <!-- Información General -->
                                     <div class="card mb-3">
-                                        <div class="card-header fw-semibold bg-light">
-                                            Información General
-                                        </div>
+                                        <div class="card-header fw-semibold bg-light">Información General</div>
+
                                         <div class="card-body">
 
                                             <!-- Descripción -->
                                             <div class="mb-3">
                                                 <label class="form-label fw-semibold">Descripción de la incidencia</label>
-                                                <textarea name="descripcion" id="descripcion" class="form-control" rows="3"
-                                                    placeholder="Describe claramente la incidencia detectada durante las pruebas funcionales."><?= htmlspecialchars($info["descripcion"]); ?></textarea>
+                                                <textarea name="descripcion" id="descripcion" class="form-control"
+                                                    rows="3"><?= htmlspecialchars($info["descripcion"]); ?></textarea>
                                             </div>
 
                                             <!-- Acción recomendada -->
@@ -163,11 +165,11 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                 <label class="form-label fw-semibold">Acción recomendada /
                                                     correctiva</label>
                                                 <textarea name="accion_recomendada" id="accion_recomendada"
-                                                    class="form-control" rows="3"
-                                                    placeholder="Especifica la acción sugerida o el paso a seguir para resolver la incidencia."><?= htmlspecialchars($info["accion_recomendada"]); ?></textarea>
+                                                    class="form-control"
+                                                    rows="3"><?= htmlspecialchars($info["accion_recomendada"]); ?></textarea>
                                             </div>
 
-                                            <!-- Fila: tipo y prioridad -->
+                                            <!-- tipo / prioridad -->
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label fw-semibold">Tipo de incidencia</label>
@@ -193,86 +195,112 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                 </div>
                                             </div>
 
-                                            <!-- Módulo -->
+                                            <!-- módulo -->
                                             <div class="mb-3">
                                                 <label class="form-label fw-semibold">Módulo del Sistema</label>
-                                                <select name="modulo" id="modulo" class="form-select" required>
-                                                    <option value="">Seleccione módulo...</option>
-                                                    <option value="EJENP" <?= $info["modulo"] == "EJENP" ? "selected" : ""; ?>>
-                                                        EJENP</option>
-                                                    <option value="SAJ - PJ" <?= $info["modulo"] == "SAJ - PJ" ? "selected" : ""; ?>>SAJ - PJ</option>
-                                                    <option value="Casos de Prueba" <?= $info["modulo"] == "Casos de Prueba" ? "selected" : ""; ?>>Casos de Prueba</option>
-                                                    <option value="Grabaciones Judiciales" <?= $info["modulo"] == "Grabaciones Judiciales" ? "selected" : ""; ?>>Grabaciones Judiciales</option>
-                                                    <option value="Programación de Audiencias"
-                                                        <?= $info["modulo"] == "Programación de Audiencias" ? "selected" : ""; ?>>Programación de Audiencias</option>
-                                                    <option value="Actuaciones Judiciales" <?= $info["modulo"] == "Actuaciones Judiciales" ? "selected" : ""; ?>>Actuaciones Judiciales</option>
-                                                    <option value="Otro" <?= $info["modulo"] == "Otro" ? "selected" : ""; ?>>
-                                                        Otro</option>
-                                                </select>
-                                                <small class="text-muted">Seleccione el módulo funcional donde se identificó
-                                                    la incidencia.</small>
+                                                <select name="id_modulo" id="id_modulo" class="form-select"></select>
                                             </div>
-
-
 
                                             <!-- Base de datos -->
                                             <div class="mb-3">
                                                 <label class="form-label fw-semibold">Base de datos</label>
                                                 <input type="text" name="base_datos" id="base_datos" class="form-control"
-                                                    value="<?= htmlspecialchars($info["base_datos"]); ?>"
-                                                    placeholder="Nombre o instancia de la base de datos relacionada">
+                                                    value="<?= htmlspecialchars($info["base_datos"]); ?>">
                                             </div>
 
-                                            <!-- Versión -->
+                                            <!-- Version -->
                                             <div class="mb-3">
                                                 <label class="form-label fw-semibold">Versión del sistema</label>
                                                 <input type="text" name="version_origen" id="version_origen"
                                                     class="form-control"
-                                                    value="<?= htmlspecialchars($info["version_origen"]); ?>"
-                                                    placeholder="Ejemplo: v1.2.5 o build 2025.03">
+                                                    value="<?= htmlspecialchars($info["version_origen"]); ?>">
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- EVIDENCIAS -->
+                                    <div class="card mb-3">
+    <div class="card-header fw-semibold bg-light">Evidencias de la incidencia</div>
+
+    <div class="card-body">
+
+        <label class="form-label fw-semibold">Imágenes actuales:</label>
+        <div id="imagenes_actuales" class="d-flex flex-wrap gap-3 mb-3"></div>
+
+        <hr>
+
+        <label class="form-label fw-semibold">Agregar nuevas imágenes</label>
+
+        <div class="input-group mb-2">
+            <input 
+                type="file"
+                id="imagenes_nuevas"
+                name="imagenes_nuevas[]"
+                class="form-control"
+                accept="image/*"
+                multiple
+            >
+            <button 
+                type="button"
+                id="btn_subir_imagen"
+                class="btn btn-success"
+                data-bs-toggle="tooltip"
+                title="Subir estas imágenes a la galería antes de guardar"
+            >
+                <i class="bx bx-cloud-upload"></i>
+                Agregar a galería
+            </button>
+        </div>
+
+        <small class="text-muted">Selecciona una o varias imágenes y haz clic en el botón para subirlas a la galería.</small>
+
+        <div id="preview_nuevas" class="d-flex flex-wrap gap-3 mt-3"></div>
+    </div>
+</div>
+
                                 </div>
 
-                                <!-- Columna lateral -->
+                                <!-- COLUMNA DERECHA -->
                                 <div class="col-lg-4">
                                     <div class="card mb-3">
-                                        <div class="card-header fw-semibold bg-light">
-                                            Información de Registro
-                                        </div>
+                                        <div class="card-header fw-semibold bg-light">Información de Registro</div>
                                         <div class="card-body">
                                             <p><strong>Analista QA:</strong><br><?= htmlspecialchars($info["analista"]); ?>
                                             </p>
-                                            <p><strong>Fecha de
+                                            <p><strong>Fecha
                                                     Registro:</strong><br><?= htmlspecialchars($info["fecha_registro"]); ?>
                                             </p>
-                                            <p><strong>Fecha de
+                                            <p><strong>Fecha
                                                     Recepción:</strong><br><?= htmlspecialchars($info["fecha_recepcion"]); ?>
                                             </p>
 
                                             <div class="mt-3">
                                                 <label class="form-label fw-semibold">Estado actual</label>
                                                 <select id="estado_incidencia" name="estado_incidencia" class="form-select">
-                                                    <option value="Pendiente" <?= $info["estado_incidencia"] == "Pendiente" ? "selected" : ""; ?>>Pendiente</option>
+                                                    <option value="Pendiente"
+                                                        <?= $info["estado_incidencia"] == "Pendiente" ? "selected" : ""; ?>>
+                                                        Pendiente</option>
                                                     <option value="En Proceso" <?= $info["estado_incidencia"] == "En Proceso" ? "selected" : ""; ?>>En Proceso</option>
-                                                    <option value="Resuelto" <?= $info["estado_incidencia"] == "Resuelto" ? "selected" : ""; ?>>Resuelto</option>
-                                                    <option value="Cerrado" <?= $info["estado_incidencia"] == "Cerrado" ? "selected" : ""; ?>>Cerrado</option>
+                                                    <option value="Resuelto"
+                                                        <?= $info["estado_incidencia"] == "Resuelto" ? "selected" : ""; ?>>Resuelto
+                                                    </option>
+                                                    <option value="Cerrado"
+                                                        <?= $info["estado_incidencia"] == "Cerrado" ? "selected" : ""; ?>>Cerrado
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="text-end mt-5 mb-4">
-                                        <button type="submit" class="btn btn-primary px-4 shadow-sm rounded-pill">
-                                            <i class="bx bx-save"></i> Guardar cambios
-                                        </button>
+
+                                    <div class="text-end mt-4 mb-4">
+                                        <button type="submit" class="btn btn-primary px-4 rounded-pill"><i
+                                                class="bx bx-save"></i> Guardar cambios</button>
                                     </div>
                                 </div>
+
                             </div>
-
-
-
                         </form>
+
 
 
                     </div>
@@ -287,31 +315,189 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
         <?php require_once("../html/js.php"); ?>
 
         <script>
-            $("#form_editar_incidencia").on("submit", function (e) {
-                e.preventDefault();
-                let formData = new FormData(this);
 
-                $.ajax({
-                    url: "../../controller/incidencia.php?op=editar",
-                    type: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    dataType: "json",
-                    success: function (data) {
-                        if (data.status === "ok") {
-                            Swal.fire("Guardado", "Cambios actualizados correctamente", "success");
-                        } else {
-                            Swal.fire("Error", data.msg || "No se pudo guardar", "error");
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        Swal.fire("Error", "Error en la solicitud AJAX", "error");
-                        console.error("AJAX error:", error);
-                    }
-                });
+const imagenesGuardadas = <?= json_encode($info["imagenes"] ? json_decode($info["imagenes"], true) : []); ?>;
+
+function cargarModulos() {
+    $.ajax({
+        url: "../../controller/modulo.php?op=combo",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            let select = $("#id_modulo");
+            select.empty().append('<option value="">Seleccione…</option>');
+            data.forEach(m => {
+                select.append(`<option value="${m.id_modulo}">${m.nombre}</option>`);
             });
-        </script>
+        }
+    });
+}
+
+cargarModulos();
+
+// Espera a que el combo termine de llenarse
+setTimeout(() => {
+    $("#id_modulo").val(<?= $info["id_modulo"] ?>);
+}, 500);
+
+
+
+/* -----------------------------
+   RENDERIZAR IMÁGENES GUARDADAS
+----------------------------- */
+function renderImagenesActuales() {
+    let cont = $("#imagenes_actuales");
+    cont.html("");
+
+    if (!imagenesGuardadas || imagenesGuardadas.length === 0) {
+        cont.html("<p class='text-muted'>No hay imágenes adjuntas.</p>");
+        return;
+    }
+
+    imagenesGuardadas.forEach((ruta, i) => {
+        cont.append(`
+            <div class="position-relative">
+                <img src="../../${ruta}" class="rounded shadow-sm"
+                     style="width:120px;height:120px;object-fit:cover;">
+                <button type="button"
+                        class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                        onclick="eliminarImagen(${i})">
+                    <i class="bx bx-trash"></i>
+                </button>
+            </div>
+        `);
+    });
+}
+renderImagenesActuales();
+
+/* -----------------------------
+   ELIMINAR IMAGEN GUARDADA
+----------------------------- */
+function eliminarImagen(i) {
+    Swal.fire({
+        title: "¿Eliminar imagen?",
+        text: "Esta imagen será retirada al guardar.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then(res => {
+        if (res.isConfirmed) {
+            imagenesGuardadas.splice(i, 1);
+            renderImagenesActuales();
+        }
+    });
+}
+
+/* -----------------------------
+   PREVISUALIZAR NUEVAS IMÁGENES
+----------------------------- */
+$("#imagenes_nuevas").on("change", function () {
+    let files = this.files;
+    let preview = $("#preview_nuevas");
+    preview.html("");
+
+    [...files].forEach(file => {
+        let reader = new FileReader();
+        reader.onload = e => {
+            preview.append(`
+                <img src="${e.target.result}" class="rounded shadow-sm"
+                     style="width:120px;height:120px;object-fit:cover;">
+            `);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+
+$("#btn_subir_imagen").on("click", function () {
+
+let files = document.getElementById("imagenes_nuevas").files;
+
+if (files.length === 0) {
+    Swal.fire("Advertencia", "Selecciona una imagen primero", "warning");
+    return;
+}
+
+let fd = new FormData();
+fd.append("id_incidencia", $("#id_incidencia").val());
+fd.append("op", "subir_imagen_unica");
+
+for (let i = 0; i < files.length; i++) {
+    fd.append("imagenes_nuevas[]", files[i]);
+}
+
+$.ajax({
+    url: "../../controller/incidencia.php",
+    type: "POST",
+    data: fd,
+    processData: false,
+    contentType: false,
+    dataType: "json",
+    success: function (data) {
+        if (data.status === "ok") {
+
+            // Actualiza lista en pantalla sin recargar
+            imagenesGuardadas.push(data.ruta);
+            renderImagenesActuales();
+
+            // limpia input y preview
+            $("#imagenes_nuevas").val("");
+            $("#preview_nuevas").html("");
+
+            Swal.fire("Subida", "Imagen agregada a la galería", "success");
+        }
+    }
+});
+});
+
+
+
+/* -----------------------------
+   GUARDAR FORMULARIO COMPLETO
+----------------------------- */
+$("#form_editar_incidencia").on("submit", function (e) {
+    e.preventDefault();
+
+    let fd = new FormData(this);
+
+    // enviar lista actualizada de imágenes guardadas
+    fd.append("imagenes_guardadas", JSON.stringify(imagenesGuardadas));
+
+    // nuevas imágenes
+    let nuevas = document.getElementById("imagenes_nuevas").files;
+    for (let i = 0; i < nuevas.length; i++) {
+        fd.append("imagenes_nuevas[]", nuevas[i]);
+    }
+
+    $.ajax({
+        url: "../../controller/incidencia.php?op=editar",
+        type: "POST",
+        data: fd,
+        processData: false,
+        contentType: false,
+        dataType: "json",
+        success: function (data) {
+
+            if (data.status === "ok") {
+                Swal.fire("Guardado", "Cambios actualizados correctamente", "success");
+
+                // 🔥🔥 REFRESCA PARA QUE SE MUESTREN LAS NUEVAS IMÁGENES 🔥🔥
+                setTimeout(() => {
+                    location.reload();
+                }, 800);
+
+            } else {
+                Swal.fire("Error", data.msg || "No se pudo guardar", "error");
+            }
+        },
+        error: function () {
+            Swal.fire("Error", "Error en la solicitud AJAX", "error");
+        }
+    });
+});
+
+
+</script>
 
     </body>
 

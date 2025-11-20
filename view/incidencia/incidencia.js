@@ -429,24 +429,40 @@ function cargarModulos() {
 
 // Subir imagen vía AJAX
 function uploadImage(file) {
-    let formData = new FormData();
-    formData.append("file", file);
+
+    let fd = new FormData();
+    fd.append("imagenes_nuevas[]", file);  // nombre que SI espera PHP
 
     $.ajax({
-        url: "../../controller/incidencia.php?op=subir_imagen",
+        url: "../../controller/incidencia.php?op=subir_imagen_unica",
         type: "POST",
-        data: formData,
+        data: fd,
         contentType: false,
         processData: false,
         dataType: "json",
-        success: function (r) {
-            if (r.status === "ok") {
-                addPreview(r.url);
-                saveImagePath(r.url);
+        success: function (data) {
+
+            if (data.status === "ok") {
+
+                // agregarla a la galería real
+                imagenesGuardadas.push(data.ruta);
+
+                // actualizar la vista de imágenes actuales
+                renderImagenesActuales();
+
+                // limpiar previews temporales
+                imagenesTemp = [];
+                updatePreview();
+
+                Swal.fire("Imagen agregada", "La imagen fue subida a la galería.", "success");
             }
+        },
+        error: function () {
+            Swal.fire("Error", "No se pudo subir la imagen.", "error");
         }
     });
 }
+
 
 // Agregar visualmente la imagen pegada
 function addPreview(url) {
