@@ -101,15 +101,16 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
                                     <div class="text-muted fs-4">|</div>
 
-                                    <!-- Módulo -->
-                                    <div>
-                                        <div class="text-muted small fw-semibold">Módulo del Sistema</div>
-                                        <div class="fw-semibold mb-0">
-                                            <span class="badge bg-light text-primary border px-2 py-1">
-                                                <?= htmlspecialchars($info["modulo"] ?? "-"); ?>
-                                            </span>
-                                        </div>
+                                <!-- Módulo -->
+                                <div>
+                                    <div class="text-muted small fw-semibold">Módulo del Sistema</div>
+                                    <div class="fw-semibold mb-0">
+                                        <span class="badge bg-light text-primary border px-2 py-1">
+                                            <?= htmlspecialchars($info["modulo_nombre"] ?? "-"); ?>
+                                        </span>
                                     </div>
+                                </div>
+
 
                                 </div>
 
@@ -248,7 +249,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                 title="Subir estas imágenes a la galería antes de guardar"
             >
                 <i class="bx bx-cloud-upload"></i>
-                Agregar a galería
+                
             </button>
         </div>
 
