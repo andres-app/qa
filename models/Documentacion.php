@@ -92,5 +92,25 @@ ORDER BY fecha_recepcion DESC";
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function listar_incidencias_x_documentacion($id_documentacion)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "SELECT i.id_incidencia, i.actividad, i.descripcion, 
+                   u.usu_nomape AS analista
+            FROM incidencia i
+            LEFT JOIN tm_usuario u ON u.usu_id = i.analista_id
+            WHERE i.id_documentacion = ? AND i.estado = 1
+            ORDER BY i.id_incidencia ASC";
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindValue(1, $id_documentacion);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 }
 ?>

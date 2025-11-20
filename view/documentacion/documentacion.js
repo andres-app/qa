@@ -90,9 +90,15 @@ $(document).ready(function () {
                 data: null,
                 render: function (data) {
                     return `
-                        <button class="btn btn-warning btn-sm" onclick="editar(${data.id_documentacion})">
+                        <button class="btn btn-primary btn-sm me-1" title="Generar PDF de incidencias consolidado"
+                            onclick="generarPDF(${data.id_documentacion})">
+                            <i class="bx bxs-file-pdf"></i>
+                        </button>
+            
+                        <button class="btn btn-warning btn-sm me-1" onclick="editar(${data.id_documentacion})">
                             <i class="bx bx-edit"></i>
                         </button>
+            
                         <button class="btn btn-danger btn-sm" onclick="eliminar(${data.id_documentacion})">
                             <i class="bx bx-trash"></i>
                         </button>
@@ -100,6 +106,7 @@ $(document).ready(function () {
                 },
                 className: "text-center"
             }
+
         ],
         "bDestroy": true,
         "responsive": true,
@@ -189,5 +196,11 @@ function eliminar(id_documentacion) {
         }
     });
 }
+
+function generarPDF(id_documentacion) {
+    // Abrir el PDF en una nueva pestaña
+    window.open(`../../controller/documentacion.php?op=pdf&id_documentacion=${id_documentacion}`, "_blank");
+}
+
 
 init();
