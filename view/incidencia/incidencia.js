@@ -377,5 +377,77 @@ function cargarModulos() {
     });
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dropZone = document.getElementById("dropZone");
+    const preview = document.getElementById("preview");
+    const inputBase64 = document.getElementById("imagenes_base64");
+
+    let imagenesBase64 = [];
+
+    // -----------------------------
+    // CTRL + V (pegar imágenes)
+    // -----------------------------
+    document.addEventListener("paste", function (event) {
+        const items = event.clipboardData.items;
+
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.includes("image")) {
+                const file = items[i].getAsFile();
+                procesarImagen(file);
+            }
+        }
+    });
+
+    // -----------------------------
+    // Drag Over
+    // -----------------------------
+    dropZone.addEventListener("dragover", function (event) {
+        event.preventDefault();
+    });
+
+    // -----------------------------
+    // Drop
+    // -----------------------------
+    dropZone.addEventListener("drop", function (event) {
+        event.preventDefault();
+        let files = event.dataTransfer.files;
+
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].type.includes("image")) {
+                procesarImagen(files[i]);
+            }
+        }
+    });
+
+    // -----------------------------
+    // Convertir a Base64
+    // -----------------------------
+    function procesarImagen(file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+
+            imagenesBase64.push(e.target.result);
+
+            // Insertar en el input oculto para el backend
+            inputBase64.value = JSON.stringify(imagenesBase64);
+
+            // Mostrar miniatura
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.classList.add("img-thumbnail", "m-2");
+            img.style.width = "120px";
+
+            preview.appendChild(img);
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+});
+
+
+
 // Ejecutar init
 init();
