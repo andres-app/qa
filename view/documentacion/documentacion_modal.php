@@ -45,7 +45,7 @@
                             <label for="tipo_documento" class="form-label">Tipo de Documento</label>
                             <select class="form-select" id="tipo_documento" name="tipo_documento">
                                 <option value="">Seleccione</option>
-                                <option value="Informe">Informe</option>
+                                <option value="Carta">Carta</option>
                                 <option value="Oficio">Oficio</option>
                                 <option value="Memorando">Memorando</option>
                                 <option value="Resolución">Resolución</option>
