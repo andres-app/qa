@@ -1,92 +1,92 @@
-/* Contenedor del dropzone */
+/* CONTENEDOR PRINCIPAL */
 #dropZone {
-    background: #f8f9fc !important;
-    border: 2px dashed #cbd5e1 !important;
-    border-radius: 12px !important;
-    padding: 40px !important;
-    text-align: center !important;
+    background: linear-gradient(180deg, #fafbff 0%, #f1f5ff 100%);
+    border: 2.5px dashed #b7c0d8;
+    border-radius: 14px;
+    padding: 50px 25px;
+    text-align: center;
+    transition: all .25s ease;
     position: relative;
-    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-/* Hover */
+/* HOVER */
 #dropZone:hover {
-    background: #eef2ff !important;
-    border-color: #6574ff !important;
+    border-color: #4f46e5;
+    background: #eef1ff;
+    transform: scale(1.01);
 }
 
-/* Icono */
+/* ICONO */
 #dropZone .dz-icon i {
-    font-size: 56px;
-    color: #9ca3af;
-    margin-bottom: 12px;
-    display: block;
+    font-size: 64px;
+    color: #a0a5b8;
+    margin-bottom: 14px;
+    opacity: 0.8;
 }
 
-/* Texto */
+/* TEXTO PRINCIPAL */
 #dropZone .dz-text {
     font-size: 15px;
-    font-weight: 500;
     color: #6b7280;
+    font-weight: 600;
 }
 
-
-/* Área donde aparecerán las miniaturas */
+/* LISTA DE MINIATURAS */
 #dropZone .dz-preview {
-    margin-top: 20px;
+    margin-top: 25px;
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 15px;
     justify-content: center;
 }
 
-/* Miniaturas bonitas */
-.preview-img {
-    width: 160px;
-    height: auto;
-    border-radius: 10px;
-    object-fit: cover;
-    border: 1px solid #ddd;
-    padding: 3px;
-    background: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
-}
-
-.preview-img:hover {
-    transform: scale(1.03);
-}
-
+/* TARJETA DE MINIATURA */
 .preview-item {
     position: relative;
     display: inline-block;
 }
 
+/* MINIATURA */
 .preview-img {
     width: 160px;
-    height: auto;
-    border-radius: 10px;
+    height: 95px;
+    border-radius: 12px;
+    overflow: hidden;
     object-fit: cover;
-    border: 1px solid #ddd;
-    padding: 3px;
+    border: 1px solid #d0d7e3;
     background: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin: 5px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    transition: transform .25s ease, box-shadow .25s ease;
 }
 
+/* ANIMACIÓN HOVER MINIATURA */
+.preview-item:hover .preview-img {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* BOTÓN PARA ELIMINAR */
 .preview-remove {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #ff4d4f;
+    top: -10px;
+    right: -10px;
+    background: #ef4444;
     color: white;
     border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    text-align: center;
-    line-height: 22px;
-    font-size: 12px;
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    transition: background .2s ease, transform .2s ease;
 }
 
+/* HOVER "X" */
+.preview-remove:hover {
+    background: #d32f2f;
+    transform: scale(1.15);
+}

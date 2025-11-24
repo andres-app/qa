@@ -450,25 +450,51 @@ document.addEventListener("DOMContentLoaded", function () {
     // -----------------------------
     function procesarImagen(file) {
         const reader = new FileReader();
-
+    
         reader.onload = function (e) {
-
-            imagenesBase64.push(e.target.result);
-
-            // Insertar en el input oculto para el backend
+            const base64 = e.target.result;
+    
+            // Agregar al array
+            imagenesBase64.push(base64);
             inputBase64.value = JSON.stringify(imagenesBase64);
-
-            // Mostrar miniatura
+    
+            // Crear contenedor con botón eliminar
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("position-relative", "d-inline-block", "m-2");
+    
             const img = document.createElement("img");
-            img.src = e.target.result;
-            img.classList.add("img-thumbnail", "m-2");
+            img.src = base64;
+            img.classList.add("img-thumbnail");
             img.style.width = "120px";
-
-            preview.appendChild(img);
+            img.style.height = "auto";
+    
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.innerHTML = "✖";
+            btn.classList.add("btn", "btn-danger", "btn-sm", "position-absolute");
+            btn.style.top = "-8px";
+            btn.style.right = "-8px";
+            btn.style.borderRadius = "50%";
+            btn.style.padding = "2px 6px";
+    
+            // 🔥 Evento para eliminar
+            btn.addEventListener("click", function () {
+                // 1. Quitarlo del array
+                imagenesBase64 = imagenesBase64.filter(img64 => img64 !== base64);
+                inputBase64.value = JSON.stringify(imagenesBase64);
+    
+                // 2. Quitar la miniatura del DOM
+                wrapper.remove();
+            });
+    
+            wrapper.appendChild(img);
+            wrapper.appendChild(btn);
+            preview.appendChild(wrapper);
         };
-
+    
         reader.readAsDataURL(file);
     }
+    
 
 });
 
