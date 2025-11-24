@@ -126,45 +126,50 @@ $(document).ready(function () {
             {
                 extend: "excelHtml5",
                 exportOptions: {
-                    columns: function (idx) {
-                        return idx !== 11; // sin acciones
-                    },
+                    // Orden correcto en Excel (sin botones)
+                    columns: [0,1,2,3,4,5,11,6,7,8,9,10],
+                
                     format: {
                         body: function (data, row, column) {
-                    
-                            // Estado (columna 10) → quitar HTML
+                
+                            // Estado
                             if (column === 10) {
                                 let div = document.createElement("div");
                                 div.innerHTML = data;
                                 return div.textContent || "";
                             }
-                    
-                            // Documentación (columna 3)
+                
+                            // Documentación
                             if (column === 3) {
                                 return tabla.row(row).data().documentacion || "";
                             }
-                    
-                            // Módulo (columna 4)
+                
+                            // Módulo
                             if (column === 4) {
                                 return tabla.row(row).data().modulo || "";
                             }
-                    
-                            // Descripción (columna 5)
+                
+                            // Descripción
                             if (column === 5) {
                                 return tabla.row(row).data().descripcion || "";
                             }
-                    
-                            // Default: remover HTML para las otras columnas
+                
+                            // Acción Recomendada (columna oculta real: 11)
+                            if (column === 6) { 
+                                return tabla.row(row).data().accion_recomendada || "";
+                            }
+                
+                            // Default: limpiar HTML
                             let div = document.createElement("div");
                             div.innerHTML = data;
                             return div.textContent || "";
                         }
                     }
-                    
-                }
+                }  
+                
             },
             "pdfHtml5"
-        ],
+        ],        
 
         ajax: {
             url: "../../controller/incidencia.php?op=listar",
@@ -230,7 +235,7 @@ $(document).ready(function () {
 
             // acciones
             {
-                targets: 11,
+                targets: 12,
                 orderable: false,
                 render: function (_, __, row) {
                     return `
@@ -255,19 +260,25 @@ $(document).ready(function () {
         ],
 
         columns: [
-            { data: "id_incidencia" },
-            { data: "correlativo_doc" },
-            { data: "actividad" },
-            { data: "documentacion" },
-            { data: "modulo" },
-            { data: "descripcion" },
-            { data: "analista" },
-            { data: "prioridad" },
-            { data: "tipo_incidencia" },
-            { data: "fecha_registro" },
-            { data: "estado_incidencia" },
+            { data: "id_incidencia" },       // 0
+            { data: "correlativo_doc" },     // 1
+            { data: "actividad" },           // 2
+            { data: "documentacion" },       // 3
+            { data: "modulo" },              // 4
+            { data: "descripcion" },         // 5
+            { data: "analista" },            // 6
+            { data: "prioridad" },           // 7
+            { data: "tipo_incidencia" },     // 8
+            { data: "fecha_registro" },      // 9
+            { data: "estado_incidencia" },   // 10
+        
+            // 🔥 COLUMNA OCULTA AHORA ESTÁ AQUÍ (11)
+            { data: "accion_recomendada", visible: false },
+        
+            // 🔥 COLUMNA DE BOTONES (12)
             { data: null }
         ]
+        
     });
 
     // =======================================================

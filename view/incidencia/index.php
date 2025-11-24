@@ -8,7 +8,7 @@ $rol = new Rol();
 $datos = $rol->validar_menu_x_rol($_SESSION["rol_id"], "incidencia");
 
 if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
-    ?>
+?>
 
     <!doctype html>
     <html lang="es">
@@ -145,9 +145,8 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                         </div>
 
                                         <!-- TABLA -->
-                                        <table id="incidencia_table"
-                                            class="table table-striped table-bordered dt-responsive nowrap w-100">
-                                            <thead class="table-light text-center">
+                                        <table id="incidencia_table" class="table table-striped table-bordered dt-responsive nowrap">>
+                                            <thead>
                                                 <tr>
                                                     <th>ID.</th>
                                                     <th>N° Inc.</th>
@@ -160,12 +159,11 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                     <th>Tipo</th>
                                                     <th>Fecha Registro</th>
                                                     <th>Estado</th>
-                                                    <th class="text-center">Acciones</th>
+                                                    <th style="display:none;">Acción Recomendada</th> <!-- OCULTA PERO EXISTE -->
+                                                    <th>Acciones</th> <!-- 🔥 ESTE FALTABA -->
                                                 </tr>
                                             </thead>
-                                            <tbody></tbody>
                                         </table>
-
                                     </div> <!-- END CARD BODY -->
 
                                 </div> <!-- END CARD -->
@@ -194,7 +192,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
     </html>
 
-    <?php
+<?php
 } else {
     header("Location:" . Conectar::ruta() . "index.php");
 }

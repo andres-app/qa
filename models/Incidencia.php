@@ -15,6 +15,7 @@ class Incidencia extends Conectar
                 d.nombre AS documentacion,   -- 👈 NUEVA COLUMNA AQUÍ
                 m.nombre AS modulo,
                 i.descripcion,
+                i.accion_recomendada,
                 u.usu_nomape AS analista,
                 i.prioridad,
                 i.tipo_incidencia,
