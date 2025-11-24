@@ -131,22 +131,36 @@ $(document).ready(function () {
                     },
                     format: {
                         body: function (data, row, column) {
-
+                    
+                            // Estado (columna 10) → quitar HTML
                             if (column === 10) {
                                 let div = document.createElement("div");
                                 div.innerHTML = data;
                                 return div.textContent || "";
                             }
-
+                    
+                            // Documentación (columna 3)
+                            if (column === 3) {
+                                return tabla.row(row).data().documentacion || "";
+                            }
+                    
+                            // Módulo (columna 4)
+                            if (column === 4) {
+                                return tabla.row(row).data().modulo || "";
+                            }
+                    
+                            // Descripción (columna 5)
                             if (column === 5) {
                                 return tabla.row(row).data().descripcion || "";
                             }
-
+                    
+                            // Default: remover HTML para las otras columnas
                             let div = document.createElement("div");
                             div.innerHTML = data;
                             return div.textContent || "";
                         }
                     }
+                    
                 }
             },
             "pdfHtml5"
