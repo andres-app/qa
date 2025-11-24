@@ -1,0 +1,9 @@
+Array
+(
+    [id_actividad] => 19
+    [estado] => Atendido
+    [avance] => 100%
+    [fecha_inicio] => 2025-11-24 22:17:11
+    [fecha_respuesta] => 2025-11-24 22:17:11
+    [observacion] => 
+)

@@ -44,21 +44,24 @@ switch ($_GET["op"]) {
         echo json_encode($actividad->mostrar($_POST["id_actividad"]));
         break;
 
-    case "actualizar_estado":
+        case "actualizar_estado":
 
-        $estado = $_POST["estado"];
-
-        $actividad->actualizar_estado(
-            $_POST["id_actividad"],
-            $_POST["estado"],
-            $_POST["avance"],
-            $_POST["fecha_inicio"] ?? null,
-            $_POST["fecha_respuesta"] ?? null,
-            $_POST["observacion"] ?? null
-        );
-
-        echo json_encode(["status" => "ok"]);
-        break;
+            file_put_contents("debug_estado.txt", print_r($_POST, true));  // 👈 LOG DEFINITIVO
+        
+            $estado = $_POST["estado"];
+        
+            $actividad->actualizar_estado(
+                $_POST["id_actividad"],
+                $_POST["estado"],
+                $_POST["avance"],
+                $_POST["fecha_inicio"] ?? null,
+                $_POST["fecha_respuesta"] ?? null,
+                $_POST["observacion"] ?? null
+            );
+        
+            echo json_encode(["status" => "ok"]);
+            break;
+        
 
 
 

@@ -107,6 +107,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
     <?php require_once("../html/js.php") ?>
     <script type="text/javascript" src="actividad.js"></script>
+    <script type="text/javascript" src="modal_estado.js"></script>
 
 </body>
 </html>

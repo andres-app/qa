@@ -4,37 +4,6 @@
 var tabla;
 
 // =======================================================
-// FUNCIÓN CORRECTA PARA ABRIR EL MODAL DE ESTADO
-// =======================================================
-function abrirModalEstado(id) {
-
-  $("#estado_id").val(id);
-
-  $.ajax({
-    url: "../../controller/actividad.php?op=mostrar",
-    type: "POST",
-    data: { id_actividad: id },
-    dataType: "json",
-    success: function (data) {
-
-      $("#estado").val(data.estado);
-
-      $("#fecha_inicio").val(data.fecha_inicio ? data.fecha_inicio.replace(" ", "T") : "");
-      $("#fecha_respuesta").val(data.fecha_respuesta ? data.fecha_respuesta.replace(" ", "T") : "");
-
-      // Calcular avance
-      let avance = "0%";
-      if (data.estado === "En Progreso") avance = "50%";
-      if (data.estado === "Atendido" || data.estado === "Cerrado") avance = "100%";
-      $("#avance").val(avance);
-
-      $("#modal_estado").modal("show");
-    }
-  });
-}
-
-
-// =======================================================
 // FUNCIÓN PRINCIPAL
 // =======================================================
 function init() {
@@ -267,41 +236,6 @@ $(document).ready(function () {
     ],
 
   });
-
-
-  // =======================================================
-  // ABRIR MODAL DE ESTADO
-  // =======================================================
-  function abrirModalEstado(id) {
-
-    $("#estado_id").val(id); // Guardar ID real
-
-    // Obtener la info actual desde el backend
-    $.ajax({
-      url: "../../controller/actividad.php?op=mostrar",
-      type: "POST",
-      data: { id_actividad: id },
-      dataType: "json",
-      success: function (data) {
-
-        $("#estado").val(data.estado);
-
-        // Setear fechas si existen
-        $("#fecha_inicio").val(data.fecha_inicio ? data.fecha_inicio.replace(" ", "T") : "");
-        $("#fecha_respuesta").val(data.fecha_respuesta ? data.fecha_respuesta.replace(" ", "T") : "");
-
-        // Calcular avance automático
-        let avance = "0%";
-        if (data.estado === "En Progreso") avance = "50%";
-        if (data.estado === "Atendido" || data.estado === "Cerrado") avance = "100%";
-
-        $("#avance").val(avance);
-
-        $("#modal_estado").modal("show");
-      }
-    });
-  }
-
 
   // =======================================================
   // BOTÓN NUEVA ACTIVIDAD

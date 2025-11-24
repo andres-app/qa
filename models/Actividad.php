@@ -94,8 +94,8 @@ class Actividad extends Conectar {
         $sql = "UPDATE actividad 
                 SET estado = ?, 
                     avance = ?, 
-                    fecha_inicio = IFNULL(?, fecha_inicio),
-                    fecha_respuesta = IFNULL(?, fecha_respuesta),
+                    fecha_inicio = (CASE WHEN ? = '' THEN fecha_inicio ELSE ? END),
+                    fecha_respuesta = (CASE WHEN ? = '' THEN fecha_respuesta ELSE ? END),
                     observacion = ?
                 WHERE id_actividad = ?";
     
@@ -103,7 +103,9 @@ class Actividad extends Conectar {
         return $stmt->execute([
             $estado,
             $avance,
-            $fecha_inicio,
+            $fecha_inicio,   // para el CASE
+            $fecha_inicio,   // fecha real
+            $fecha_respuesta, 
             $fecha_respuesta,
             $observacion,
             $id
@@ -111,6 +113,7 @@ class Actividad extends Conectar {
     }
     
     
+
 
     public function get_correlativo() {
         $conectar = parent::conexion();
