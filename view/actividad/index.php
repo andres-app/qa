@@ -100,6 +100,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
     <!-- Modal de Registro / Edición -->
     <?php require_once("modal_actividad.php"); ?>
+    <?php require_once("modal_estado.php"); ?>
 
     <?php require_once("../html/sidebar.php") ?>
     <div class="rightbar-overlay"></div>

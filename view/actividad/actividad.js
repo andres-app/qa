@@ -4,6 +4,37 @@
 var tabla;
 
 // =======================================================
+// FUNCIÓN CORRECTA PARA ABRIR EL MODAL DE ESTADO
+// =======================================================
+function abrirModalEstado(id) {
+
+  $("#estado_id").val(id);
+
+  $.ajax({
+    url: "../../controller/actividad.php?op=mostrar",
+    type: "POST",
+    data: { id_actividad: id },
+    dataType: "json",
+    success: function (data) {
+
+      $("#estado").val(data.estado);
+
+      $("#fecha_inicio").val(data.fecha_inicio ? data.fecha_inicio.replace(" ", "T") : "");
+      $("#fecha_respuesta").val(data.fecha_respuesta ? data.fecha_respuesta.replace(" ", "T") : "");
+
+      // Calcular avance
+      let avance = "0%";
+      if (data.estado === "En Progreso") avance = "50%";
+      if (data.estado === "Atendido" || data.estado === "Cerrado") avance = "100%";
+      $("#avance").val(avance);
+
+      $("#modal_estado").modal("show");
+    }
+  });
+}
+
+
+// =======================================================
 // FUNCIÓN PRINCIPAL
 // =======================================================
 function init() {
@@ -155,42 +186,40 @@ $(document).ready(function () {
     order: [[0, "desc"]],
     columnDefs: [
       {
-        targets: 3,
-        render: function (data) {
-          if (!data) return "";
-          let limite = 25;
-          let corto = data.length > limite ? data.substring(0, limite) + "…" : data;
-          return `<span title="${data}">${corto}</span>`;
-        },
+          targets: 3,
+          render: function (data) {
+              if (!data) return "";
+              let limite = 25;
+              let corto = data.length > limite ? data.substring(0, limite) + "…" : data;
+              return `<span title="${data}">${corto}</span>`;
+          }
       },
       {
-        targets: 8,
-        render: function (data, type, row) {
-
-          // Si data es numérico (0 = anulado)
-          if (data === 0) {
-            return `<span class="badge bg-danger">Anulado</span>`;
+          targets: 7, // 👈 AQUI VA
+          render: function (data, type, row) {
+  
+              if (row.est == 0) {
+                  return `<span class="badge bg-danger">Anulado</span>`;
+              }
+  
+              if (!data || typeof data !== "string") {
+                  return `<span class="badge bg-secondary">Sin Estado</span>`;
+              }
+  
+              let estado = data.toLowerCase();
+              let badge = "";
+  
+              if (estado === "pendiente") badge = "badge bg-warning text-dark";
+              else if (estado === "en progreso") badge = "badge bg-info text-dark";
+              else if (estado === "atendido") badge = "badge bg-primary";
+              else if (estado === "cerrado") badge = "badge bg-success";
+              else badge = "badge bg-secondary";
+  
+              return `<span class="${badge}">${data}</span>`;
           }
-
-          // Si data no es string, convertirlo
-          if (typeof data !== "string") {
-            data = String(data || "").trim();
-          }
-
-          let estado = data.toLowerCase();
-          let badge = "";
-
-          if (estado === "pendiente") badge = "badge bg-warning text-dark";
-          else if (estado === "en progreso") badge = "badge bg-info text-dark";
-          else if (estado === "atendido") badge = "badge bg-primary";
-          else if (estado === "cerrado") badge = "badge bg-success";
-          else badge = "badge bg-secondary";
-
-          return `<span class="${badge}">${data}</span>`;
-        }
-      },
-
-    ],
+      }
+  ],
+  
     columns: [
       { data: "id_actividad" },
       { data: "colaborador" },
@@ -239,6 +268,41 @@ $(document).ready(function () {
 
   });
 
+
+  // =======================================================
+  // ABRIR MODAL DE ESTADO
+  // =======================================================
+  function abrirModalEstado(id) {
+
+    $("#estado_id").val(id); // Guardar ID real
+
+    // Obtener la info actual desde el backend
+    $.ajax({
+      url: "../../controller/actividad.php?op=mostrar",
+      type: "POST",
+      data: { id_actividad: id },
+      dataType: "json",
+      success: function (data) {
+
+        $("#estado").val(data.estado);
+
+        // Setear fechas si existen
+        $("#fecha_inicio").val(data.fecha_inicio ? data.fecha_inicio.replace(" ", "T") : "");
+        $("#fecha_respuesta").val(data.fecha_respuesta ? data.fecha_respuesta.replace(" ", "T") : "");
+
+        // Calcular avance automático
+        let avance = "0%";
+        if (data.estado === "En Progreso") avance = "50%";
+        if (data.estado === "Atendido" || data.estado === "Cerrado") avance = "100%";
+
+        $("#avance").val(avance);
+
+        $("#modal_estado").modal("show");
+      }
+    });
+  }
+
+
   // =======================================================
   // BOTÓN NUEVA ACTIVIDAD
   // =======================================================
@@ -266,7 +330,7 @@ $(document).ready(function () {
 
 });
 
-$("#form_estado").on("submit", function(e){
+$("#form_estado").on("submit", function (e) {
   e.preventDefault();
 
   const estado = $("#estado").val();
@@ -276,24 +340,24 @@ $("#form_estado").on("submit", function(e){
   if (estado === "Atendido" || estado === "Cerrado") avance = "100%";
 
   $.ajax({
-      url: "../../controller/actividad.php?op=actualizar_estado",
-      type: "POST",
-      data: {
-        id_actividad: $("#estado_id").val(),
-        estado: estado,
-        avance: avance,
-        fecha_inicio: $("#fecha_inicio").val(),
-        fecha_respuesta: $("#fecha_respuesta").val(),
-        observacion: $("#observacion").val()
-      },
-      dataType: "json",
-      success: function(){
-          $("#modal_estado").modal("hide");
-          tabla.ajax.reload();
-          Swal.fire("Listo", "Estado actualizado", "success");
-      }
+    url: "../../controller/actividad.php?op=actualizar_estado",
+    type: "POST",
+    data: {
+      id_actividad: $("#estado_id").val(),
+      estado: estado,
+      avance: avance,
+      fecha_inicio: $("#fecha_inicio").val(),
+      fecha_respuesta: $("#fecha_respuesta").val()
+    },
+    dataType: "json",
+    success: function () {
+      $("#modal_estado").modal("hide");
+      tabla.ajax.reload();
+      Swal.fire("Correcto", "Estado actualizado", "success");
+    }
   });
 });
+
 
 // =======================================================
 // EJECUTAR INICIALIZACIÓN

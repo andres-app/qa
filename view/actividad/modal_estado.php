@@ -14,17 +14,11 @@
 
           <label>Estado</label>
           <select id="estado" name="estado" class="form-control">
-            <option>Pendiente</option>
-            <option>En Progreso</option>
-            <option>Atendido</option>
-            <option>Cerrado</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="En Progreso">En Progreso</option>
+            <option value="Atendido">Atendido</option>
+            <option value="Cerrado">Cerrado</option>
           </select>
-
-          <label class="mt-3">Fecha Inicio</label>
-          <input type="datetime-local" id="fecha_inicio" class="form-control">
-
-          <label class="mt-3">Fecha Respuesta</label>
-          <input type="datetime-local" id="fecha_respuesta" class="form-control">
 
           <label class="mt-3">Observación</label>
           <textarea id="observacion" class="form-control" rows="2"></textarea>
@@ -32,7 +26,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">Cerrar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="submit" class="btn btn-info">Guardar</button>
         </div>
 

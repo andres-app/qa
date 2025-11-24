@@ -4,16 +4,30 @@ class Actividad extends Conectar {
     public function listar() {
         $conectar = parent::conexion();
         parent::set_names();
-
-        $sql = "SELECT a.*, u.usu_nomape AS colaborador
-        FROM actividad a
-        LEFT JOIN tm_usuario u ON a.colaborador_id = u.usu_id
-        WHERE a.est = 1
-        ORDER BY a.id_actividad DESC";
+    
+        $sql = "SELECT 
+                    a.id_actividad,
+                    a.colaborador_id,
+                    a.actividad,
+                    a.descripcion,
+                    a.fecha_recepcion,
+                    a.fecha_inicio,
+                    a.fecha_respuesta,
+                    a.estado,
+                    a.avance,
+                    a.prioridad,
+                    a.est AS estado_logico,
+                    u.usu_nomape AS colaborador
+                FROM actividad a
+                LEFT JOIN tm_usuario u ON a.colaborador_id = u.usu_id
+                WHERE a.est = 1
+                ORDER BY a.id_actividad DESC";
+    
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
 
     // ✅ INSERTAR NUEVA ACTIVIDAD
     public function insertar($data) {
