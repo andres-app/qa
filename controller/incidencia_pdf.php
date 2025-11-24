@@ -49,7 +49,7 @@ $fecha_actual = date("d/m/Y");
 
 $ambiente = v($data, "ambiente_pruebas", "Ambiente de pruebas v 1.0-SAJ – PJ / Registro de expediente");
 
-$nro_incidencia = v($data, "id_incidencia");
+$nro_incidencia = v($data, "correlativo_doc");
 $nro_glpi = v($data, "glpi");
 $version_origen = v($data, "version_origen");
 $caso_prueba = v($data, "caso_prueba");
@@ -68,16 +68,41 @@ $pasos = v($data, "pasos", "");
 $observaciones = v($data, "observaciones", "");
 $analista = v($data, "analista", "");
 
-// Checkboxes Tipo de Error
-$cb_funcional = cb($tipo_error, "Funcional");
-$cb_datos = cb($tipo_error, "Datos");
-$cb_diseno = cb($tipo_error, "Diseño");
-$cb_otros = cb($tipo_error, "Otros");
+$tipo_error = v($data, "tipo_incidencia");
+$criticidad = v($data, "prioridad");
 
-// Checkboxes Criticidad
-$cb_alto = cb($criticidad, "Alto");
+/* --- Regla especial para Documentación → marcar como Otros --- */
+$tipo_normalizado = strtolower(trim($tipo_error));
+
+if ($tipo_normalizado === "documentacion" || $tipo_normalizado === "documentación") {
+    $tipo_error = "Otros";
+}
+
+if ($tipo_normalizado === "otro") {
+    $tipo_error = "Otros";
+}
+
+/* Checkboxes */
+$cb_funcional = cb($tipo_error, "Funcional");
+$cb_datos     = cb($tipo_error, "Datos");
+$cb_diseno    = cb($tipo_error, "Diseño");
+$cb_otros     = cb($tipo_error, "Otros");
+
+
+$criticidad = v($data, "prioridad");
+
+/* --- Normalización de criticidad --- */
+$crit = strtolower(trim($criticidad));
+
+if ($crit === "alta")  { $criticidad = "Alto"; }
+if ($crit === "media") { $criticidad = "Medio"; }
+if ($crit === "baja")  { $criticidad = "Bajo"; }
+
+/* Checkboxes Criticidad */
+$cb_alto  = cb($criticidad, "Alto");
 $cb_medio = cb($criticidad, "Medio");
-$cb_bajo = cb($criticidad, "Bajo");
+$cb_bajo  = cb($criticidad, "Bajo");
+
 
 // ==============================
 // CONFIGURACIÓN DEL PDF

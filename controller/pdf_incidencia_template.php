@@ -25,7 +25,7 @@ $estado_actual  = v($data, "estado_incidencia", "PENDIENTE");
 $fecha_actual   = date("d/m/Y");
 
 $ambiente       = v($data, "ambiente_pruebas", "");
-$nro_incidencia = v($data, "id_incidencia");
+$nro_incidencia = v($data, "correlativo_doc");
 $nro_glpi       = v($data, "glpi");
 $version_origen = v($data, "version_origen");
 $caso_prueba    = v($data, "caso_prueba");
@@ -44,6 +44,49 @@ $pasos          = v($data, "pasos");
 $observaciones  = v($data, "observaciones");
 $analista       = v($data, "analista");
 
+$tipo_error     = v($data, "tipo_incidencia");
+$criticidad     = v($data, "prioridad");
+
+/* --- Regla especial: cuando es Documentacion, marcar como Otros --- */
+$tipo = strtolower(trim($tipo_error));
+
+if ($tipo === "documentacion" || $tipo === "documentación") {
+    $tipo_error = "Otros";
+}
+
+if ($tipo === "otro") {
+    $tipo_error = "Otros";
+}
+
+
+/* Checkboxes */
+$cb_funcional = cb($tipo_error, "Funcional");
+$cb_datos     = cb($tipo_error, "Datos");
+$cb_diseno    = cb($tipo_error, "Diseño");
+$cb_otros     = cb($tipo_error, "Otros");
+
+
+$tipo_error     = v($data, "tipo_incidencia");
+$criticidad     = v($data, "prioridad");
+
+/* --- Regla especial: cuando es Documentacion, marcar como Otros --- */
+$tipo = strtolower(trim($tipo_error));
+
+if ($tipo === "documentacion" || $tipo === "documentación") {
+    $tipo_error = "Otros";
+}
+
+if ($tipo === "otro") {
+    $tipo_error = "Otros";
+}
+
+/* --- Normalización de criticidad --- */
+$crit = strtolower(trim($criticidad));
+
+if ($crit === "alta")  { $criticidad = "Alto"; }
+if ($crit === "media") { $criticidad = "Medio"; }
+if ($crit === "baja")  { $criticidad = "Bajo"; }
+
 /* Checkboxes */
 $cb_funcional = cb($tipo_error, "Funcional");
 $cb_datos     = cb($tipo_error, "Datos");
@@ -53,6 +96,7 @@ $cb_otros     = cb($tipo_error, "Otros");
 $cb_alto      = cb($criticidad, "Alto");
 $cb_medio     = cb($criticidad, "Medio");
 $cb_bajo      = cb($criticidad, "Bajo");
+
 
 /* ============================================================
    IMÁGENES
