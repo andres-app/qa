@@ -12,16 +12,13 @@
 
           <input type="hidden" id="estado_id" name="id_actividad">
 
-          <label>Estado</label>
-          <select id="estado" name="estado" class="form-control">
-            <option value="Pendiente">Pendiente</option>
-            <option value="En Progreso">En Progreso</option>
-            <option value="Atendido">Atendido</option>
-            <option value="Cerrado">Cerrado</option>
-          </select>
+          <label>Nuevo Estado</label>
+          <select id="estado" name="estado" class="form-control"></select>
 
-          <label class="mt-3">Observación</label>
-          <textarea id="observacion" class="form-control" rows="2"></textarea>
+          <div id="observacion_box" class="mt-3" style="display:none;">
+            <label>Observación</label>
+            <textarea id="observacion" class="form-control"></textarea>
+          </div>
 
         </div>
 

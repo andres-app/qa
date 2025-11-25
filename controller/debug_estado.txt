@@ -1,9 +1,9 @@
 Array
 (
-    [id_actividad] => 19
-    [estado] => Atendido
+    [id_actividad] => 28
+    [estado] => Cerrado
     [avance] => 100%
-    [fecha_inicio] => 2025-11-24 22:17:11
-    [fecha_respuesta] => 2025-11-24 22:17:11
+    [fecha_inicio] => 
+    [fecha_respuesta] => 2025-11-25 01:05:40
     [observacion] => 
 )
