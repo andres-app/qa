@@ -179,3 +179,39 @@
     width: 100%;
     height: 100%;
 }
+
+/* Alternancia tipo tabla dinámica por grupo */
+#tablaDocAnalista tr.grupo-par td {
+    background-color: #f8faff !important;
+}
+
+#tablaDocAnalista tr.grupo-impar td {
+    background-color: #eef2ff !important;
+}
+
+/* Documento con mismo fondo del grupo */
+#tablaDocAnalista td.doc-cell {
+    font-weight: 700;
+    border-left: 3px solid #3b82f6;
+    color: #1e3a8a;
+    vertical-align: middle !important;
+    width: 180px;
+}
+
+/* Número destacado */
+#tablaDocAnalista td.text-center {
+    font-weight: 700;
+    color: #b91c1c !important;
+}
+
+/* Hover elegante */
+#tablaDocAnalista tbody tr:hover td {
+    background-color: #f1f1f1 !important;
+}
+
+/* Tamaño compacto ideal para md-6 */
+#tablaDocAnalista td,
+#tablaDocAnalista th {
+    padding: 6px 8px !important;
+    font-size: 12px;
+}

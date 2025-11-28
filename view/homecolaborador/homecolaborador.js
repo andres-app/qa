@@ -516,6 +516,65 @@ if (document.getElementById("chartMes")) {
 }
 
 
+// ======================================================
+//  📊 GRÁFICO: Incidencias por Documento y Analista
+// ======================================================
+
+// Agrupar por documento
+const agrupado = {};
+
+docAnalistaData.forEach(row => {
+    if (!agrupado[row.documento]) {
+        agrupado[row.documento] = [];
+    }
+    agrupado[row.documento].push({
+        analista: row.analista,
+        total: row.total
+    });
+});
+
+// Renderizar tabla con rowspan
+let tbody = "";
+let totalGeneral = 0;
+let grupoIndex = 0;
+
+docAnalistaData.forEach((row, idx) => {}); // asegurar que existe antes
+
+Object.keys(agrupado).forEach(documento => {
+
+    const filas = agrupado[documento];
+    const rowspan = filas.length;
+
+    const grupoClass = (grupoIndex % 2 === 0) ? "grupo-par" : "grupo-impar";
+    grupoIndex++;
+
+    filas.forEach((item, index) => {
+        totalGeneral += parseInt(item.total);
+
+        tbody += `
+            <tr class="${grupoClass}">
+                ${index === 0 ? `
+                    <td rowspan="${rowspan}" class="doc-cell ${grupoClass}">
+                        ${documento}
+                    </td>` : ""}
+                <td>${item.analista}</td>
+                <td class="fw-bold text-center text-danger">${item.total}</td>
+            </tr>
+        `;
+    });
+});
+
+document.querySelector("#tablaDocAnalista tbody").innerHTML = tbody;
+document.querySelector("#totalGeneral").innerText = totalGeneral;
+
+new DataTable("#tablaDocAnalista", {
+    paging: false,
+    searching: false,
+    info: false,
+    ordering: false
+});
+
+
 
 
 });

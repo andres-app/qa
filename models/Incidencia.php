@@ -119,7 +119,6 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";
 
                 // ✔ Insert correcto → salir
                 return $conectar->lastInsertId();
-
             } catch (PDOException $e) {
 
                 // 🛑 Error 1062 = duplicado por colisión simultánea
@@ -312,6 +311,28 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function incidencias_por_documento_analista()
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
 
+        $sql = "
+        SELECT 
+            d.nombre AS documento,
+            u.usu_nomape AS analista,
+            COUNT(i.id_incidencia) AS total
+        FROM incidencia i
+        INNER JOIN documentacion d 
+            ON i.id_documentacion = d.id_documentacion
+        INNER JOIN tm_usuario u 
+            ON i.analista_id = u.usu_id
+        WHERE i.estado = 1
+        GROUP BY d.id_documentacion, u.usu_id
+        ORDER BY d.nombre ASC, u.usu_nomape ASC
+    ";
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
-?>

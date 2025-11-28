@@ -79,7 +79,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     $ids_organo = array_column($casos_por_organo, "id_organo");
 
     // === Seguimiento por especialidad ===
-// === Seguimiento por especialidad ===
+    // === Seguimiento por especialidad ===
     $seguimiento_especialidad = $reporte->get_seguimiento_por_especialidad();
     $labels_especialidad = array_column($seguimiento_especialidad, "especialidad");
     $data_completado = array_column($seguimiento_especialidad, "completado");
@@ -90,6 +90,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     $inc = new Incidencia();
 
     $inc_por_doc = $inc->incidencias_por_documento();
+    $inc_doc_analista = $inc->incidencias_por_documento_analista();
     $inc_por_mod = $inc->incidencias_por_modulo();
     $inc_por_mes = $inc->incidencias_por_mes();
     $inc_total = $inc->contar_todas();
@@ -97,7 +98,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
 
     // === Resumen consolidado ===
     $resumen = $reporte->get_resumen_por_especialidad() ?? [];
-    ?>
+?>
     <!doctype html>
     <html lang="es">
 
@@ -257,7 +258,8 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                                         <td><?= $fila["total_requisitos"]; ?></td>
                                                                         <td><?= $fila["total_requerimientos"]; ?></td>
                                                                     </tr>
-                                                                <?php endforeach; endforeach; ?>
+                                                            <?php endforeach;
+                                                            endforeach; ?>
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -350,6 +352,37 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                         </div>
                                     </div>
 
+                                    <!-- Incidencias por Documento y Analista -->
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-header bg-light text-center fw-semibold">
+                                                Incidencias por Documento y Analista
+                                            </div>
+
+                                            <div class="card-body p-0">
+                                                <div class="table-responsive" style="max-height:350px; overflow-y:auto;">
+                                                    <table id="tablaDocAnalista"
+                                                        class="table table-hover table-striped align-middle mb-0">
+                                                        <thead class="table-dark">
+                                                            <tr>
+                                                                <th>Documento</th>
+                                                                <th>Analista</th>
+                                                                <th>N°</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody></tbody>
+                                                        <tfoot class="fw-bold bg-light">
+                                                            <tr>
+                                                                <td colspan="2" class="text-end">TOTAL</td>
+                                                                <td id="totalGeneral" class="text-primary text-center"></td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- Incidencias por Mes (FULL WIDTH) -->
                                     <div class="card shadow-sm mt-4 mb-5">
                                         <div class="card-header bg-light text-center fw-semibold">
@@ -424,7 +457,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
             const mesData = <?= json_encode(array_column($inc_por_mes, "total")); ?>;
             const mesLabelsBonitos = formatearMeses(mesLabels);
 
-
+            const docAnalistaData = <?= json_encode($inc_doc_analista); ?>;
         </script>
 
         <script src="homecolaborador.js"></script>
@@ -433,7 +466,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
     </html>
 
 
-    <?php
+<?php
 } else {
     header("Location:" . Conectar::ruta() . "index.php");
 }
