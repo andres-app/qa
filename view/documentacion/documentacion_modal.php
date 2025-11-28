@@ -34,12 +34,17 @@
 
                     <!-- Fecha de recepción -->
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="fecha_recepcion" class="form-label">Fecha de Recepción (*)</label>
-                            <input type="date" class="form-control" id="fecha_recepcion" name="fecha_recepcion"
-                                required>
-                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="fecha_recepcion" class="form-label">Fecha de Recepción (*)</label>
+                                <input type="date" class="form-control" id="fecha_recepcion" name="fecha_recepcion" required>
+                            </div>
 
+                            <div class="col-md-6 mb-3">
+                                <label for="fecha_respuesta" class="form-label">Fecha de Respuesta</label>
+                                <input type="date" class="form-control" id="fecha_respuesta" name="fecha_respuesta">
+                            </div>
+                        </div>
                         <!-- Tipo de documento -->
                         <div class="col-md-6 mb-3">
                             <label for="tipo_documento" class="form-label">Tipo de Documento</label>

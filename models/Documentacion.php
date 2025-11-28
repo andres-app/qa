@@ -13,6 +13,7 @@ class Documentacion extends Conectar
     nombre,
     descripcion,
     fecha_recepcion,
+    fecha_respuesta,
     fecha_creacion, 
     tipo_documento,
     estado
@@ -39,28 +40,28 @@ ORDER BY fecha_recepcion DESC";
     }
 
     // 🟨 Insertar nueva documentación
-    public function insertar($nombre, $descripcion, $fecha_recepcion, $tipo_documento)
+    public function insertar($nombre, $descripcion, $fecha_recepcion, $fecha_respuesta, $tipo_documento)
     {
         $conectar = parent::conexion();
         parent::set_names();
 
-        $sql = "INSERT INTO documentacion (nombre, descripcion, fecha_recepcion, tipo_documento, estado)
-                VALUES (?, ?, ?, ?, 1)";
+        $sql = "INSERT INTO documentacion (nombre, descripcion, fecha_recepcion, fecha_respuesta, tipo_documento, estado)
+                VALUES (?, ?, ?, ?, ?, 1)";
         $stmt = $conectar->prepare($sql);
-        $stmt->execute([$nombre, $descripcion, $fecha_recepcion, $tipo_documento]);
+        $stmt->execute([$nombre, $descripcion, $fecha_recepcion, $fecha_respuesta, $tipo_documento]);
     }
 
     // 🟧 Actualizar registro existente
-    public function actualizar($id_documentacion, $nombre, $descripcion, $fecha_recepcion, $tipo_documento)
+    public function actualizar($id_documentacion, $nombre, $descripcion, $fecha_recepcion, $fecha_respuesta, $tipo_documento)
     {
         $conectar = parent::conexion();
         parent::set_names();
 
         $sql = "UPDATE documentacion 
-                SET nombre = ?, descripcion = ?, fecha_recepcion = ?, tipo_documento = ?
+                SET nombre = ?, descripcion = ?, fecha_recepcion = ?, fecha_respuesta = ?, tipo_documento = ?
                 WHERE id_documentacion = ?";
         $stmt = $conectar->prepare($sql);
-        $stmt->execute([$nombre, $descripcion, $fecha_recepcion, $tipo_documento, $id_documentacion]);
+        $stmt->execute([$nombre, $descripcion, $fecha_recepcion, $fecha_respuesta, $tipo_documento, $id_documentacion]);
     }
 
     // 🟥 Eliminación lógica

@@ -20,6 +20,7 @@ switch ($_GET["op"]) {
                 $_POST["nombre"],
                 $_POST["descripcion"],
                 $_POST["fecha_recepcion"],
+                $_POST["fecha_respuesta"],
                 $_POST["tipo_documento"]
             );
             echo json_encode(["status" => "ok", "msg" => "Documentación registrada correctamente"]);
@@ -29,6 +30,7 @@ switch ($_GET["op"]) {
                 $_POST["nombre"],
                 $_POST["descripcion"],
                 $_POST["fecha_recepcion"],
+                $_POST["fecha_respuesta"],
                 $_POST["tipo_documento"]
             );
             echo json_encode(["status" => "ok", "msg" => "Documentación actualizada correctamente"]);

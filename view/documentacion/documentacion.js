@@ -85,6 +85,7 @@ $(document).ready(function () {
             { data: "nombre" },
             { data: "tipo_documento" },
             { data: "fecha_recepcion" },
+            { data: "fecha_respuesta" },
             { data: "fecha_creacion" },
             {
                 data: null,
@@ -156,20 +157,19 @@ function editar(id_documentacion) {
         { id_documentacion: id_documentacion },
         function (data) {
 
-            console.log("RESPUESTA MOSTRAR:", data);
-
-            // data YA ES OBJETO JSON porque indicamos "json" al final
             $("#id_documento_mnt").val(data.id_documentacion);
             $("#nombre").val(data.nombre);
             $("#descripcion").val(data.descripcion);
             $("#fecha_recepcion").val(data.fecha_recepcion);
+            $("#fecha_respuesta").val(data.fecha_respuesta); // 👈 NUEVO
             $("#tipo_documento").val(data.tipo_documento);
 
             $("#mnt_modal").modal('show');
         },
-        "json" // <- importante: jQuery convierte automáticamente a objeto
+        "json"
     );
 }
+
 
 
 // ==============================

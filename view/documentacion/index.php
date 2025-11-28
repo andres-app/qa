@@ -68,6 +68,7 @@ if (isset($_SESSION["usu_id"]) && count($datos) > 0) {
                                                     <th>Nombre</th>
                                                     <th>Tipo</th>
                                                     <th>Fecha Recepción</th>
+                                                    <th>Fecha Respuesta</th>
                                                     <th>Fecha Creación</th>
                                                     <th class="text-center">Acciones</th>
                                                 </tr>
